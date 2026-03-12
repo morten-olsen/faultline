@@ -1,0 +1,134 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Check, ArrowRight, Pause, RotateCcw, Trash2 } from 'lucide-react'
+import { Button } from '../../components/button/button.tsx'
+
+<Meta title="Design System/Components/Button/Overview" />
+
+<div style={{ maxWidth: 640, color: '#e8e8e8' }}>
+
+# Button
+
+<p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+  Built on <a href="https://base-ui.com/react/components/button" style={{ color: '#60a5fa' }}>Base UI Button</a>.
+  Buttons are rare in Faultline — the system acts on its own. When one appears, the user
+  has chosen to step in.
+</p>
+
+---
+
+## Variants
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', margin: '2rem 0' }}>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem' }}>
+    <div style={{ marginBottom: '1rem' }}>
+      <Button variant="primary" icon={Check}>Approve</Button>
+    </div>
+    <div style={{ color: '#60a5fa', fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.375rem' }}>Primary</div>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', lineHeight: 1.6, margin: 0 }}>
+      The single most important action. One per context. White fill — unmistakable.
+    </p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem' }}>
+    <div style={{ marginBottom: '1rem' }}>
+      <Button variant="secondary" iconRight={ArrowRight}>View details</Button>
+    </div>
+    <div style={{ color: '#a3a3a3', fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.375rem' }}>Secondary</div>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', lineHeight: 1.6, margin: 0 }}>
+      The default. Translucent fill. View details, navigate deeper.
+    </p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem' }}>
+    <div style={{ marginBottom: '1rem' }}>
+      <Button variant="ghost">Dismiss</Button>
+    </div>
+    <div style={{ color: '#a3a3a3', fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.375rem' }}>Ghost</div>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', lineHeight: 1.6, margin: 0 }}>
+      Nearly invisible until hovered. Dismiss, defer, secondary actions.
+    </p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem' }}>
+    <div style={{ marginBottom: '1rem' }}>
+      <Button variant="danger" icon={Trash2}>Force restart</Button>
+    </div>
+    <div style={{ color: '#f87171', fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.375rem' }}>Danger</div>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', lineHeight: 1.6, margin: 0 }}>
+      Irreversible or high-impact. Force restart, delete, override.
+    </p>
+  </div>
+</div>
+
+---
+
+## Sizes
+
+<div style={{ display: 'flex', alignItems: 'flex-end', gap: '2rem', margin: '2rem 0', background: '#141414', borderRadius: 12, padding: '2rem' }}>
+  <div style={{ textAlign: 'center' }}>
+    <Button size="sm" variant="secondary">Small</Button>
+    <p style={{ color: '#5a5a5a', fontSize: '0.6875rem', margin: '0.75rem 0 0' }}>Inline actions</p>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <Button size="md" variant="secondary">Medium</Button>
+    <p style={{ color: '#5a5a5a', fontSize: '0.6875rem', margin: '0.75rem 0 0' }}>Default</p>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <Button size="lg" variant="secondary">Large</Button>
+    <p style={{ color: '#5a5a5a', fontSize: '0.6875rem', margin: '0.75rem 0 0' }}>Hero actions</p>
+  </div>
+</div>
+
+---
+
+## With icons
+
+<div style={{ background: '#141414', borderRadius: 12, padding: '2rem', margin: '2rem 0' }}>
+  <p style={{ color: '#5a5a5a', fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1rem' }}>Left icon — reinforces the action</p>
+  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+    <Button variant="primary" icon={Check}>Approve</Button>
+    <Button variant="secondary" icon={RotateCcw}>Retry</Button>
+    <Button variant="ghost" icon={Pause}>Pause</Button>
+  </div>
+  <p style={{ color: '#5a5a5a', fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1rem' }}>Right icon — suggests navigation</p>
+  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+    <Button variant="secondary" iconRight={ArrowRight}>View details</Button>
+    <Button variant="ghost" iconRight={ArrowRight}>Details</Button>
+  </div>
+</div>
+
+---
+
+## States
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', margin: '2rem 0' }}>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem', textAlign: 'center' }}>
+    <div style={{ marginBottom: '0.75rem' }}><Button variant="primary">Active</Button></div>
+    <p style={{ color: '#5a5a5a', fontSize: '0.6875rem', margin: 0 }}>Ready</p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem', textAlign: 'center' }}>
+    <div style={{ marginBottom: '0.75rem' }}><Button variant="primary" disabled>Disabled</Button></div>
+    <p style={{ color: '#5a5a5a', fontSize: '0.6875rem', margin: 0 }}>Fades gently</p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem', textAlign: 'center' }}>
+    <div style={{ marginBottom: '0.75rem' }}><Button variant="primary" loading>Approving...</Button></div>
+    <p style={{ color: '#5a5a5a', fontSize: '0.6875rem', margin: 0 }}>Spinner replaces icon</p>
+  </div>
+</div>
+
+---
+
+## When not to use
+
+<div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem', margin: '2rem 0' }}>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0 }}>
+      <span style={{ color: '#f87171' }}>Navigation?</span> Use a clickable card or link instead.
+    </p>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0 }}>
+      <span style={{ color: '#f87171' }}>Automatic action?</span> If the system can handle it, don't offer a button.
+    </p>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0 }}>
+      <span style={{ color: '#f87171' }}>Needs confirmation?</span> Reconsider if the action should be that easy.
+    </p>
+  </div>
+</div>
+
+</div>

@@ -1,0 +1,125 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { CircleCheck, Eye, Wrench, Search, Hand, ArrowRight, Lightbulb, ListChecks } from 'lucide-react'
+
+<Meta title="Design System/Introduction" />
+
+<div style={{ maxWidth: 640, margin: '0 auto', color: '#e8e8e8' }}>
+
+# Faultline
+
+<p style={{ fontSize: '1rem', color: '#a3a3a3', lineHeight: 1.8, marginBottom: '2rem' }}>
+  A design system for a platform that takes care of things.
+  Quiet, purposeful, and always in your pocket — like a capable
+  colleague who handles the details so you don't have to.
+</p>
+
+---
+
+## The idea
+
+Faultline manages your infrastructure. The interface exists to give you
+peace of mind — not to make you work. When everything is fine, you should
+feel it instantly: a glance, a checkmark, done. When something needs
+attention, the system explains it like a calm colleague —
+not like an alarm.
+
+<div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem', margin: '1.5rem 0', borderLeft: '3px solid #3b82f6' }}>
+  <p style={{ margin: 0, color: '#a3a3a3', fontStyle: 'italic', fontSize: '0.9375rem', lineHeight: 1.7 }}>
+    "Automatic by default, never a loss of control."
+  </p>
+</div>
+
+## The issue lifecycle
+
+Every issue flows through a pipeline. The interface mirrors this directly —
+you always know where things are and why.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '1.5rem 0' }}>
+  {[
+    { icon: <Search size={14} style={{ color: '#fbbf24' }} />, stage: 'Triage', desc: 'Detected something, assessing severity' },
+    { icon: <Lightbulb size={14} style={{ color: '#60a5fa' }} />, stage: 'Investigation', desc: 'Analyzing root cause' },
+    { icon: <ListChecks size={14} style={{ color: '#60a5fa' }} />, stage: 'Proposed Plan', desc: 'Has a plan, may need approval' },
+    { icon: <Wrench size={14} style={{ color: '#60a5fa' }} />, stage: 'Implementation', desc: 'Executing the fix' },
+    { icon: <Eye size={14} style={{ color: '#4ade80' }} />, stage: 'Monitoring', desc: 'Fix applied, watching if it holds' },
+    { icon: <CircleCheck size={14} style={{ color: '#22c55e', opacity: 0.6 }} />, stage: 'Resolved', desc: 'Confirmed fixed, moves to the log' },
+  ].map(({ icon, stage, desc }) => (
+    <div key={stage} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: '#141414', borderRadius: 10 }}>
+      {icon}
+      <span style={{ fontSize: '0.8125rem', fontWeight: 500, minWidth: 110 }}>{stage}</span>
+      <span style={{ fontSize: '0.8125rem', color: '#5a5a5a' }}>{desc}</span>
+    </div>
+  ))}
+</div>
+
+At any stage, the system may need you — approval, a decision, physical action.
+When this happens, a <Hand size={12} style={{ color: '#fbbf24', display: 'inline', verticalAlign: 'middle' }} /> **"Needs you"**
+flag appears. It's not a separate state — it's a signal that the pipeline is blocked
+until you act. And it's warm, not alarming. A raised hand, not a siren.
+
+See the **[Issue Lifecycle](/docs/design-system-foundations-issue-lifecycle--docs)** page for
+a complete walkthrough from detection to resolution.
+
+---
+
+## Principles
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', margin: '1.5rem 0' }}>
+  {[
+    { n: '1', name: 'Calm Over Urgent', desc: 'Default to quiet. Escalate through subtlety.' },
+    { n: '2', name: 'Show the Machine Thinking', desc: 'Every automated action has a visible trace.' },
+    { n: '3', name: 'A Checkmark Over a Chart', desc: 'If a simple signal tells the story, don\'t build an infographic.' },
+    { n: '4', name: 'The Pipeline Is the Interface', desc: 'The home view mirrors the issue lifecycle directly.' },
+    { n: '5', name: 'Assign, Don\'t Alarm', desc: 'When the system needs a human, it asks — it doesn\'t demand.' },
+    { n: '6', name: 'Always in Your Pocket', desc: 'One viewport, one answer. Phone or desktop, same experience.' },
+    { n: '7', name: 'Motion as Storytelling', desc: 'Things enter, exit, and guide the eye. Nothing just appears.' },
+    { n: '8', name: 'Consistency as Kindness', desc: 'Same patterns, same places, same behaviors.' },
+  ].map(({ n, name, desc }) => (
+    <div key={n} style={{ display: 'flex', gap: 12, alignItems: 'baseline' }}>
+      <span style={{ color: '#3b82f6', fontSize: '0.6875rem', fontFamily: 'monospace', flexShrink: 0 }}>{n}</span>
+      <div>
+        <span style={{ fontSize: '0.8125rem', fontWeight: 500 }}>{name}</span>
+        <span style={{ fontSize: '0.8125rem', color: '#5a5a5a' }}> — {desc}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
+---
+
+## What's here
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', margin: '1.5rem 0' }}>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.25rem' }}>
+    <p style={{ color: '#60a5fa', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 0.5rem' }}>Foundations</p>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>Colors, typography, spacing, motion — the atomic decisions everything is built on.</p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.25rem' }}>
+    <p style={{ color: '#4ade80', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 0.5rem' }}>Components</p>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>Buttons, cards, pills, tags — each one earns its place.</p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.25rem' }}>
+    <p style={{ color: '#fbbf24', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 0.5rem' }}>Pages</p>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>Home, issue detail, issue search — the complete interface explored.</p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.25rem' }}>
+    <p style={{ color: '#a3a3a3', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 0.5rem' }}>Tone</p>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>How the system speaks — not just the pixels, but the personality.</p>
+  </div>
+</div>
+
+---
+
+## The test
+
+Every element in this system should pass one question:
+
+<div style={{ background: '#141414', borderRadius: 12, padding: '2rem', margin: '1.5rem 0', textAlign: 'center' }}>
+  <p style={{ margin: 0, fontSize: '1rem', color: '#e8e8e8', lineHeight: 1.7 }}>
+    Does this make the user feel <strong>cared for</strong>?
+  </p>
+</div>
+
+Not impressed. Not productive. *Cared for.* Like someone
+capable is watching over things, and they've got it handled.
+
+</div>

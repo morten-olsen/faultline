@@ -1,0 +1,125 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { ArrowRight, Hand } from 'lucide-react'
+import { Card, CardHeader, CardBody, CardFooter, CardCallout } from '../../components/card/card.tsx'
+import { StagePill } from '../../components/stage-pill/stage-pill.tsx'
+import { Tag } from '../../components/tag/tag.tsx'
+import { Button } from '../../components/button/button.tsx'
+
+<Meta title="Design System/Components/Card/Overview" />
+
+<div style={{ maxWidth: 640, color: '#e8e8e8' }}>
+
+# Card
+
+<p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+  The container for everything — issues, sections, needs-you prompts.
+  Translucent surfaces with subtle rings. Composable sub-components inside.
+</p>
+
+---
+
+## Variants
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', margin: '1.5rem 0' }}>
+  <Card>
+    <CardBody>
+      <strong style={{ color: '#e8e8e8' }}>Default</strong> — the standard container. Resolved lists, informational sections.
+    </CardBody>
+  </Card>
+  <Card variant="issue" interactive>
+    <CardBody>
+      <strong style={{ color: '#e8e8e8' }}>Issue</strong> — an active issue in the pipeline. Hover reveals the ring brightening.
+    </CardBody>
+  </Card>
+  <Card variant="needs-you">
+    <CardBody>
+      <strong style={{ color: '#e8e8e8' }}>Needs you</strong> — blocked on the user. Amber tint — a colleague asking, not an alarm.
+    </CardBody>
+  </Card>
+  <Card variant="subtle">
+    <CardBody>
+      <strong style={{ color: '#e8e8e8' }}>Subtle</strong> — minimal styling. For nested or secondary content.
+    </CardBody>
+  </Card>
+</div>
+
+---
+
+## Composable structure
+
+Cards use sub-components for consistent internal layout:
+
+- **CardHeader** — title + tags + trailing content (timestamps, actions)
+- **CardBody** — the description
+- **CardCallout** — inset highlight for context the user needs
+- **CardFooter** — stage pill + navigation
+
+---
+
+## A needs-you card
+
+The amber treatment is calm — it's a hand-raise, not a fire alarm.
+"Needs you" means the pipeline is paused, waiting for a human to act.
+
+<div style={{ margin: '1.5rem 0' }}>
+  <Card variant="needs-you">
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+      <Hand size={15} style={{ color: '#fbbf24', opacity: 0.8 }} />
+      <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>NAS disk showing SMART warnings</span>
+    </div>
+    <CardBody>
+      Disk 3 is reporting reallocated sectors. The array is degraded but online.
+      This needs a physical disk swap.
+    </CardBody>
+    <div style={{ display: 'flex', gap: 8 }}>
+      <Button variant="primary" size="sm">I'll replace it</Button>
+      <Button variant="ghost" size="sm" iconRight={ArrowRight}>Details</Button>
+    </div>
+  </Card>
+</div>
+
+---
+
+## A calm issue card
+
+Most cards are just the system showing its work. No action needed.
+
+<div style={{ margin: '1.5rem 0' }}>
+  <Card variant="issue" interactive>
+    <CardHeader trailing={<span className="text-xs font-mono text-text-muted">3m</span>}>
+      <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>Memory pressure on node-02</span>
+      <Tag>kubernetes</Tag>
+    </CardHeader>
+    <CardBody>
+      Above 80% memory. Low-priority workloads moved to node-01.
+    </CardBody>
+    <CardFooter>
+      <StagePill stage="monitoring" />
+      <Button variant="ghost" size="sm" iconRight={ArrowRight}>Details</Button>
+    </CardFooter>
+  </Card>
+</div>
+
+The visual weight is noticeably lower. Same structure, same components,
+but the absence of the amber tint says everything: this one's handled.
+
+---
+
+## Callout variants
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', margin: '1.5rem 0' }}>
+  <Card>
+    <CardCallout variant="critical">
+      Approve taking home-assistant offline for ~3 minutes?
+    </CardCallout>
+  </Card>
+  <Card>
+    <CardCallout variant="info">
+      This issue was previously resolved, then resurfaced 8 minutes later.
+    </CardCallout>
+  </Card>
+</div>
+
+Critical for action prompts. Info for context and history.
+
+</div>

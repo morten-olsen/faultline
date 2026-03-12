@@ -1,0 +1,101 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { StagePill } from '../../components/stage-pill/stage-pill.tsx'
+
+<Meta title="Design System/Components/Stage Pill/Overview" />
+
+<div style={{ maxWidth: 480, color: '#e8e8e8' }}>
+
+# Stage Pill
+
+<p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+  The pipeline indicator. Shows where an issue is and whether it needs you.
+</p>
+
+---
+
+## The pipeline
+
+<div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem', margin: '1.5rem 0', fontFamily: '"Geist Mono Variable", monospace', fontSize: '0.75rem', color: '#a3a3a3', lineHeight: 2.2 }}>
+  <span style={{ color: '#fbbf24' }}>Triage</span> → <span style={{ color: '#60a5fa' }}>Investigation</span> → <span style={{ color: '#60a5fa' }}>Proposed Plan</span> → <span style={{ color: '#60a5fa' }}>Implementation</span> → <span style={{ color: '#4ade80' }}>Monitoring</span> → <span style={{ color: '#4ade80' }}>Resolved</span>
+  <br />
+  <span style={{ opacity: 0.4 }}>{'                                                              '}↑{'               '}|</span>
+  <br />
+  <span style={{ opacity: 0.4 }}>{'                                                              '}└───────────────┘ (regression)</span>
+</div>
+
+---
+
+## All stages
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', margin: '1.5rem 0' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+    <StagePill stage="triage" />
+    <span style={{ color: '#5a5a5a', fontSize: '0.8125rem' }}>Detected, assessing severity</span>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+    <StagePill stage="investigation" />
+    <span style={{ color: '#5a5a5a', fontSize: '0.8125rem' }}>Analyzing root cause</span>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+    <StagePill stage="proposed-plan" />
+    <span style={{ color: '#5a5a5a', fontSize: '0.8125rem' }}>Has a plan, may need approval</span>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+    <StagePill stage="implementation" />
+    <span style={{ color: '#5a5a5a', fontSize: '0.8125rem' }}>Executing the fix</span>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+    <StagePill stage="monitoring" />
+    <span style={{ color: '#5a5a5a', fontSize: '0.8125rem' }}>Fix applied, watching to confirm</span>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+    <StagePill stage="resolved" />
+    <span style={{ color: '#5a5a5a', fontSize: '0.8125rem' }}>Confirmed fixed</span>
+  </div>
+</div>
+
+The color arc is intentional: **amber** (we've noticed) → **blue** (we're thinking, planning, doing) →
+**green** (it's handled). This mirrors the emotional arc of an issue — from alert to action to calm.
+
+---
+
+## "Needs you" — at any stage
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', margin: '1.5rem 0' }}>
+  <div>
+    <StagePill stage="triage" needsYou />
+    <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', marginTop: 4 }}>
+      "We found something but need your input to assess it."
+    </p>
+  </div>
+  <div>
+    <StagePill stage="investigation" needsYou />
+    <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', marginTop: 4 }}>
+      "We're analyzing but need more context from you."
+    </p>
+  </div>
+  <div>
+    <StagePill stage="proposed-plan" needsYou />
+    <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', marginTop: 4 }}>
+      "We have a plan but it's disruptive — approve it?"
+    </p>
+  </div>
+  <div>
+    <StagePill stage="implementation" needsYou />
+    <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', marginTop: 4 }}>
+      "We're working on it, but hit a step that needs your action."
+    </p>
+  </div>
+  <div>
+    <StagePill stage="monitoring" needsYou />
+    <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', marginTop: 4 }}>
+      "The fix is in, but we need you to confirm it's good."
+    </p>
+  </div>
+</div>
+
+"Needs you" is not a separate state — it's a **flag** layered on any stage.
+It means the pipeline is paused until the user acts. The amber treatment is
+intentional — it's a colleague asking for help, not a siren.
+
+</div>

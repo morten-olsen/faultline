@@ -1,0 +1,49 @@
+{
+  "name": "@faultline/web",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.3.0",
+    "@faultline/client": "workspace:*",
+    "@faultline/protocol": "workspace:*",
+    "@fontsource-variable/geist": "^5.2.8",
+    "@fontsource-variable/geist-mono": "^5.2.7",
+    "@tanstack/react-query": "^5.90.21",
+    "@tanstack/react-query-devtools": "^5.91.3",
+    "@tanstack/react-router": "^1.166.7",
+    "@tanstack/react-router-devtools": "^1.166.7",
+    "lucide-react": "^0.577.0",
+    "motion": "^12.36.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^5.0.1",
+    "@storybook/addon-a11y": "^10.2.17",
+    "@storybook/addon-docs": "^10.2.17",
+    "@storybook/addon-onboarding": "^10.2.17",
+    "@storybook/addon-vitest": "^10.2.17",
+    "@storybook/react-vite": "^10.2.17",
+    "@tailwindcss/vite": "^4.2.1",
+    "@tanstack/router-plugin": "^1.166.7",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "@vitest/browser-playwright": "^4.1.0",
+    "@vitest/coverage-v8": "^4.1.0",
+    "playwright": "^1.58.2",
+    "storybook": "^10.2.17",
+    "tailwindcss": "^4.2.1",
+    "typescript": "catalog:",
+    "vite": "^7.3.1",
+    "vitest": "^4.1.0"
+  }
+}

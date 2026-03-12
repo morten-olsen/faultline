@@ -1,0 +1,73 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Search, Filter, Terminal } from 'lucide-react'
+import { Input } from '../../components/input/input.tsx'
+
+<Meta title="Design System/Components/Input/Overview" />
+
+<div style={{ maxWidth: 480, color: '#e8e8e8' }}>
+
+# Input
+
+<p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+  Built on <a href="https://base-ui.com/react/components/input" style={{ color: '#60a5fa' }}>Base UI Input</a>.
+  Uncommon but comfortable when it appears.
+</p>
+
+---
+
+## Why inputs are rare
+
+Faultline runs autonomously. When an input appears, it's for **search**, **manual override**,
+or **approval with context**. Because they're uncommon, each one gets room to breathe.
+
+---
+
+## Default
+
+<div style={{ maxWidth: 400, margin: '1.5rem 0' }}>
+  <Input placeholder="Search resolved issues..." />
+</div>
+
+Translucent surface, subtle ring that brightens on focus.
+
+---
+
+## With icon
+
+<div style={{ maxWidth: 400, display: 'flex', flexDirection: 'column', gap: '0.75rem', margin: '1.5rem 0' }}>
+  <Input placeholder="Search..." icon={Search} />
+  <Input placeholder="Filter by namespace..." icon={Filter} />
+  <Input placeholder="kubectl get pods..." icon={Terminal} />
+</div>
+
+The icon provides context — search, filter, command.
+
+---
+
+## Error state
+
+<div style={{ maxWidth: 400, margin: '1.5rem 0' }}>
+  <Input value="not-a-valid-node" error="No node found with this name" />
+</div>
+
+Red ring and message below — clear but not aggressive.
+
+---
+
+## Disabled
+
+<div style={{ maxWidth: 400, margin: '1.5rem 0' }}>
+  <Input value="Managed by system" disabled />
+</div>
+
+Fades like everything else that's unavailable. Text stays legible.
+
+---
+
+## Design decisions
+
+- **No built-in labels.** Labels live outside — sometimes context makes them redundant.
+- **Translucent surface.** `bg-white/4` — not a solid fill, part of the environment.
+- **Subtle focus.** Ring brightens, that's it. No glowing outlines.
+
+</div>

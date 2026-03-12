@@ -1,0 +1,206 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { CircleCheck, Eye, Wrench, Search, Hand, ArrowRight } from 'lucide-react'
+import { Badge } from '../../components/badge/badge.tsx'
+import { Button } from '../../components/button/button.tsx'
+import { TopBar } from '../../components/top-bar/top-bar.tsx'
+
+<Meta title="Design System/Pages/Home/Overview" />
+
+<div style={{ maxWidth: 640, color: '#e8e8e8' }}>
+
+# Home
+
+<p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+  The single-glance view. Answers "am I good?" in under 3 seconds —
+  whether the user is at a desk or on a phone in the metro.
+</p>
+
+---
+
+## Information hierarchy
+
+The page is structured around four questions, in strict order of importance.
+Each layer only appears when it has something to say.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', margin: '2rem 0' }}>
+  {[
+    { n: '1', q: 'Is everything okay?', a: 'Status line', why: 'The user reads one line and knows. "All clear", "All being handled", or "1 thing needs you". This must fit in a single glance — no scrolling, no parsing.' },
+    { n: '2', q: 'Do I need to do anything?', a: 'Needs-you card', why: 'If the system is blocked on a human, the card sits directly below the status with an inline action button. The user can approve from the metro and put their phone away.' },
+    { n: '3', q: 'What\'s currently happening?', a: 'Ongoing section', why: 'Active issues the system is handling. This is the "I just noticed my internet is slow — is it being tracked?" check-in. Each row shows the stage and a one-line summary.' },
+    { n: '4', q: 'What happened since I last checked?', a: 'Today section', why: 'A quiet log of resolved items. Lighter visual weight. Proof the system works — builds trust over time, but never demands attention.' },
+  ].map(({ n, q, a, why }) => (
+    <div key={n} style={{ background: '#141414', borderRadius: 12, padding: '1.25rem' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
+        <span style={{ color: '#5a5a5a', fontSize: '0.6875rem', fontFamily: 'monospace' }}>{n}</span>
+        <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>{q}</span>
+        <span style={{ color: '#60a5fa', fontSize: '0.6875rem', marginLeft: 'auto' }}>{a}</span>
+      </div>
+      <p style={{ color: '#7e7e7e', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>{why}</p>
+    </div>
+  ))}
+</div>
+
+---
+
+## The status line
+
+The first thing the user reads. Three possible states:
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', margin: '1.5rem 0' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <span style={{ fontSize: '1.5rem', fontWeight: 500, letterSpacing: '-0.02em' }}>All clear</span>
+    <CircleCheck size={18} style={{ color: '#22c55e', opacity: 0.7 }} />
+  </div>
+  <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', margin: '-0.5rem 0 0' }}>
+    Nothing needs the user. The system handled everything. Close the app.
+  </p>
+
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <span style={{ fontSize: '1.5rem', fontWeight: 500, letterSpacing: '-0.02em' }}>All being handled</span>
+    <Wrench size={18} style={{ color: '#60a5fa', opacity: 0.7 }} />
+  </div>
+  <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', margin: '-0.5rem 0 0' }}>
+    Issues exist but the system has them covered. No human action required.
+  </p>
+
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <span style={{ fontSize: '1.5rem', fontWeight: 500, letterSpacing: '-0.02em' }}>1 thing needs you</span>
+  </div>
+  <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', margin: '-0.5rem 0 0' }}>
+    The pipeline is blocked somewhere. Keep reading — the needs-you card is right below.
+  </p>
+</div>
+
+The heading is `text-2xl font-medium tracking-tight` — the largest element on the page.
+The optional icon next to it confirms the tone without adding words.
+The subtitle (`text-sm text-text-muted`) provides just enough context: how many resolved, how many being handled.
+
+---
+
+## The needs-you card
+
+<div style={{ background: 'rgba(245, 158, 11, 0.04)', border: '1px solid rgba(245, 158, 11, 0.12)', borderRadius: 12, padding: '1rem', margin: '1.5rem 0' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+    <Hand size={15} style={{ color: '#fbbf24', opacity: 0.8 }} />
+    <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>NAS disk showing SMART warnings</span>
+    <span style={{ color: '#5a5a5a', fontSize: '0.6875rem', fontFamily: 'monospace', marginLeft: 'auto' }}>12m</span>
+  </div>
+  <p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: 12 }}>
+    Disk 3 is reporting reallocated sectors. The array is degraded but online.
+    This needs a physical swap.
+  </p>
+  <div style={{ display: 'flex', gap: 8 }}>
+    <Button variant="primary" size="sm">I'll replace it</Button>
+    <Button variant="ghost" size="sm" iconRight={ArrowRight}>Details</Button>
+  </div>
+</div>
+
+**Why amber, not red?** "Needs you" is not an error. The system is asking for permission or
+physical action — a colleague tapping you on the shoulder, not a fire alarm. Red is reserved
+for genuine failures where something is broken and degrading. If the design makes the user
+feel anxious when all the system needs is a "yes", the design is wrong.
+
+**Why inline actions?** The user should be able to act without navigating deeper. Approve from
+the metro, put your phone away. The "Details" ghost button is there for the curious, not as a
+prerequisite.
+
+**Why the Hand icon?** `AlertCircle` reads as danger. `Hand` reads as a raised hand — "hey,
+over here, when you get a moment." It matches the tone.
+
+---
+
+## The ongoing section
+
+<div style={{ margin: '1.5rem 0' }}>
+  <div style={{ fontSize: '0.6875rem', fontWeight: 500, color: '#5a5a5a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Ongoing</div>
+  <div style={{ display: 'flex', alignItems: 'start', gap: 12, padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+    <Eye size={15} style={{ color: '#4ade80', opacity: 0.7, marginTop: 2 }} />
+    <div style={{ flex: 1 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <span style={{ fontSize: '0.875rem' }}>Memory pressure on node-02 and node-03</span>
+        <span style={{ color: '#5a5a5a', fontSize: '0.6875rem', fontFamily: 'monospace' }}>3m</span>
+      </div>
+      <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+        <span style={{ color: '#4ade80', fontSize: '0.75rem', opacity: 0.7 }}>Monitoring</span>
+        <span style={{ color: '#5a5a5a', fontSize: '0.75rem', opacity: 0.4 }}>·</span>
+        <span style={{ color: '#5a5a5a', fontSize: '0.75rem' }}>Moved low-priority workloads. Watching memory settle.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+**Purpose:** The user who just noticed something going wrong — slow internet, an app not
+responding — checks here to confirm "yes, the system already knows about it." Each row shows
+the stage icon (colored by pipeline position), title, stage label, and a one-line summary.
+
+**Why not inside cards?** Cards add visual weight. These rows are deliberately lightweight — the
+user shouldn't feel like each ongoing issue demands their attention. The stage icon + color is
+enough to communicate status without elevation or borders.
+
+---
+
+## The resolved section
+
+<div style={{ margin: '1.5rem 0' }}>
+  <div style={{ fontSize: '0.6875rem', fontWeight: 500, color: '#5a5a5a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Today</div>
+  <div style={{ display: 'flex', alignItems: 'start', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+    <CircleCheck size={14} style={{ color: '#22c55e', opacity: 0.4, marginTop: 2 }} />
+    <div style={{ flex: 1 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <span style={{ fontSize: '0.875rem', color: '#a3a3a3' }}>CoreDNS entered CrashLoopBackOff</span>
+        <span style={{ color: '#5a5a5a', fontSize: '0.6875rem', fontFamily: 'monospace' }}>25m</span>
+      </div>
+      <span style={{ color: '#5a5a5a', fontSize: '0.75rem', marginTop: 2, display: 'block' }}>Restarted the pod. DNS healthy.</span>
+    </div>
+  </div>
+</div>
+
+**Lower visual weight than ongoing.** The title uses `text-text-secondary` instead of
+`text-text`. The checkmark icon is more transparent (`opacity: 0.4`). The rows are slightly
+more compact (`py-2.5` vs `py-3`). Everything says: "this is history, not action."
+
+**Why show resolved at all?** Trust. The user builds confidence in the system by seeing proof
+that things were handled. Over weeks and months, this log becomes the reason they stop
+checking — they've seen enough to believe.
+
+---
+
+## The top bar
+
+<div style={{ background: '#141414', borderRadius: 12, padding: '0.75rem 1rem', margin: '1.5rem 0' }}>
+  <TopBar />
+</div>
+
+Four actions, always accessible:
+
+- **Search** — opens the issue search page with filters
+- **Create** — manually raise an issue the system hasn't detected
+- **Settings** — system configuration
+- **Account** — user profile, logout
+
+The bar is minimal — `h-14`, just icon buttons. The app name "Faultline" on the left is
+`text-sm font-medium` — present but quiet. A divider separates system actions from account.
+
+---
+
+## Design decisions
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', margin: '1.5rem 0' }}>
+  <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>
+    <strong style={{ color: '#e8e8e8' }}>max-w-lg</strong> — the page is narrow on purpose. On desktop
+    it doesn't fill the screen, which is the point. A wide layout invites complexity. A narrow
+    layout forces simplicity. It also means the mobile experience is identical.
+  </p>
+  <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>
+    <strong style={{ color: '#e8e8e8' }}>No tabs or navigation</strong> — the home page is a single scroll.
+    Sections appear or disappear based on state (no ongoing = section hidden). The user never
+    has to decide where to look.
+  </p>
+  <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>
+    <strong style={{ color: '#e8e8e8' }}>The healthy state is almost empty</strong> — and that's the design
+    working. Layers 2 and 3 vanish, leaving just the status line and the resolved log. Calm is
+    the product, not a side effect.
+  </p>
+</div>
+
+</div>

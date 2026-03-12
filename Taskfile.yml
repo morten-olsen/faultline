@@ -1,0 +1,34 @@
+version: "3"
+
+tasks:
+  install:
+    desc: Install dependencies
+    cmds:
+      - pnpm install
+
+  build:
+    desc: Build all packages
+    cmds:
+      - pnpm -r run build
+
+  dev:
+    desc: Start the server in development mode
+    dir: packages/server
+    cmds:
+      - pnpm run dev
+
+  dev:web:
+    desc: Start the frontend dev server
+    dir: packages/web
+    cmds:
+      - pnpm run dev
+
+  typecheck:
+    desc: Type-check all packages
+    cmds:
+      - pnpm -r run typecheck
+
+  clean:
+    desc: Remove all build artifacts
+    cmds:
+      - pnpm -r exec rm -rf dist

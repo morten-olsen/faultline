@@ -1,0 +1,158 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Search, Hand, Eye, Wrench, CircleCheck } from 'lucide-react'
+import { Input } from '../../components/input/input.tsx'
+import { Tag } from '../../components/tag/tag.tsx'
+
+<Meta title="Design System/Pages/Issue Search/Overview" />
+
+<div style={{ maxWidth: 640, color: '#e8e8e8' }}>
+
+# Issue Search
+
+<p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+  Where the user finds issues by keyword, stage, or source. Accessed via the
+  search icon in the top bar. Also serves as the "browse all issues" view.
+</p>
+
+---
+
+## When this page is used
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', margin: '1.5rem 0' }}>
+  {[
+    { q: '"Was there something about DNS recently?"', a: 'Search by keyword — finds the resolved CoreDNS issue from this morning.' },
+    { q: '"Show me everything that\'s still open"', a: 'Filter by "Open" — sees the 3 active issues without the resolved clutter.' },
+    { q: '"What\'s happened with storage lately?"', a: 'Filter by "Storage" — sees the NAS disk issue and recent backups.' },
+    { q: '"Has the system noticed the latency I\'m seeing?"', a: 'Search "latency" — finds the traefik issue being triaged.' },
+  ].map(({ q, a }) => (
+    <div key={q} style={{ background: '#141414', borderRadius: 12, padding: '1.25rem' }}>
+      <p style={{ fontSize: '0.8125rem', fontStyle: 'italic', color: '#a3a3a3', margin: '0 0 6px' }}>{q}</p>
+      <p style={{ fontSize: '0.8125rem', color: '#7e7e7e', margin: 0 }}>{a}</p>
+    </div>
+  ))}
+</div>
+
+---
+
+## Page structure
+
+### Search input
+
+<div style={{ maxWidth: 400, margin: '1.5rem 0' }}>
+  <Input placeholder="Search issues..." icon={Search} />
+</div>
+
+Always at the top, always focused on load. The user starts typing immediately.
+Uses the standard `Input` component with the `Search` icon.
+
+### Filter chips
+
+<div style={{ display: 'flex', gap: 8, margin: '1.5rem 0', flexWrap: 'wrap' }}>
+  {['All', 'Open', 'Resolved', 'Needs you'].map(label => (
+    <span key={label} style={{
+      fontSize: '0.75rem', padding: '4px 10px', borderRadius: 999,
+      background: label === 'All' ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
+      color: label === 'All' ? '#e8e8e8' : '#5a5a5a',
+      border: label === 'All' ? '1px solid rgba(255,255,255,0.1)' : 'none',
+    }}>
+      {label}
+    </span>
+  ))}
+  <span style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.08)', alignSelf: 'center' }} />
+  {['Kubernetes', 'Networking', 'Storage'].map(label => (
+    <span key={label} style={{
+      fontSize: '0.75rem', padding: '4px 10px', borderRadius: 999,
+      background: 'rgba(255,255,255,0.04)', color: '#5a5a5a',
+    }}>
+      {label}
+    </span>
+  ))}
+</div>
+
+Two groups separated by a divider:
+
+- **Stage filters** — All, Open, Resolved, Needs you
+- **Source filters** — Kubernetes, Networking, Storage, Unifi
+
+Horizontally scrollable on mobile. Active chips use brighter fill + ring.
+When active, they also appear as removable `Tag` components below the bar,
+so the user can see and dismiss active filters easily.
+
+### Active filter tags
+
+<div style={{ display: 'flex', gap: 8, margin: '1.5rem 0', alignItems: 'center' }}>
+  <span style={{ color: '#5a5a5a', fontSize: '0.75rem' }}>Filters:</span>
+  <Tag variant="info" removable>Open</Tag>
+  <Tag removable>Kubernetes</Tag>
+</div>
+
+These only appear when filters are active. Each tag is removable — tap the X to clear it.
+This pattern keeps the filter state visible and reversible.
+
+### Result rows
+
+Each row follows the same pattern as the home page's ongoing/resolved rows:
+
+<div style={{ display: 'flex', alignItems: 'start', gap: 12, padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', margin: '1rem 0' }}>
+  <Hand size={15} style={{ color: '#fbbf24', opacity: 0.8, marginTop: 2 }} />
+  <div style={{ flex: 1 }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+      <span style={{ fontSize: '0.875rem' }}>NAS disk showing SMART warnings</span>
+      <span style={{ color: '#5a5a5a', fontSize: '0.6875rem', fontFamily: 'monospace' }}>12m</span>
+    </div>
+    <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+      <span style={{ color: '#fbbf24', fontSize: '0.75rem' }}>Needs you</span>
+      <span style={{ color: '#5a5a5a', fontSize: '0.75rem', opacity: 0.4 }}>·</span>
+      <span style={{ color: '#5a5a5a', fontSize: '0.75rem' }}>Disk 3 reporting reallocated sectors.</span>
+    </div>
+    <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+      <Tag>storage</Tag>
+    </div>
+  </div>
+</div>
+
+- **Stage icon** — colored by pipeline position, or Hand for needs-you
+- **Stage label** — text label next to summary, separated by a dot
+- **Tags** — shown below the summary to help scanning
+- **Timestamp** — monospace, trailing, elapsed format
+
+**Why not cards?** Same reason as the home feed — cards add visual weight. Rows are lighter and
+scan faster. The user is browsing, not focusing. When they find what they want, they tap to
+open the detail page.
+
+---
+
+## Empty state
+
+<div style={{ textAlign: 'center', padding: '4rem 0', margin: '1.5rem 0' }}>
+  <Search size={24} style={{ color: '#5a5a5a', opacity: 0.3, margin: '0 auto 12px' }} />
+  <p style={{ color: '#5a5a5a', fontSize: '0.875rem', margin: '0 0 4px' }}>No issues match your search</p>
+  <p style={{ color: '#5a5a5a', fontSize: '0.75rem', opacity: 0.6, margin: 0 }}>Try a different query or remove some filters</p>
+</div>
+
+Quiet and factual. No illustration, no emoji, no "oops." Just a muted icon and a suggestion.
+The empty state should feel like a blank page, not like something went wrong.
+
+---
+
+## Design decisions
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', margin: '1.5rem 0' }}>
+  <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>
+    <strong style={{ color: '#e8e8e8' }}>Back arrow, not a new navigation level.</strong> The search page
+    uses the detail variant of the TopBar — back arrow on the left, overflow menu on the right.
+    It's a modal-like overlay over the home view, not a permanent section.
+  </p>
+  <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>
+    <strong style={{ color: '#e8e8e8' }}>No pagination.</strong> Issues are loaded as a continuous list.
+    The system doesn't generate thousands of issues — it handles most things silently.
+    The search results are finite enough to scroll.
+  </p>
+  <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>
+    <strong style={{ color: '#e8e8e8' }}>Tags on result rows.</strong> On the home page, tags are omitted
+    for simplicity. On the search page, they help the user scan results when filters are broad.
+    Context-appropriate information density.
+  </p>
+</div>
+
+</div>

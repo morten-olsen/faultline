@@ -1,0 +1,90 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { X, MoreHorizontal, ChevronDown, Pause, Play, ExternalLink, Trash2, Settings, Eye } from 'lucide-react'
+import { IconButton } from '../../components/icon-button/icon-button.tsx'
+
+<Meta title="Design System/Components/Icon Button/Overview" />
+
+<div style={{ maxWidth: 480, color: '#e8e8e8' }}>
+
+# Icon Button
+
+<p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+  Built on <a href="https://base-ui.com/react/components/button" style={{ color: '#60a5fa' }}>Base UI Button</a>.
+  For actions that don't need a label.
+</p>
+
+---
+
+## Variants
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', margin: '1.5rem 0' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+    <span style={{ color: '#5a5a5a', fontSize: '0.8125rem', width: 80 }}>Ghost</span>
+    <IconButton icon={X} label="Close" />
+    <IconButton icon={MoreHorizontal} label="More" />
+    <IconButton icon={ChevronDown} label="Expand" />
+    <IconButton icon={Eye} label="View" />
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+    <span style={{ color: '#5a5a5a', fontSize: '0.8125rem', width: 80 }}>Secondary</span>
+    <IconButton icon={Settings} label="Settings" variant="secondary" />
+    <IconButton icon={ExternalLink} label="Open" variant="secondary" />
+    <IconButton icon={Pause} label="Pause" variant="secondary" />
+    <IconButton icon={Play} label="Resume" variant="secondary" />
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+    <span style={{ color: '#5a5a5a', fontSize: '0.8125rem', width: 80 }}>Danger</span>
+    <IconButton icon={Trash2} label="Delete" variant="danger" />
+    <IconButton icon={X} label="Dismiss" variant="danger" />
+  </div>
+</div>
+
+**Ghost** is the default — nearly invisible until hovered. Most icon buttons should be ghost.
+**Secondary** when discoverable without hovering. **Danger** for destructive actions.
+
+---
+
+## Sizes
+
+<div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', margin: '1.5rem 0' }}>
+  <div style={{ textAlign: 'center' }}>
+    <IconButton icon={X} label="Close" size="sm" variant="secondary" />
+    <div style={{ color: '#5a5a5a', fontSize: '0.6875rem', marginTop: 4 }}>sm</div>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <IconButton icon={X} label="Close" size="md" variant="secondary" />
+    <div style={{ color: '#5a5a5a', fontSize: '0.6875rem', marginTop: 4 }}>md</div>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <IconButton icon={X} label="Close" size="lg" variant="secondary" />
+    <div style={{ color: '#5a5a5a', fontSize: '0.6875rem', marginTop: 4 }}>lg</div>
+  </div>
+</div>
+
+---
+
+## In context
+
+At the edges of a card — discoverable, not dominant:
+
+<div style={{ background: '#141414', borderRadius: 12, padding: '1.25rem', margin: '1.5rem 0' }}>
+  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+    <div>
+      <div style={{ fontSize: '0.875rem', fontWeight: 500, marginBottom: 4 }}>Memory pressure on node-02</div>
+      <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0 }}>Rebalancing workloads.</p>
+    </div>
+    <div style={{ display: 'flex', gap: 4 }}>
+      <IconButton icon={ExternalLink} label="Open in Grafana" size="sm" />
+      <IconButton icon={MoreHorizontal} label="More actions" size="sm" />
+    </div>
+  </div>
+</div>
+
+---
+
+## Accessibility
+
+Every icon button **must** have a `label` prop (becomes `aria-label`).
+No visible text means screen readers need this — it's enforced by the component API.
+
+</div>

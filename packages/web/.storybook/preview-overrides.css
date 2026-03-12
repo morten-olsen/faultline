@@ -1,0 +1,8 @@
+/* Force dark background on docs story canvases */
+.docs-story {
+  background: #0c0c0c !important;
+}
+
+.sb-story {
+  background: #0c0c0c !important;
+}

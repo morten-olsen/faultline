@@ -1,0 +1,30 @@
+{
+  "name": "@faultline/server",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/main.d.ts",
+      "import": "./dist/main.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --watch dist/main.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@faultline/protocol": "workspace:*",
+    "fastify": "catalog:",
+    "@fastify/websocket": "^11.0.0",
+    "ws": "catalog:",
+    "kysely": "catalog:",
+    "better-sqlite3": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "catalog:",
+    "@types/ws": "catalog:",
+    "typescript": "catalog:"
+  }
+}
