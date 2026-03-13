@@ -142,9 +142,15 @@ const IntegrationsIndex = (): React.ReactElement => {
   return (
     <SettingsShell
       title="Settings"
-      tabs={[{ id: "integrations", label: "Integrations" }]}
+      tabs={[
+        { id: "integrations", label: "Integrations" },
+        { id: "stage-configs", label: "Stage Configs" },
+      ]}
       activeTab="integrations"
       onBack={() => navigate({ to: "/" })}
+      onTabChange={(id) => {
+        if (id === "stage-configs") navigate({ to: "/settings/stage-configs" })
+      }}
     >
       {!hasAny ? (
         <motion.div {...fadeUp} className="text-center py-16">

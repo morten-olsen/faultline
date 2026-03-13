@@ -50,6 +50,7 @@ const issueStageAccess: Record<string, ToolAccess> = {
   implementation: "write",
   monitoring: "read",
   resolved: "read",
+  ignored: "read",
 };
 
 // ── Built-in SDK tools by access level ────────────────────────────

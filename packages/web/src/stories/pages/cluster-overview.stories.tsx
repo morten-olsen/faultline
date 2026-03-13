@@ -6,6 +6,7 @@ import {
 import { motion } from 'motion/react'
 import { Button } from '../../components/button/button.tsx'
 import { TopBar } from '../../components/top-bar/top-bar.tsx'
+import { ApprovalCard } from '../../components/approval-card/approval-card.tsx'
 
 /*
  * Home — the single-glance view.
@@ -304,12 +305,21 @@ const HomeApproval = (): React.ReactElement => (
     </motion.div>
     <motion.p {...stagger(0, 0.08)} className="text-sm text-text-muted mb-6">1 more being monitored.</motion.p>
 
-    <NeedsYouCard
-      title="Persistent memory pressure across cluster"
-      reason="Memory has been above 80% for over an hour despite rebalancing. The best fix is to evict home-assistant temporarily — your smart home would be offline for about 3 minutes."
-      action="Approve"
-      time="8m"
-    />
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const, delay: 0.15 }}
+    >
+      <ApprovalCard
+        title="Persistent memory pressure across cluster"
+        body="Memory has been above 80% for over an hour despite rebalancing. The best fix is to evict home-assistant temporarily — your smart home would be offline for about 3 minutes."
+        actions={[
+          { label: 'Approve', variant: 'primary', onClick: () => {} },
+          { label: 'Details', variant: 'ghost', onClick: () => {} },
+        ]}
+        onReject={() => {}}
+      />
+    </motion.div>
 
     <SectionLabel delay={0.35}>Ongoing</SectionLabel>
     <div>

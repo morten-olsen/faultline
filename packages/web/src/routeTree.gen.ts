@@ -10,10 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as IssuesRouteImport } from './routes/issues'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IssuesIndexRouteImport } from './routes/issues/index'
+import { Route as SettingsStageConfigsRouteImport } from './routes/settings/stage-configs'
 import { Route as SettingsIntegrationsRouteImport } from './routes/settings/integrations'
+import { Route as IssuesNewRouteImport } from './routes/issues/new'
+import { Route as SettingsStageConfigsIndexRouteImport } from './routes/settings/stage-configs/index'
 import { Route as SettingsIntegrationsIndexRouteImport } from './routes/settings/integrations/index'
+import { Route as SettingsStageConfigsStageEditRouteImport } from './routes/settings/stage-configs/$stage.edit'
 import { Route as SettingsIntegrationsSshIdentityNewRouteImport } from './routes/settings/integrations/ssh-identity/new'
 import { Route as SettingsIntegrationsSshConnectionNewRouteImport } from './routes/settings/integrations/ssh-connection/new'
 import { Route as SettingsIntegrationsKubernetesNewRouteImport } from './routes/settings/integrations/kubernetes/new'
@@ -30,6 +36,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IssuesRoute = IssuesRouteImport.update({
+  id: '/issues',
+  path: '/issues',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -40,16 +51,43 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IssuesIndexRoute = IssuesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => IssuesRoute,
+} as any)
+const SettingsStageConfigsRoute = SettingsStageConfigsRouteImport.update({
+  id: '/stage-configs',
+  path: '/stage-configs',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const SettingsIntegrationsRoute = SettingsIntegrationsRouteImport.update({
   id: '/integrations',
   path: '/integrations',
   getParentRoute: () => SettingsRoute,
 } as any)
+const IssuesNewRoute = IssuesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => IssuesRoute,
+} as any)
+const SettingsStageConfigsIndexRoute =
+  SettingsStageConfigsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => SettingsStageConfigsRoute,
+  } as any)
 const SettingsIntegrationsIndexRoute =
   SettingsIntegrationsIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsStageConfigsStageEditRoute =
+  SettingsStageConfigsStageEditRouteImport.update({
+    id: '/$stage/edit',
+    path: '/$stage/edit',
+    getParentRoute: () => SettingsStageConfigsRoute,
   } as any)
 const SettingsIntegrationsSshIdentityNewRoute =
   SettingsIntegrationsSshIdentityNewRouteImport.update({
@@ -115,14 +153,20 @@ const SettingsIntegrationsArgocdIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/issues': typeof IssuesRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
+  '/issues/new': typeof IssuesNewRoute
   '/settings/integrations': typeof SettingsIntegrationsRouteWithChildren
+  '/settings/stage-configs': typeof SettingsStageConfigsRouteWithChildren
+  '/issues/': typeof IssuesIndexRoute
   '/settings/integrations/': typeof SettingsIntegrationsIndexRoute
+  '/settings/stage-configs/': typeof SettingsStageConfigsIndexRoute
   '/settings/integrations/argocd/new': typeof SettingsIntegrationsArgocdNewRoute
   '/settings/integrations/git-repo/new': typeof SettingsIntegrationsGitRepoNewRoute
   '/settings/integrations/kubernetes/new': typeof SettingsIntegrationsKubernetesNewRoute
   '/settings/integrations/ssh-connection/new': typeof SettingsIntegrationsSshConnectionNewRoute
   '/settings/integrations/ssh-identity/new': typeof SettingsIntegrationsSshIdentityNewRoute
+  '/settings/stage-configs/$stage/edit': typeof SettingsStageConfigsStageEditRoute
   '/settings/integrations/argocd/$id/edit': typeof SettingsIntegrationsArgocdIdEditRoute
   '/settings/integrations/git-repo/$id/edit': typeof SettingsIntegrationsGitRepoIdEditRoute
   '/settings/integrations/kubernetes/$id/edit': typeof SettingsIntegrationsKubernetesIdEditRoute
@@ -133,12 +177,16 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/settings': typeof SettingsRouteWithChildren
+  '/issues/new': typeof IssuesNewRoute
+  '/issues': typeof IssuesIndexRoute
   '/settings/integrations': typeof SettingsIntegrationsIndexRoute
+  '/settings/stage-configs': typeof SettingsStageConfigsIndexRoute
   '/settings/integrations/argocd/new': typeof SettingsIntegrationsArgocdNewRoute
   '/settings/integrations/git-repo/new': typeof SettingsIntegrationsGitRepoNewRoute
   '/settings/integrations/kubernetes/new': typeof SettingsIntegrationsKubernetesNewRoute
   '/settings/integrations/ssh-connection/new': typeof SettingsIntegrationsSshConnectionNewRoute
   '/settings/integrations/ssh-identity/new': typeof SettingsIntegrationsSshIdentityNewRoute
+  '/settings/stage-configs/$stage/edit': typeof SettingsStageConfigsStageEditRoute
   '/settings/integrations/argocd/$id/edit': typeof SettingsIntegrationsArgocdIdEditRoute
   '/settings/integrations/git-repo/$id/edit': typeof SettingsIntegrationsGitRepoIdEditRoute
   '/settings/integrations/kubernetes/$id/edit': typeof SettingsIntegrationsKubernetesIdEditRoute
@@ -149,14 +197,20 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/issues': typeof IssuesRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
+  '/issues/new': typeof IssuesNewRoute
   '/settings/integrations': typeof SettingsIntegrationsRouteWithChildren
+  '/settings/stage-configs': typeof SettingsStageConfigsRouteWithChildren
+  '/issues/': typeof IssuesIndexRoute
   '/settings/integrations/': typeof SettingsIntegrationsIndexRoute
+  '/settings/stage-configs/': typeof SettingsStageConfigsIndexRoute
   '/settings/integrations/argocd/new': typeof SettingsIntegrationsArgocdNewRoute
   '/settings/integrations/git-repo/new': typeof SettingsIntegrationsGitRepoNewRoute
   '/settings/integrations/kubernetes/new': typeof SettingsIntegrationsKubernetesNewRoute
   '/settings/integrations/ssh-connection/new': typeof SettingsIntegrationsSshConnectionNewRoute
   '/settings/integrations/ssh-identity/new': typeof SettingsIntegrationsSshIdentityNewRoute
+  '/settings/stage-configs/$stage/edit': typeof SettingsStageConfigsStageEditRoute
   '/settings/integrations/argocd/$id/edit': typeof SettingsIntegrationsArgocdIdEditRoute
   '/settings/integrations/git-repo/$id/edit': typeof SettingsIntegrationsGitRepoIdEditRoute
   '/settings/integrations/kubernetes/$id/edit': typeof SettingsIntegrationsKubernetesIdEditRoute
@@ -168,14 +222,20 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/chat'
+    | '/issues'
     | '/settings'
+    | '/issues/new'
     | '/settings/integrations'
+    | '/settings/stage-configs'
+    | '/issues/'
     | '/settings/integrations/'
+    | '/settings/stage-configs/'
     | '/settings/integrations/argocd/new'
     | '/settings/integrations/git-repo/new'
     | '/settings/integrations/kubernetes/new'
     | '/settings/integrations/ssh-connection/new'
     | '/settings/integrations/ssh-identity/new'
+    | '/settings/stage-configs/$stage/edit'
     | '/settings/integrations/argocd/$id/edit'
     | '/settings/integrations/git-repo/$id/edit'
     | '/settings/integrations/kubernetes/$id/edit'
@@ -186,12 +246,16 @@ export interface FileRouteTypes {
     | '/'
     | '/chat'
     | '/settings'
+    | '/issues/new'
+    | '/issues'
     | '/settings/integrations'
+    | '/settings/stage-configs'
     | '/settings/integrations/argocd/new'
     | '/settings/integrations/git-repo/new'
     | '/settings/integrations/kubernetes/new'
     | '/settings/integrations/ssh-connection/new'
     | '/settings/integrations/ssh-identity/new'
+    | '/settings/stage-configs/$stage/edit'
     | '/settings/integrations/argocd/$id/edit'
     | '/settings/integrations/git-repo/$id/edit'
     | '/settings/integrations/kubernetes/$id/edit'
@@ -201,14 +265,20 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/chat'
+    | '/issues'
     | '/settings'
+    | '/issues/new'
     | '/settings/integrations'
+    | '/settings/stage-configs'
+    | '/issues/'
     | '/settings/integrations/'
+    | '/settings/stage-configs/'
     | '/settings/integrations/argocd/new'
     | '/settings/integrations/git-repo/new'
     | '/settings/integrations/kubernetes/new'
     | '/settings/integrations/ssh-connection/new'
     | '/settings/integrations/ssh-identity/new'
+    | '/settings/stage-configs/$stage/edit'
     | '/settings/integrations/argocd/$id/edit'
     | '/settings/integrations/git-repo/$id/edit'
     | '/settings/integrations/kubernetes/$id/edit'
@@ -219,6 +289,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChatRoute: typeof ChatRoute
+  IssuesRoute: typeof IssuesRouteWithChildren
   SettingsRoute: typeof SettingsRouteWithChildren
 }
 
@@ -229,6 +300,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/issues': {
+      id: '/issues'
+      path: '/issues'
+      fullPath: '/issues'
+      preLoaderRoute: typeof IssuesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chat': {
@@ -245,6 +323,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/issues/': {
+      id: '/issues/'
+      path: '/'
+      fullPath: '/issues/'
+      preLoaderRoute: typeof IssuesIndexRouteImport
+      parentRoute: typeof IssuesRoute
+    }
+    '/settings/stage-configs': {
+      id: '/settings/stage-configs'
+      path: '/stage-configs'
+      fullPath: '/settings/stage-configs'
+      preLoaderRoute: typeof SettingsStageConfigsRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/settings/integrations': {
       id: '/settings/integrations'
       path: '/integrations'
@@ -252,12 +344,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsIntegrationsRouteImport
       parentRoute: typeof SettingsRoute
     }
+    '/issues/new': {
+      id: '/issues/new'
+      path: '/new'
+      fullPath: '/issues/new'
+      preLoaderRoute: typeof IssuesNewRouteImport
+      parentRoute: typeof IssuesRoute
+    }
+    '/settings/stage-configs/': {
+      id: '/settings/stage-configs/'
+      path: '/'
+      fullPath: '/settings/stage-configs/'
+      preLoaderRoute: typeof SettingsStageConfigsIndexRouteImport
+      parentRoute: typeof SettingsStageConfigsRoute
+    }
     '/settings/integrations/': {
       id: '/settings/integrations/'
       path: '/'
       fullPath: '/settings/integrations/'
       preLoaderRoute: typeof SettingsIntegrationsIndexRouteImport
       parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/stage-configs/$stage/edit': {
+      id: '/settings/stage-configs/$stage/edit'
+      path: '/$stage/edit'
+      fullPath: '/settings/stage-configs/$stage/edit'
+      preLoaderRoute: typeof SettingsStageConfigsStageEditRouteImport
+      parentRoute: typeof SettingsStageConfigsRoute
     }
     '/settings/integrations/ssh-identity/new': {
       id: '/settings/integrations/ssh-identity/new'
@@ -332,6 +445,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface IssuesRouteChildren {
+  IssuesNewRoute: typeof IssuesNewRoute
+  IssuesIndexRoute: typeof IssuesIndexRoute
+}
+
+const IssuesRouteChildren: IssuesRouteChildren = {
+  IssuesNewRoute: IssuesNewRoute,
+  IssuesIndexRoute: IssuesIndexRoute,
+}
+
+const IssuesRouteWithChildren =
+  IssuesRoute._addFileChildren(IssuesRouteChildren)
+
 interface SettingsIntegrationsRouteChildren {
   SettingsIntegrationsIndexRoute: typeof SettingsIntegrationsIndexRoute
   SettingsIntegrationsArgocdNewRoute: typeof SettingsIntegrationsArgocdNewRoute
@@ -370,12 +496,27 @@ const SettingsIntegrationsRouteChildren: SettingsIntegrationsRouteChildren = {
 const SettingsIntegrationsRouteWithChildren =
   SettingsIntegrationsRoute._addFileChildren(SettingsIntegrationsRouteChildren)
 
+interface SettingsStageConfigsRouteChildren {
+  SettingsStageConfigsIndexRoute: typeof SettingsStageConfigsIndexRoute
+  SettingsStageConfigsStageEditRoute: typeof SettingsStageConfigsStageEditRoute
+}
+
+const SettingsStageConfigsRouteChildren: SettingsStageConfigsRouteChildren = {
+  SettingsStageConfigsIndexRoute: SettingsStageConfigsIndexRoute,
+  SettingsStageConfigsStageEditRoute: SettingsStageConfigsStageEditRoute,
+}
+
+const SettingsStageConfigsRouteWithChildren =
+  SettingsStageConfigsRoute._addFileChildren(SettingsStageConfigsRouteChildren)
+
 interface SettingsRouteChildren {
   SettingsIntegrationsRoute: typeof SettingsIntegrationsRouteWithChildren
+  SettingsStageConfigsRoute: typeof SettingsStageConfigsRouteWithChildren
 }
 
 const SettingsRouteChildren: SettingsRouteChildren = {
   SettingsIntegrationsRoute: SettingsIntegrationsRouteWithChildren,
+  SettingsStageConfigsRoute: SettingsStageConfigsRouteWithChildren,
 }
 
 const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
@@ -385,6 +526,7 @@ const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChatRoute: ChatRoute,
+  IssuesRoute: IssuesRouteWithChildren,
   SettingsRoute: SettingsRouteWithChildren,
 }
 export const routeTree = rootRouteImport

@@ -27,6 +27,7 @@ export type {
   KubeContext,
   ArgocdInstance,
   SshConnection,
+  StageConfig,
 } from "./protocol.schemas.js";
 export {
   callMessageSchema,
@@ -47,6 +48,7 @@ export {
   kubeContextSchema,
   argocdInstanceSchema,
   sshConnectionSchema,
+  stageConfigSchema,
   issueStages,
   issuePriorities,
   timelineEntryKinds,

@@ -10,6 +10,8 @@ import { Button } from '../../components/button/button.tsx'
 import { TimelineEntry } from '../../components/timeline-entry/timeline-entry.tsx'
 import { ResourceChip } from '../../components/resource-chip/resource-chip.tsx'
 import { AgentActivity } from '../../components/agent-activity/agent-activity.tsx'
+import { ApprovalCard } from '../../components/approval-card/approval-card.tsx'
+import { MonitoringProgress } from '../../components/monitoring-progress/monitoring-progress.tsx'
 
 /*
  * Issue Detail — the full story behind one issue.
@@ -136,21 +138,16 @@ const InProgressNeedsYou = (): React.ReactElement => (
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const, delay: 0.12 }}
-      className="bg-white/3 ring-1 ring-amber-500/12 rounded-xl p-4 space-y-3"
     >
-      <div className="flex items-center gap-2">
-        <Hand size={15} className="text-amber-400/80" />
-        <span className="text-sm font-medium text-text">Approve evicting home-assistant?</span>
-      </div>
-      <p className="text-sm text-text-secondary leading-relaxed">
-        Memory has been above 80% for over an hour despite two rebalancing attempts. The most
-        effective option is to evict home-assistant temporarily — your smart home would be
-        offline for about 3 minutes, then resume automatically.
-      </p>
-      <div className="flex items-center gap-2 pt-1">
-        <Button variant="primary" size="sm">Approve</Button>
-        <Button variant="ghost" size="sm">Remind me later</Button>
-      </div>
+      <ApprovalCard
+        title="Approve evicting home-assistant?"
+        body="Memory has been above 80% for over an hour despite two rebalancing attempts. The most effective option is to evict home-assistant temporarily — your smart home would be offline for about 3 minutes, then resume automatically."
+        actions={[
+          { label: 'Approve', variant: 'primary', onClick: () => {} },
+          { label: 'Remind me later', variant: 'ghost', onClick: () => {} },
+        ]}
+        onReject={() => {}}
+      />
     </motion.div>
 
     {/* Summary */}
@@ -528,6 +525,410 @@ const Resolved = (): React.ReactElement => (
   </Shell>
 )
 
+/* ══════════════════════════════════════════════════════════════════════
+ * TRIAGE ACTIVE — agent classifying the issue
+ * ══════════════════════════════════════════════════════════════════════ */
+
+const TriageActiveStory = (): React.ReactElement => (
+  <Shell>
+    <motion.div {...fadeUp} className="mb-6">
+      <div className="flex items-baseline justify-between gap-4 mb-2">
+        <h1 className="text-xl font-medium tracking-tight">Memory above 80% on node-02</h1>
+        <span className="text-xs text-text-muted font-mono flex-shrink-0">just now</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <StagePill stage="triage" />
+        <Badge variant="info">Agent working</Badge>
+      </div>
+    </motion.div>
+
+    <SectionLabel delay={0.15}>What's happening</SectionLabel>
+    <div>
+      <AnimatedTimeline index={0} baseDelay={0.2}>
+        <TimelineEntry
+          kind="analysis"
+          status="pending"
+          title="Classifying severity"
+          time="14:02"
+          body="Reading alert payload and assessing blast radius."
+        />
+        <div className="ml-8 -mt-3 mb-4">
+          <AgentActivity
+            status="working"
+            label="Classifying severity"
+            elapsed="3s"
+            onStop={() => {}}
+            onExpand={() => {}}
+          />
+        </div>
+      </AnimatedTimeline>
+      <AnimatedTimeline index={1} baseDelay={0.2}>
+        <TimelineEntry
+          kind="detected"
+          status="info"
+          title="Memory above 80% on node-02"
+          time="14:02"
+          body="node-02 at 84%. Threshold is 80%."
+          isLast
+        />
+      </AnimatedTimeline>
+    </div>
+
+    <SectionLabel delay={0.35}>Infrastructure</SectionLabel>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, delay: 0.4 }}
+      className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+    >
+      <ResourceChip kind="node" name="node-02" health="degraded" detail="Memory 84%" />
+    </motion.div>
+  </Shell>
+)
+
+/* ══════════════════════════════════════════════════════════════════════
+ * IMPLEMENTATION ACTIVE — agent executing the plan
+ * ══════════════════════════════════════════════════════════════════════ */
+
+const ImplementationActiveStory = (): React.ReactElement => (
+  <Shell>
+    <motion.div {...fadeUp} className="mb-6">
+      <div className="flex items-baseline justify-between gap-4 mb-2">
+        <h1 className="text-xl font-medium tracking-tight">Memory pressure on node-02 and node-03</h1>
+        <span className="text-xs text-text-muted font-mono flex-shrink-0">20m</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <StagePill stage="implementation" />
+        <Badge variant="info">Agent working</Badge>
+      </div>
+    </motion.div>
+
+    <motion.p {...stagger(0, 0.1)} className="text-sm text-text-secondary leading-relaxed">
+      Plan approved — evicting home-assistant to free 1.2 GB. Smart home will be offline for about 3 minutes.
+    </motion.p>
+
+    <SectionLabel delay={0.2}>What's happening</SectionLabel>
+    <div>
+      <AnimatedTimeline index={0} baseDelay={0.25}>
+        <TimelineEntry
+          kind="action"
+          status="pending"
+          title="Evicting home-assistant from node-02"
+          time="14:40"
+          commandRun="kubectl delete pod home-assistant-0 -n home --grace-period=30"
+        />
+        <div className="ml-8 -mt-3 mb-4">
+          <AgentActivity
+            status="working"
+            label="Executing fix — 3 commands run"
+            elapsed="12s"
+            onStop={() => {}}
+            onExpand={() => {}}
+          />
+        </div>
+      </AnimatedTimeline>
+      <AnimatedTimeline index={1} baseDelay={0.25}>
+        <TimelineEntry
+          kind="user-action"
+          status="success"
+          title="Plan approved"
+          time="14:38"
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={2} baseDelay={0.25}>
+        <TimelineEntry
+          kind="needs-you"
+          status="pending"
+          title="Waiting for approval — evict home-assistant?"
+          time="14:22"
+          body="Plan is disruptive. Needs human approval."
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={3} baseDelay={0.25}>
+        <TimelineEntry
+          kind="detected"
+          status="info"
+          title="Memory above 80% on node-02 and node-03"
+          time="14:02"
+          body="node-02 at 84%, node-03 at 81%."
+          isLast
+        />
+      </AnimatedTimeline>
+    </div>
+
+    <SectionLabel delay={0.5}>Infrastructure</SectionLabel>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, delay: 0.55 }}
+      className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+    >
+      <ResourceChip kind="node" name="node-02" health="degraded" detail="Memory 83%" />
+      <ResourceChip kind="node" name="node-03" health="degraded" detail="Memory 81%" />
+    </motion.div>
+  </Shell>
+)
+
+/* ══════════════════════════════════════════════════════════════════════
+ * PLAN REJECTED — user rejected, re-investigating
+ * ══════════════════════════════════════════════════════════════════════ */
+
+const PlanRejectedStory = (): React.ReactElement => (
+  <Shell>
+    <motion.div {...fadeUp} className="mb-6">
+      <div className="flex items-baseline justify-between gap-4 mb-2">
+        <h1 className="text-xl font-medium tracking-tight">Memory pressure on node-02 and node-03</h1>
+        <span className="text-xs text-text-muted font-mono flex-shrink-0">22m</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <StagePill stage="investigation" />
+        <Badge variant="info">Agent working</Badge>
+      </div>
+    </motion.div>
+
+    <motion.p {...stagger(0, 0.1)} className="text-sm text-text-secondary leading-relaxed">
+      The proposed plan was rejected. The system is re-investigating with the feedback in mind.
+    </motion.p>
+
+    <SectionLabel delay={0.2}>What's happening</SectionLabel>
+    <div>
+      <AnimatedTimeline index={0} baseDelay={0.25}>
+        <TimelineEntry
+          kind="analysis"
+          status="pending"
+          title="Re-investigating with feedback"
+          time="14:24"
+          body="Looking for alternative approaches that don't involve evicting home-assistant."
+        />
+        <div className="ml-8 -mt-3 mb-4">
+          <AgentActivity
+            status="working"
+            label="Analyzing alternative approaches"
+            elapsed="8s"
+            onStop={() => {}}
+            onExpand={() => {}}
+          />
+        </div>
+      </AnimatedTimeline>
+      <AnimatedTimeline index={1} baseDelay={0.25}>
+        <TimelineEntry
+          kind="user-action"
+          status="info"
+          title="Plan rejected: tried this before, didn't work"
+          time="14:23"
+          body="User rejected the eviction plan — they've tried this approach before and it didn't hold."
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={2} baseDelay={0.25}>
+        <TimelineEntry
+          kind="needs-you"
+          status="pending"
+          title="Waiting for approval — evict home-assistant?"
+          time="14:22"
+          body="Plan is disruptive. Needs human approval."
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={3} baseDelay={0.25}>
+        <TimelineEntry
+          kind="detected"
+          status="info"
+          title="Memory above 80% on node-02 and node-03"
+          time="14:02"
+          body="node-02 at 84%, node-03 at 81%."
+          isLast
+        />
+      </AnimatedTimeline>
+    </div>
+
+    <SectionLabel delay={0.5}>Infrastructure</SectionLabel>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, delay: 0.55 }}
+      className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+    >
+      <ResourceChip kind="node" name="node-02" health="degraded" detail="Memory 83%" />
+      <ResourceChip kind="node" name="node-03" health="degraded" detail="Memory 81%" />
+    </motion.div>
+  </Shell>
+)
+
+/* ══════════════════════════════════════════════════════════════════════
+ * MONITORING WITH SCHEDULE — uses MonitoringProgress
+ * ══════════════════════════════════════════════════════════════════════ */
+
+const MonitoringWithScheduleStory = (): React.ReactElement => (
+  <Shell>
+    <motion.div {...fadeUp} className="mb-6">
+      <div className="flex items-baseline justify-between gap-4 mb-2">
+        <h1 className="text-xl font-medium tracking-tight">Memory pressure on node-02 and node-03</h1>
+        <span className="text-xs text-text-muted font-mono flex-shrink-0">35m</span>
+      </div>
+      <StagePill stage="monitoring" />
+    </motion.div>
+
+    <motion.div {...stagger(0, 0.1)}>
+      <MonitoringProgress
+        plan="Memory on node-02 stays below 80%"
+        nextCheckIn="2 minutes"
+        checksCompleted={3}
+        totalChecks={6}
+        intervalMinutes={5}
+      />
+    </motion.div>
+
+    <SectionLabel delay={0.2}>What happened</SectionLabel>
+    <div>
+      <AnimatedTimeline index={0} baseDelay={0.25}>
+        <TimelineEntry
+          kind="outcome"
+          status="success"
+          title="Check 3: Memory at 62% — holding"
+          time="14:50"
+          body="Memory stable after eviction. 3 of 6 checks passed."
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={1} baseDelay={0.25}>
+        <TimelineEntry
+          kind="outcome"
+          status="success"
+          title="Check 2: Memory at 64% — holding"
+          time="14:45"
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={2} baseDelay={0.25}>
+        <TimelineEntry
+          kind="outcome"
+          status="success"
+          title="Check 1: Memory at 58% — fix applied"
+          time="14:40"
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={3} baseDelay={0.25}>
+        <TimelineEntry
+          kind="action"
+          status="success"
+          title="Evicted home-assistant from node-02"
+          time="14:38"
+          commandRun="kubectl delete pod home-assistant-0 -n home --grace-period=30"
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={4} baseDelay={0.25}>
+        <TimelineEntry
+          kind="detected"
+          status="info"
+          title="Memory above 80% on node-02 and node-03"
+          time="14:02"
+          isLast
+        />
+      </AnimatedTimeline>
+    </div>
+
+    <SectionLabel delay={0.55}>Infrastructure</SectionLabel>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, delay: 0.6 }}
+      className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+    >
+      <ResourceChip kind="node" name="node-02" health="healthy" detail="Memory 62%" />
+      <ResourceChip kind="node" name="node-03" health="healthy" detail="Memory 71%" />
+    </motion.div>
+  </Shell>
+)
+
+/* ══════════════════════════════════════════════════════════════════════
+ * REGRESSED — monitoring detected regression
+ * ══════════════════════════════════════════════════════════════════════ */
+
+const RegressedStory = (): React.ReactElement => (
+  <Shell>
+    <motion.div {...fadeUp} className="mb-6">
+      <div className="flex items-baseline justify-between gap-4 mb-2">
+        <h1 className="text-xl font-medium tracking-tight">Memory pressure on node-02 and node-03</h1>
+        <span className="text-xs text-text-muted font-mono flex-shrink-0">18m</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <StagePill stage="investigation" />
+        <Badge variant="warning">Regressed</Badge>
+      </div>
+    </motion.div>
+
+    <motion.p {...stagger(0, 0.1)} className="text-sm text-text-secondary leading-relaxed">
+      The rebalancing fix didn't hold. Memory climbed back above 80% after 8 minutes. The system is
+      re-investigating to find a more durable solution.
+    </motion.p>
+
+    <SectionLabel delay={0.2}>What happened</SectionLabel>
+    <div>
+      <AnimatedTimeline index={0} baseDelay={0.25}>
+        <TimelineEntry
+          kind="analysis"
+          status="pending"
+          title="Re-investigating — previous fix didn't hold"
+          time="14:14"
+        />
+        <div className="ml-8 -mt-3 mb-4">
+          <AgentActivity
+            status="working"
+            label="Analyzing why rebalance didn't hold"
+            elapsed="6s"
+            onStop={() => {}}
+            onExpand={() => {}}
+          />
+        </div>
+      </AnimatedTimeline>
+      <AnimatedTimeline index={1} baseDelay={0.25}>
+        <TimelineEntry
+          kind="regression"
+          status="info"
+          title="Memory climbed back above 80%"
+          time="14:14"
+          body="The first rebalance didn't hold. Memory on node-02 returned to 83% within 8 minutes."
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={2} baseDelay={0.25}>
+        <TimelineEntry
+          kind="outcome"
+          status="success"
+          title="Memory dropped to 68% on both nodes"
+          time="14:06"
+          body="Rebalance confirmed effective. Entering monitoring."
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={3} baseDelay={0.25}>
+        <TimelineEntry
+          kind="action"
+          status="success"
+          title="Moved low-priority workloads to node-01"
+          time="14:04"
+          commandRun="kubectl cordon node-02 && kubectl drain node-02 --pod-selector=priority=low"
+        />
+      </AnimatedTimeline>
+      <AnimatedTimeline index={4} baseDelay={0.25}>
+        <TimelineEntry
+          kind="detected"
+          status="info"
+          title="Memory above 80% on node-02 and node-03"
+          time="14:02"
+          isLast
+        />
+      </AnimatedTimeline>
+    </div>
+
+    <SectionLabel delay={0.55}>Infrastructure</SectionLabel>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, delay: 0.6 }}
+      className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+    >
+      <ResourceChip kind="node" name="node-02" health="degraded" detail="Memory 83%" />
+      <ResourceChip kind="node" name="node-03" health="degraded" detail="Memory 81%" />
+    </motion.div>
+  </Shell>
+)
+
 /* ══════════════════════════════════════════════════════════════════════ */
 
 const meta: Meta = {
@@ -546,6 +947,11 @@ const NeedsApproval: Story = { render: InProgressNeedsYou }
 const AgentWorking: Story = { render: ActiveInvestigation }
 const BeingMonitored: Story = { render: Monitoring }
 const FullyResolved: Story = { render: Resolved }
+const TriageActive: Story = { render: TriageActiveStory }
+const ImplementationActive: Story = { render: ImplementationActiveStory }
+const PlanRejected: Story = { render: PlanRejectedStory }
+const MonitoringWithSchedule: Story = { render: MonitoringWithScheduleStory }
+const Regressed: Story = { render: RegressedStory }
 
-export { NeedsApproval, AgentWorking, BeingMonitored, FullyResolved }
+export { NeedsApproval, AgentWorking, BeingMonitored, FullyResolved, TriageActive, ImplementationActive, PlanRejected, MonitoringWithSchedule, Regressed }
 export default meta

@@ -56,6 +56,7 @@ const issueStages = [
   "implementation",
   "monitoring",
   "resolved",
+  "ignored",
 ] as const;
 
 const issuePriorities = ["critical", "high", "medium", "low"] as const;
@@ -67,6 +68,7 @@ const timelineEntryKinds = [
   "outcome",
   "regression",
   "needs-you",
+  "user-action",
   "resolved",
 ] as const;
 
@@ -113,6 +115,11 @@ const issueSchema = z.object({
   needsYou: z.boolean(),
   priority: z.enum(issuePriorities),
   sourcePayload: z.string().nullable(),
+  monitorPlan: z.string().nullable(),
+  monitorIntervalMinutes: z.number().nullable(),
+  monitorNextCheckAt: z.string().nullable(),
+  monitorUntil: z.string().nullable(),
+  monitorChecksCompleted: z.number().nullable(),
   resolvedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -190,6 +197,7 @@ const approvalSchema = z.object({
   title: z.string(),
   reason: z.string(),
   status: z.enum(approvalStatuses),
+  decisionReason: z.string().nullable(),
   decidedAt: z.string().nullable(),
   createdAt: z.string(),
 });
@@ -269,6 +277,21 @@ const sshConnectionSchema = z.object({
 });
 
 type SshConnection = z.infer<typeof sshConnectionSchema>;
+
+const stageConfigSchema = z.object({
+  id: z.string().uuid(),
+  stage: z.string(),
+  allowedKubeContexts: z.array(z.string()).nullable(),
+  allowedSshConnections: z.array(z.string()).nullable(),
+  allowedGitRepos: z.array(z.string()).nullable(),
+  allowedArgocdInstances: z.array(z.string()).nullable(),
+  sshIdentityId: z.string().uuid().nullable(),
+  additionalSystemPrompt: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+type StageConfig = z.infer<typeof stageConfigSchema>;
 
 // --- Protocol definition ---
 
@@ -427,6 +450,7 @@ const protocol = {
       input: z.object({
         id: z.string().uuid(),
         decision: z.enum(["approved", "denied"]),
+        reason: z.string().optional(),
       }),
       output: z.object({ approval: approvalSchema.nullable() }),
     },
@@ -628,10 +652,43 @@ const protocol = {
       input: z.object({ id: z.string().uuid() }),
       output: z.object({ deleted: z.boolean() }),
     },
+
+    // Stage Configs
+    "stageConfigs.list": {
+      input: z.object({}),
+      output: z.object({ configs: z.array(stageConfigSchema) }),
+    },
+    "stageConfigs.get": {
+      input: z.object({ stage: z.string().min(1) }),
+      output: z.object({ config: stageConfigSchema.nullable() }),
+    },
+    "stageConfigs.upsert": {
+      input: z.object({
+        stage: z.string().min(1),
+        allowedKubeContexts: z.array(z.string()).nullable().optional(),
+        allowedSshConnections: z.array(z.string()).nullable().optional(),
+        allowedGitRepos: z.array(z.string()).nullable().optional(),
+        allowedArgocdInstances: z.array(z.string()).nullable().optional(),
+        sshIdentityId: z.string().uuid().nullable().optional(),
+        additionalSystemPrompt: z.string().nullable().optional(),
+      }),
+      output: z.object({ config: stageConfigSchema }),
+    },
+    "stageConfigs.delete": {
+      input: z.object({ stage: z.string().min(1) }),
+      output: z.object({ deleted: z.boolean() }),
+    },
   },
   events: {
     connected: {
       payload: z.object({ clientId: z.string().uuid() }),
+    },
+    "issue.stageChanged": {
+      payload: z.object({
+        issueId: z.string().uuid(),
+        from: z.string(),
+        to: z.string(),
+      }),
     },
   },
 };
@@ -655,6 +712,7 @@ export type {
   KubeContext,
   ArgocdInstance,
   SshConnection,
+  StageConfig,
 };
 export {
   callMessageSchema,
@@ -675,6 +733,7 @@ export {
   kubeContextSchema,
   argocdInstanceSchema,
   sshConnectionSchema,
+  stageConfigSchema,
   issueStages,
   issuePriorities,
   timelineEntryKinds,

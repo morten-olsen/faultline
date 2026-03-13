@@ -9,6 +9,8 @@ import { DatabaseService } from "./database/database.js";
 import { IssueService } from "./issues/issues.js";
 import { AgentService } from "./agent/agent.js";
 import { IntegrationService } from "./integrations/integrations.js";
+import { StageConfigService } from "./stage-configs/stage-configs.js";
+import { OrchestratorService } from "./orchestrator/orchestrator.js";
 import { createRouter } from "./router/router.js";
 import { registerAlertmanagerWebhook } from "./webhooks/webhooks.js";
 
@@ -29,6 +31,7 @@ import type {
   ArgocdInstance as ArgocdInstanceRow,
   SshConnection as SshConnectionRow,
 } from "./integrations/integrations.js";
+import type { ParsedStageConfig } from "./stage-configs/stage-configs.js";
 import type { CallContext } from "./router/router.js";
 
 const toIssue = (row: IssueRow) => ({
@@ -42,6 +45,11 @@ const toIssue = (row: IssueRow) => ({
   needsYou: row.needs_you === 1,
   priority: row.priority as "medium",
   sourcePayload: row.source_payload,
+  monitorPlan: row.monitor_plan,
+  monitorIntervalMinutes: row.monitor_interval_minutes,
+  monitorNextCheckAt: row.monitor_next_check_at,
+  monitorUntil: row.monitor_until,
+  monitorChecksCompleted: row.monitor_checks_completed,
   resolvedAt: row.resolved_at,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
@@ -107,6 +115,7 @@ const toApproval = (row: ApprovalRow) => ({
   title: row.title,
   reason: row.reason,
   status: row.status as "pending",
+  decisionReason: row.decision_reason,
   decidedAt: row.decided_at,
   createdAt: row.created_at,
 });
@@ -170,6 +179,19 @@ const toSshConnection = (row: SshConnectionRow) => ({
   username: row.username,
   sshIdentityId: row.ssh_identity_id,
   description: row.description,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+});
+
+const toStageConfig = (row: ParsedStageConfig) => ({
+  id: row.id,
+  stage: row.stage,
+  allowedKubeContexts: row.allowed_kube_contexts,
+  allowedSshConnections: row.allowed_ssh_connections,
+  allowedGitRepos: row.allowed_git_repos,
+  allowedArgocdInstances: row.allowed_argocd_instances,
+  sshIdentityId: row.ssh_identity_id,
+  additionalSystemPrompt: row.additional_system_prompt,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -322,7 +344,10 @@ const router = createRouter(protocol, {
   },
 
   "approvals.resolve": async (input, { services }) => {
-    const approval = await services.get(IssueService).resolveApproval(input.id, input.decision);
+    const approval = await services.get(IssueService).resolveApproval(input.id, input.decision, input.reason);
+    if (approval) {
+      await services.get(OrchestratorService).handleApprovalResolution(approval);
+    }
     return { approval: approval ? toApproval(approval) : null };
   },
 
@@ -521,13 +546,47 @@ const router = createRouter(protocol, {
     const deleted = await services.get(IntegrationService).deleteSshConnection(input.id);
     return { deleted };
   },
+
+  // Stage Configs
+  "stageConfigs.list": async (_input, { services }) => {
+    const configs = await services.get(StageConfigService).list();
+    return { configs: configs.map(toStageConfig) };
+  },
+
+  "stageConfigs.get": async (input, { services }) => {
+    const config = await services.get(StageConfigService).getByStage(input.stage);
+    return { config: config ? toStageConfig(config) : null };
+  },
+
+  "stageConfigs.upsert": async (input, { services }) => {
+    const config = await services.get(StageConfigService).upsert({
+      stage: input.stage,
+      allowedKubeContexts: input.allowedKubeContexts ?? null,
+      allowedSshConnections: input.allowedSshConnections ?? null,
+      allowedGitRepos: input.allowedGitRepos ?? null,
+      allowedArgocdInstances: input.allowedArgocdInstances ?? null,
+      sshIdentityId: input.sshIdentityId ?? null,
+      additionalSystemPrompt: input.additionalSystemPrompt ?? null,
+    });
+    return { config: toStageConfig(config) };
+  },
+
+  "stageConfigs.delete": async (input, { services }) => {
+    const deleted = await services.get(StageConfigService).delete(input.stage);
+    return { deleted };
+  },
 });
 
 const start = async (): Promise<void> => {
   const app = Fastify();
   await app.register(fastifyWebsocket);
 
+  const connectedSockets = new Set<import("ws").WebSocket>();
+
   app.get("/api/ws", { websocket: true }, (socket) => {
+    connectedSockets.add(socket);
+    socket.on("close", () => connectedSockets.delete(socket));
+
     const context: CallContext = {
       services,
       ws: socket,
@@ -550,11 +609,27 @@ const start = async (): Promise<void> => {
   // Ensure database is initialized before accepting connections
   await services.get(DatabaseService).instance;
 
+  // Start the orchestrator
+  const orchestrator = services.get(OrchestratorService);
+  orchestrator.onStageChange((issueId, from, to) => {
+    const event: EventMessage = {
+      type: "event",
+      event: "issue.stageChanged",
+      payload: { issueId, from, to },
+    };
+    const msg = JSON.stringify(event);
+    for (const ws of connectedSockets) {
+      try { ws.send(msg); } catch { /* ignore dead sockets */ }
+    }
+  });
+  orchestrator.start();
+
   const address = await app.listen({ port: 3007, host: "0.0.0.0" });
   console.log(`Faultline server listening on ${address}`);
 };
 
 const shutdown = async (): Promise<void> => {
+  services.get(OrchestratorService).stop();
   await services.destroy();
   process.exit(0);
 };

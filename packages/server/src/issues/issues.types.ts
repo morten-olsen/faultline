@@ -5,6 +5,7 @@ const issueStages = [
   "implementation",
   "monitoring",
   "resolved",
+  "ignored",
 ] as const;
 
 type IssueStage = (typeof issueStages)[number];
@@ -20,6 +21,7 @@ const timelineEntryKinds = [
   "outcome",
   "regression",
   "needs-you",
+  "user-action",
   "resolved",
 ] as const;
 

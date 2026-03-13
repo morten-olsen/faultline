@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { AlertTriangle } from "lucide-react";
 import { TopBar } from "../components/top-bar/top-bar.tsx";
+import { Button } from "../components/button/button.tsx";
 
 function IndexComponent(): React.ReactElement {
   const navigate = useNavigate();
@@ -16,6 +18,15 @@ function IndexComponent(): React.ReactElement {
           <p className="mt-2 text-text-muted text-sm">
             Autonomous infrastructure management
           </p>
+          <div className="mt-6">
+            <Button
+              variant="secondary"
+              icon={AlertTriangle}
+              onClick={() => navigate({ to: "/issues" })}
+            >
+              Issues
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,12 +1,16 @@
 import { IssueService } from "../issues/issues.js";
+import { IntegrationService } from "../integrations/integrations.js";
+import { StageConfigService } from "../stage-configs/stage-configs.js";
 import { destroy } from "../services/services.js";
 import { createClaudeAgentProvider } from "./agent.provider.claude.js";
 import { createFaultlineTools } from "./agent.tools.faultline.js";
 import { createInfraTools, buildIntegrationSummary } from "./agent.tools.infra.js";
-import { builtinToolsByAccess } from "./agent.tools.js";
+import { builtinToolsByAccess, resolveAccess, resolveTools } from "./agent.tools.js";
+import { createScopedIntegrationService } from "./agent.integrations.js";
 
 import type { Services } from "../services/services.js";
 import type { AgentProvider, AgentTask } from "./agent.types.js";
+import type { IntegrationReader } from "./agent.integrations.js";
 
 type RunAgentInput = {
   issueId: string;
@@ -16,8 +20,11 @@ type RunAgentInput = {
   cwd?: string;
 };
 
+type AgentCompleteListener = (issueId: string, agentLoopId: string) => void;
+
 type RunningLoop = {
   agentLoopId: string;
+  issueId: string;
   controller: AbortController;
 };
 
@@ -25,12 +32,21 @@ class AgentService {
   #services: Services;
   #provider: AgentProvider;
   #running: Map<string, RunningLoop>;
+  #completeListeners: AgentCompleteListener[] = [];
 
   constructor(services: Services) {
     this.#services = services;
     this.#provider = createClaudeAgentProvider();
     this.#running = new Map();
   }
+
+  onComplete = (fn: AgentCompleteListener): (() => void) => {
+    this.#completeListeners.push(fn);
+    return () => {
+      const idx = this.#completeListeners.indexOf(fn);
+      if (idx >= 0) this.#completeListeners.splice(idx, 1);
+    };
+  };
 
   // Allow swapping the provider at runtime (e.g. for testing or config changes)
   setProvider = (provider: AgentProvider): void => {
@@ -41,6 +57,17 @@ class AgentService {
 
   run = async (input: RunAgentInput): Promise<string> => {
     const issueService = this.#services.get(IssueService);
+
+    // Fetch the issue to determine its stage
+    const issue = await issueService.getById(input.issueId);
+    if (!issue) {
+      throw new Error(`Issue ${input.issueId} not found`);
+    }
+
+    // Block runs on ignored issues
+    if (issue.stage === "ignored") {
+      throw new Error(`Cannot run agent on ignored issue ${input.issueId}`);
+    }
 
     // Create the agent loop record
     const loop = await issueService.createAgentLoop({
@@ -61,20 +88,42 @@ class AgentService {
       commandRun: null,
     });
 
-    // Give the agent all tools — access-level filtering will be
-    // introduced later when orchestration lands.
-    const { tools: infraTools, cleanup } = createInfraTools(this.#services);
-    const customTools = [...createFaultlineTools(this.#services), ...infraTools];
-    const builtinTools = builtinToolsByAccess.write;
+    // Load stage config to scope integrations
+    const stageConfig = await this.#services
+      .get(StageConfigService)
+      .getByStage(issue.stage);
+
+    let integrations: IntegrationReader = this.#services.get(IntegrationService);
+
+    if (stageConfig) {
+      integrations = createScopedIntegrationService(integrations, {
+        allowedKubeContexts: stageConfig.allowed_kube_contexts,
+        allowedSshConnections: stageConfig.allowed_ssh_connections,
+        allowedGitRepos: stageConfig.allowed_git_repos,
+        allowedArgocdInstances: stageConfig.allowed_argocd_instances,
+        sshIdentityId: stageConfig.ssh_identity_id,
+      });
+    }
+
+    const { tools: infraTools, cleanup } = createInfraTools(integrations);
+    const access = resolveAccess(issue.stage);
+    const allCustomTools = [...createFaultlineTools(this.#services), ...infraTools];
+    const customTools = resolveTools(allCustomTools, access);
+    const builtinTools = builtinToolsByAccess[access];
 
     // Build system prompt with integration summary
-    const infraSummary = await buildIntegrationSummary(this.#services);
-    const systemPrompt = input.systemPrompt
+    const infraSummary = await buildIntegrationSummary(integrations);
+    let systemPrompt = input.systemPrompt
       ? `${input.systemPrompt}\n\n${infraSummary}`
       : infraSummary;
 
+    // Append additional system prompt from stage config
+    if (stageConfig?.additional_system_prompt) {
+      systemPrompt = `${systemPrompt}\n\n${stageConfig.additional_system_prompt}`;
+    }
+
     const controller = new AbortController();
-    this.#running.set(loop.id, { agentLoopId: loop.id, controller });
+    this.#running.set(loop.id, { agentLoopId: loop.id, issueId: input.issueId, controller });
 
     const task: AgentTask = {
       issueId: input.issueId,
@@ -111,6 +160,13 @@ class AgentService {
 
   isRunning = (agentLoopId: string): boolean =>
     this.#running.has(agentLoopId);
+
+  isRunningForIssue = (issueId: string): boolean => {
+    for (const [, entry] of this.#running) {
+      if (entry.issueId === issueId) return true;
+    }
+    return false;
+  };
 
   get runningCount(): number {
     return this.#running.size;
@@ -165,6 +221,11 @@ class AgentService {
 
       // Mark loop complete
       await issueService.updateAgentLoopStatus(agentLoopId, "complete");
+
+      // Notify listeners
+      for (const fn of this.#completeListeners) {
+        try { fn(task.issueId, agentLoopId); } catch { /* ignore */ }
+      }
 
       // Update the timeline entry with the result
       if (resultText) {

@@ -473,9 +473,56 @@ const LifecycleStory = (): React.ReactElement => (
     </motion.div>
 
     <StageTransition
-      from="Approved"
-      to="Implementation → Monitoring → Resolved"
-      reason="User approves. System evicts home-assistant. Memory drops. Monitoring confirms stability."
+      from="Proposed Plan (needs you)"
+      to="Investigation (rejected)"
+      reason="User rejects the plan with a reason. System re-investigates."
+    />
+
+    {/* ── 7b. PLAN REJECTED — RE-INVESTIGATION ── */}
+    <Chapter
+      number="07b"
+      title="Plan Rejected — Re-investigation"
+      desc="14:24 — The user rejected the eviction plan: 'tried this before, didn't work.' The system takes the feedback and investigates alternatives."
+      color="#60a5fa"
+      icon={RotateCcw}
+    />
+
+    <Label>Timeline shows the rejection and re-investigation</Label>
+    <motion.div {...stagger(0, 0.15)}>
+      <TimelineEntry
+        kind="analysis"
+        status="pending"
+        title="Re-investigating with feedback"
+        time="14:24"
+        body="Looking for alternative approaches that don't involve evicting home-assistant."
+      />
+    </motion.div>
+    <motion.div {...stagger(1, 0.15)}>
+      <TimelineEntry
+        kind="user-action"
+        status="info"
+        title="Plan rejected: tried this before, didn't work"
+        time="14:23"
+        body="User rejected the eviction plan — they've tried this approach before and it didn't hold."
+        isLast
+      />
+    </motion.div>
+
+    <motion.div {...stagger(0, 0.2)} style={{
+      background: '#141414', borderRadius: 10, padding: '12px 14px', marginTop: 16, marginBottom: 16,
+    }}>
+      <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', lineHeight: 1.6, margin: 0 }}>
+        The rejection reason is carried into the next investigation as context. The agent sees
+        "The previous plan was rejected because: tried this before, didn't work" and adapts its
+        approach. The <strong style={{ color: '#e8e8e8' }}>user-action</strong> entry in the timeline
+        preserves the human's decision as part of the permanent record.
+      </p>
+    </motion.div>
+
+    <StageTransition
+      from="Re-investigation"
+      to="Proposed Plan → Approved → Implementation → Monitoring → Resolved"
+      reason="System finds a better approach. User approves. Fix holds."
     />
 
     {/* ── 8. RESOLVED ── */}

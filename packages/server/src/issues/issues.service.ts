@@ -33,12 +33,40 @@ type IssueRelation = Selectable<IssueRelationsTable>;
 type Approval = Selectable<ApprovalsTable>;
 type IssueLink = Selectable<IssueLinksTable>;
 
+type IssueEventKind = "created" | "updated" | "stage-changed";
+type IssueEventListener = (kind: IssueEventKind, issueId: string, meta?: Record<string, string>) => void;
+
+type SetMonitoringPlanInput = {
+  plan: string;
+  intervalMinutes: number;
+  durationMinutes: number;
+};
+
 class IssueService {
   #services: Services;
+  #listeners: IssueEventListener[] = [];
 
   constructor(services: Services) {
     this.#services = services;
   }
+
+  onEvent = (fn: IssueEventListener): (() => void) => {
+    this.#listeners.push(fn);
+    return () => {
+      const idx = this.#listeners.indexOf(fn);
+      if (idx >= 0) this.#listeners.splice(idx, 1);
+    };
+  };
+
+  #emit = (kind: IssueEventKind, issueId: string, meta?: Record<string, string>): void => {
+    for (const fn of this.#listeners) {
+      try {
+        fn(kind, issueId, meta);
+      } catch {
+        // listener errors don't propagate
+      }
+    }
+  };
 
   // ── Issues ────────────────────────────────────────────────────────
 
@@ -57,12 +85,19 @@ class IssueService {
       needs_you: input.needsYou ? 1 : 0,
       priority: input.priority,
       source_payload: input.sourcePayload,
+      monitor_plan: null,
+      monitor_interval_minutes: null,
+      monitor_next_check_at: null,
+      monitor_until: null,
+      monitor_checks_completed: 0,
       resolved_at: null,
       created_at: now,
       updated_at: now,
     };
 
     await db.insertInto("issues").values(issue).execute();
+
+    this.#emit("created", issue.id);
 
     return issue;
   };
@@ -114,6 +149,9 @@ class IssueService {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
+    // Fetch old stage for change detection
+    const oldIssue = input.stage !== undefined ? await this.getById(id) : undefined;
+
     const values: Record<string, unknown> = { updated_at: now };
 
     if (input.title !== undefined) values.title = input.title;
@@ -129,7 +167,15 @@ class IssueService {
 
     await db.updateTable("issues").set(values).where("id", "=", id).execute();
 
-    return this.getById(id);
+    const updated = await this.getById(id);
+
+    // Emit events
+    this.#emit("updated", id);
+    if (oldIssue && input.stage !== undefined && oldIssue.stage !== input.stage) {
+      this.#emit("stage-changed", id, { from: oldIssue.stage, to: input.stage });
+    }
+
+    return updated;
   };
 
   // ── Timeline entries ──────────────────────────────────────────────
@@ -348,6 +394,7 @@ class IssueService {
       title: input.title,
       reason: input.reason,
       status: "pending",
+      decision_reason: null,
       decided_at: null,
       created_at: now,
     };
@@ -371,13 +418,17 @@ class IssueService {
   resolveApproval = async (
     id: string,
     decision: "approved" | "denied",
+    reason?: string,
   ): Promise<Approval | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
+    const values: Record<string, unknown> = { status: decision, decided_at: now };
+    if (reason !== undefined) values.decision_reason = reason;
+
     await db
       .updateTable("approvals")
-      .set({ status: decision, decided_at: now })
+      .set(values)
       .where("id", "=", id)
       .execute();
 
@@ -430,6 +481,81 @@ class IssueService {
       .where("label_id", "=", labelId)
       .execute();
   };
+
+  // ── Monitoring ──────────────────────────────────────────────────────
+
+  setMonitoringPlan = async (
+    issueId: string,
+    input: SetMonitoringPlanInput,
+  ): Promise<Issue | undefined> => {
+    const db = await this.#services.get(DatabaseService).instance;
+    const now = new Date();
+    const until = new Date(now.getTime() + input.durationMinutes * 60_000);
+    const nextCheck = new Date(now.getTime() + input.intervalMinutes * 60_000);
+
+    await db
+      .updateTable("issues")
+      .set({
+        monitor_plan: input.plan,
+        monitor_interval_minutes: input.intervalMinutes,
+        monitor_next_check_at: nextCheck.toISOString(),
+        monitor_until: until.toISOString(),
+        monitor_checks_completed: 0,
+        updated_at: now.toISOString(),
+      })
+      .where("id", "=", issueId)
+      .execute();
+
+    return this.getById(issueId);
+  };
+
+  getIssuesDueForMonitoring = async (): Promise<Issue[]> => {
+    const db = await this.#services.get(DatabaseService).instance;
+    const now = new Date().toISOString();
+
+    return db
+      .selectFrom("issues")
+      .selectAll()
+      .where("stage", "=", "monitoring")
+      .where("monitor_next_check_at", "<=", now)
+      .where("monitor_next_check_at", "is not", null)
+      .execute();
+  };
+
+  advanceMonitorCheck = async (issueId: string): Promise<Issue | undefined> => {
+    const db = await this.#services.get(DatabaseService).instance;
+    const issue = await this.getById(issueId);
+    if (!issue || !issue.monitor_interval_minutes) return issue;
+
+    const now = new Date();
+    const nextCheck = new Date(now.getTime() + issue.monitor_interval_minutes * 60_000);
+    const completed = (issue.monitor_checks_completed ?? 0) + 1;
+
+    await db
+      .updateTable("issues")
+      .set({
+        monitor_checks_completed: completed,
+        monitor_next_check_at: nextCheck.toISOString(),
+        updated_at: now.toISOString(),
+      })
+      .where("id", "=", issueId)
+      .execute();
+
+    return this.getById(issueId);
+  };
+
+  hasRunningAgentLoop = async (issueId: string): Promise<boolean> => {
+    const db = await this.#services.get(DatabaseService).instance;
+
+    const running = await db
+      .selectFrom("agent_loops")
+      .select("id")
+      .where("issue_id", "=", issueId)
+      .where("status", "=", "running")
+      .executeTakeFirst();
+
+    return running !== undefined;
+  };
 }
 
 export type {
@@ -441,5 +567,8 @@ export type {
   IssueRelation,
   Approval,
   IssueLink,
+  IssueEventKind,
+  IssueEventListener,
+  SetMonitoringPlanInput,
 };
 export { IssueService };

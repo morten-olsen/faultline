@@ -195,7 +195,7 @@ const createFaultlineTools = (services: Services): Tool[] => {
         title: z.string().optional().describe("New title"),
         summary: z.string().nullable().optional().describe("New summary"),
         description: z.string().nullable().optional().describe("New description"),
-        stage: z.enum(["triage", "investigation", "proposed-plan", "implementation", "monitoring", "resolved"]).optional()
+        stage: z.enum(["triage", "investigation", "proposed-plan", "implementation", "monitoring", "resolved", "ignored"]).optional()
           .describe("New stage"),
         priority: z.enum(["critical", "high", "medium", "low"]).optional()
           .describe("New priority"),
@@ -217,7 +217,7 @@ const createFaultlineTools = (services: Services): Tool[] => {
       access: "write",
       input: {
         issueId: z.string().uuid().describe("The issue ID"),
-        kind: z.enum(["detected", "analysis", "action", "outcome", "regression", "needs-you", "resolved"])
+        kind: z.enum(["detected", "analysis", "action", "outcome", "regression", "needs-you", "user-action", "resolved"])
           .describe("The type of timeline entry"),
         title: z.string().describe("Short summary of the entry"),
         body: z.string().nullable().optional().describe("Detailed body text"),
@@ -322,6 +322,29 @@ const createFaultlineTools = (services: Services): Tool[] => {
           repo: args.repo,
         });
         return { linkId: link.id };
+      },
+    }),
+
+    defineTool({
+      name: "set-monitoring-plan",
+      description: "Set a structured monitoring plan for an issue. Defines what to check, how often, and for how long.",
+      access: "write",
+      input: {
+        issueId: z.string().uuid().describe("The issue ID"),
+        plan: z.string().describe("What to check (e.g. 'Memory on node-02 stays below 80%')"),
+        intervalMinutes: z.number().int().min(1).describe("How often to check, in minutes"),
+        durationMinutes: z.number().int().min(1).describe("Total monitoring duration, in minutes"),
+      },
+      output: z.object({
+        set: z.boolean(),
+      }),
+      execute: async (args) => {
+        await issues().setMonitoringPlan(args.issueId, {
+          plan: args.plan,
+          intervalMinutes: args.intervalMinutes,
+          durationMinutes: args.durationMinutes,
+        });
+        return { set: true };
       },
     }),
 

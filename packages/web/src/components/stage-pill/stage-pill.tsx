@@ -1,6 +1,6 @@
-import { Search, Lightbulb, ListChecks, Wrench, Eye, CircleCheck, AlertCircle } from 'lucide-react'
+import { Search, Lightbulb, ListChecks, Wrench, Eye, CircleCheck, AlertCircle, EyeOff } from 'lucide-react'
 
-type Stage = 'triage' | 'investigation' | 'proposed-plan' | 'implementation' | 'monitoring' | 'resolved'
+type Stage = 'triage' | 'investigation' | 'proposed-plan' | 'implementation' | 'monitoring' | 'resolved' | 'ignored'
 
 type StagePillProps = {
   stage: Stage
@@ -14,6 +14,7 @@ const stageConfig: Record<Stage, { label: string; colorClass: string; icon: type
   implementation: { label: 'Implementation', colorClass: 'text-blue-400', icon: Wrench },
   monitoring: { label: 'Monitoring', colorClass: 'text-green-400', icon: Eye },
   resolved: { label: 'Resolved', colorClass: 'text-green-400', icon: CircleCheck },
+  ignored: { label: 'Ignored', colorClass: 'text-text-muted', icon: EyeOff },
 }
 
 const StagePill = ({ stage, needsYou = false }: StagePillProps): React.ReactElement => {

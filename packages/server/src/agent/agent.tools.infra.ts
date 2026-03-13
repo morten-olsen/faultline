@@ -5,10 +5,9 @@ import { tmpdir } from "node:os";
 import { promisify } from "node:util";
 import { z } from "zod";
 
-import { IntegrationService } from "../integrations/integrations.js";
 import { defineTool } from "./agent.tools.js";
 
-import type { Services } from "../services/services.js";
+import type { IntegrationReader } from "./agent.integrations.js";
 import type { Tool } from "./agent.tools.js";
 
 const execFileAsync = promisify(execFile);
@@ -89,9 +88,8 @@ const runCommand = async (
 // ── Factory ──────────────────────────────────────────────────────────
 
 const createInfraTools = (
-  services: Services,
+  integrations: IntegrationReader,
 ): { tools: Tool[]; cleanup: () => void } => {
-  const integrations = (): IntegrationService => services.get(IntegrationService);
   const keys = createKeyFileTracker();
 
   const tools: Tool[] = [
@@ -113,7 +111,7 @@ const createInfraTools = (
         exitCode: z.number(),
       }),
       execute: async (input) => {
-        const ctx = await integrations().getKubeContext(input.contextId);
+        const ctx = await integrations.getKubeContext(input.contextId);
         if (!ctx) {
           return { stdout: "", stderr: `Kube context ${input.contextId} not found`, exitCode: 1 };
         }
@@ -141,7 +139,7 @@ const createInfraTools = (
         exitCode: z.number(),
       }),
       execute: async (input) => {
-        const conn = await integrations().getSshConnection(input.connectionId);
+        const conn = await integrations.getSshConnection(input.connectionId);
         if (!conn) {
           return { stdout: "", stderr: `SSH connection ${input.connectionId} not found`, exitCode: 1 };
         }
@@ -154,7 +152,7 @@ const createInfraTools = (
         ];
 
         if (conn.ssh_identity_id) {
-          const identity = await integrations().getSshIdentity(conn.ssh_identity_id);
+          const identity = await integrations.getSshIdentity(conn.ssh_identity_id);
           if (!identity) {
             return { stdout: "", stderr: `SSH identity ${conn.ssh_identity_id} not found`, exitCode: 1 };
           }
@@ -186,7 +184,7 @@ const createInfraTools = (
         alreadyExisted: z.boolean(),
       }),
       execute: async (input) => {
-        const repo = await integrations().getGitRepo(input.repoId);
+        const repo = await integrations.getGitRepo(input.repoId);
         if (!repo) {
           throw new Error(`Git repo ${input.repoId} not found`);
         }
@@ -207,7 +205,7 @@ const createInfraTools = (
         const env: Record<string, string> = {};
 
         if (repo.ssh_identity_id) {
-          const identity = await integrations().getSshIdentity(repo.ssh_identity_id);
+          const identity = await integrations.getSshIdentity(repo.ssh_identity_id);
           if (!identity) {
             throw new Error(`SSH identity ${repo.ssh_identity_id} not found`);
           }
@@ -272,13 +270,11 @@ const createInfraTools = (
         })),
       }),
       execute: async () => {
-        const svc = integrations();
-
         const [identities, repos, contexts, connections] = await Promise.all([
-          svc.listSshIdentities(),
-          svc.listGitRepos(),
-          svc.listKubeContexts(),
-          svc.listSshConnections(),
+          integrations.listSshIdentities(),
+          integrations.listGitRepos(),
+          integrations.listKubeContexts(),
+          integrations.listSshConnections(),
         ]);
 
         // Build identity name lookup
@@ -326,14 +322,12 @@ const createInfraTools = (
 
 // ── Integration summary for system prompt ────────────────────────────
 
-const buildIntegrationSummary = async (services: Services): Promise<string> => {
-  const svc = services.get(IntegrationService);
-
+const buildIntegrationSummary = async (integrations: IntegrationReader): Promise<string> => {
   const [identities, repos, contexts, connections] = await Promise.all([
-    svc.listSshIdentities(),
-    svc.listGitRepos(),
-    svc.listKubeContexts(),
-    svc.listSshConnections(),
+    integrations.listSshIdentities(),
+    integrations.listGitRepos(),
+    integrations.listKubeContexts(),
+    integrations.listSshConnections(),
   ]);
 
   const identityNames = new Map(identities.map((i) => [i.id, i.name]));

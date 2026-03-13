@@ -4,6 +4,8 @@ import BetterSqlite3 from "better-sqlite3";
 import { destroy } from "../services/services.js";
 import * as m001 from "./migrations/001-create-issues.js";
 import * as m002 from "./migrations/002-create-integrations.js";
+import * as m003 from "./migrations/003-create-stage-configs.js";
+import * as m004 from "./migrations/004-add-monitoring-fields.js";
 
 import type { Generated } from "kysely";
 import type { MigrationProvider } from "kysely";
@@ -20,6 +22,11 @@ type IssuesTable = {
   needs_you: Generated<number>;
   priority: Generated<string>;
   source_payload: string | null;
+  monitor_plan: string | null;
+  monitor_interval_minutes: number | null;
+  monitor_next_check_at: string | null;
+  monitor_until: string | null;
+  monitor_checks_completed: Generated<number>;
   resolved_at: string | null;
   created_at: Generated<string>;
   updated_at: Generated<string>;
@@ -95,6 +102,7 @@ type ApprovalsTable = {
   title: string;
   reason: string;
   status: Generated<string>;
+  decision_reason: string | null;
   decided_at: string | null;
   created_at: Generated<string>;
 };
@@ -162,6 +170,19 @@ type SshConnectionsTable = {
   updated_at: Generated<string>;
 };
 
+type StageConfigsTable = {
+  id: string;
+  stage: string;
+  allowed_kube_contexts: string | null;
+  allowed_ssh_connections: string | null;
+  allowed_git_repos: string | null;
+  allowed_argocd_instances: string | null;
+  ssh_identity_id: string | null;
+  additional_system_prompt: string | null;
+  created_at: Generated<string>;
+  updated_at: Generated<string>;
+};
+
 type DatabaseSchema = {
   issues: IssuesTable;
   labels: LabelsTable;
@@ -178,12 +199,15 @@ type DatabaseSchema = {
   kube_contexts: KubeContextsTable;
   argocd_instances: ArgocdInstancesTable;
   ssh_connections: SshConnectionsTable;
+  stage_configs: StageConfigsTable;
 };
 
 const migrationProvider: MigrationProvider = {
   getMigrations: async () => ({
     "001-create-issues": m001,
     "002-create-integrations": m002,
+    "003-create-stage-configs": m003,
+    "004-add-monitoring-fields": m004,
   }),
 };
 
@@ -241,5 +265,6 @@ export type {
   KubeContextsTable,
   ArgocdInstancesTable,
   SshConnectionsTable,
+  StageConfigsTable,
 };
 export { DatabaseService };

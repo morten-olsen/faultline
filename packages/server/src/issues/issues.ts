@@ -57,5 +57,8 @@ export type {
   IssueRelation as IssueRelationRow,
   Approval,
   IssueLink,
+  IssueEventKind,
+  IssueEventListener,
+  SetMonitoringPlanInput,
 } from "./issues.service.js";
 export { IssueService } from "./issues.service.js";
