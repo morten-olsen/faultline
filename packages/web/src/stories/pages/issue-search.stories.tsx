@@ -26,7 +26,7 @@ import { IconButton } from '../../components/icon-button/icon-button.tsx'
 const fadeUp = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] },
+  transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const },
 }
 
 const stagger = (i: number, base = 0) => ({
@@ -78,7 +78,7 @@ const FilterChip = ({ label, active = false, index = 0, baseDelay = 0 }: FilterC
   <motion.button
     initial={{ opacity: 0, scale: 0.92 }}
     animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1], delay: baseDelay + index * 0.03 }}
+    transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] as const, delay: baseDelay + index * 0.03 }}
     type="button"
     className={`
       text-xs px-2.5 py-1 rounded-full cursor-pointer transition-all
@@ -330,7 +330,7 @@ const SearchEmpty = (): React.ReactElement => (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const, delay: 0.2 }}
       className="text-center py-16"
     >
       <Search size={24} className="text-text-muted/30 mx-auto mb-3" />

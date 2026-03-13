@@ -1,28 +1,61 @@
 export type {
-  IssueStatus,
+  IssueStage,
   IssuePriority,
-  IssueEventType,
+  TimelineEntryKind,
+  TimelineEntryStatus,
+  AgentLoopStatus,
+  AgentStepKind,
+  ResourceKind,
+  HealthStatus,
+  IssueRelation,
+  ApprovalStatus,
   IssueLinkType,
 } from "./issues.types.js";
 export {
-  issueStatuses,
+  issueStages,
   issuePriorities,
-  issueEventTypes,
+  timelineEntryKinds,
+  timelineEntryStatuses,
+  agentLoopStatuses,
+  agentStepKinds,
+  resourceKinds,
+  healthStatuses,
+  issueRelations,
+  approvalStatuses,
   issueLinkTypes,
 } from "./issues.types.js";
 
 export type {
   CreateIssueInput,
   UpdateIssueInput,
-  CreateIssueEventInput,
+  CreateTimelineEntryInput,
+  CreateAgentLoopInput,
+  CreateAgentStepInput,
+  CreateIssueResourceInput,
+  CreateIssueRelationInput,
+  CreateApprovalInput,
   CreateIssueLinkInput,
 } from "./issues.schemas.js";
 export {
   createIssueSchema,
   updateIssueSchema,
-  createIssueEventSchema,
+  createTimelineEntrySchema,
+  createAgentLoopSchema,
+  createAgentStepSchema,
+  createIssueResourceSchema,
+  createIssueRelationSchema,
+  createApprovalSchema,
   createIssueLinkSchema,
 } from "./issues.schemas.js";
 
-export type { Issue, IssueEvent, IssueLink } from "./issues.service.js";
+export type {
+  Issue,
+  TimelineEntry,
+  AgentLoop,
+  AgentStep,
+  IssueResource,
+  IssueRelation as IssueRelationRow,
+  Approval,
+  IssueLink,
+} from "./issues.service.js";
 export { IssueService } from "./issues.service.js";

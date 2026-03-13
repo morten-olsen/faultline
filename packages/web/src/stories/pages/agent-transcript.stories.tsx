@@ -29,7 +29,7 @@ import { IconButton } from '../../components/icon-button/icon-button.tsx'
 const fadeUp = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] },
+  transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const },
 }
 
 const stagger = (i: number, base = 0) => ({
@@ -375,7 +375,7 @@ const WaitingForApproval = (): React.ReactElement => (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: 0.35 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const, delay: 0.35 }}
       className="mt-4 bg-white/3 ring-1 ring-amber-500/12 rounded-xl p-4 space-y-3"
     >
       <div className="flex items-center gap-2">

@@ -2,7 +2,7 @@
 
 Autonomous infrastructure management system — monitors a Kubernetes cluster and Unifi network, triages alerts, applies fixes, and tracks resolution.
 
-See [docs/architecture.md](docs/architecture.md) for system design and [docs/coding-standards.md](docs/coding-standards.md) for full standards.
+See [docs/architecture.md](docs/architecture.md) for system design, [docs/coding-standards.md](docs/coding-standards.md) for full standards, and [docs/ways-of-working.md](docs/ways-of-working.md) for how we design and build features.
 
 ## Monorepo
 

@@ -24,7 +24,7 @@ import { AgentActivity } from '../../components/agent-activity/agent-activity.ts
 const fadeUp = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] },
+  transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const },
 }
 
 const stagger = (i: number, base = 0) => ({
@@ -79,7 +79,7 @@ const RelatedRow = ({ title, relation, stage, time, icon: Icon, iconColor, delay
   <motion.div
     initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1], delay }}
+    transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const, delay }}
     className="group flex items-start gap-3 py-3 -mx-2 px-2 rounded-lg cursor-pointer hover:bg-white/3 transition-colors"
   >
     <div className="mt-0.5 flex-shrink-0">
@@ -135,7 +135,7 @@ const InProgressNeedsYou = (): React.ReactElement => (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1], delay: 0.12 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const, delay: 0.12 }}
       className="bg-white/3 ring-1 ring-amber-500/12 rounded-xl p-4 space-y-3"
     >
       <div className="flex items-center gap-2">

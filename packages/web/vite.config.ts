@@ -16,7 +16,16 @@ export default defineConfig({
     autoCodeSplitting: true
   }), tailwindcss(), react()],
   server: {
-    port: 5173
+    port: 5173,
+    proxy: {
+      "/api/ws": {
+        target: "ws://localhost:3007",
+        ws: true,
+      },
+      "/api": {
+        target: "http://localhost:3007",
+      },
+    },
   },
   test: {
     projects: [{

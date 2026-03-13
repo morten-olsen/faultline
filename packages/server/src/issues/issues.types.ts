@@ -1,39 +1,116 @@
-const issueStatuses = [
+const issueStages = [
   "triage",
-  "ready",
-  "in_progress",
-  "under_observation",
+  "investigation",
+  "proposed-plan",
+  "implementation",
+  "monitoring",
   "resolved",
-  "regressed",
-  "cancelled",
 ] as const;
 
-type IssueStatus = (typeof issueStatuses)[number];
+type IssueStage = (typeof issueStages)[number];
 
 const issuePriorities = ["critical", "high", "medium", "low"] as const;
 
 type IssuePriority = (typeof issuePriorities)[number];
 
-const issueEventTypes = [
-  "status_change",
-  "comment",
-  "priority_change",
-  "label_added",
-  "label_removed",
-  "commit_linked",
-  "pr_linked",
+const timelineEntryKinds = [
+  "detected",
+  "analysis",
+  "action",
+  "outcome",
+  "regression",
+  "needs-you",
+  "resolved",
 ] as const;
 
-type IssueEventType = (typeof issueEventTypes)[number];
+type TimelineEntryKind = (typeof timelineEntryKinds)[number];
+
+const timelineEntryStatuses = [
+  "pending",
+  "info",
+  "success",
+  "failed",
+] as const;
+
+type TimelineEntryStatus = (typeof timelineEntryStatuses)[number];
+
+const agentLoopStatuses = [
+  "running",
+  "complete",
+  "waiting",
+  "stopped",
+] as const;
+
+type AgentLoopStatus = (typeof agentLoopStatuses)[number];
+
+const agentStepKinds = [
+  "thinking",
+  "tool-call",
+  "message",
+  "error",
+] as const;
+
+type AgentStepKind = (typeof agentStepKinds)[number];
+
+const resourceKinds = [
+  "node",
+  "pod",
+  "deployment",
+  "ingress",
+  "daemonset",
+  "access-point",
+  "switch",
+  "nas",
+  "volume",
+  "service",
+  "endpoint",
+] as const;
+
+type ResourceKind = (typeof resourceKinds)[number];
+
+const healthStatuses = ["healthy", "degraded", "critical"] as const;
+
+type HealthStatus = (typeof healthStatuses)[number];
+
+const issueRelations = [
+  "caused-by",
+  "related-to",
+  "duplicate-of",
+] as const;
+
+type IssueRelation = (typeof issueRelations)[number];
+
+const approvalStatuses = ["pending", "approved", "denied"] as const;
+
+type ApprovalStatus = (typeof approvalStatuses)[number];
 
 const issueLinkTypes = ["commit", "pr"] as const;
 
 type IssueLinkType = (typeof issueLinkTypes)[number];
 
-export type { IssueStatus, IssuePriority, IssueEventType, IssueLinkType };
+export type {
+  IssueStage,
+  IssuePriority,
+  TimelineEntryKind,
+  TimelineEntryStatus,
+  AgentLoopStatus,
+  AgentStepKind,
+  ResourceKind,
+  HealthStatus,
+  IssueRelation,
+  ApprovalStatus,
+  IssueLinkType,
+};
 export {
-  issueStatuses,
+  issueStages,
   issuePriorities,
-  issueEventTypes,
+  timelineEntryKinds,
+  timelineEntryStatuses,
+  agentLoopStatuses,
+  agentStepKinds,
+  resourceKinds,
+  healthStatuses,
+  issueRelations,
+  approvalStatuses,
   issueLinkTypes,
 };

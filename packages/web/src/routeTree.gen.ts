@@ -9,38 +9,235 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsIntegrationsRouteImport } from './routes/settings/integrations'
+import { Route as SettingsIntegrationsIndexRouteImport } from './routes/settings/integrations/index'
+import { Route as SettingsIntegrationsSshIdentityNewRouteImport } from './routes/settings/integrations/ssh-identity/new'
+import { Route as SettingsIntegrationsSshConnectionNewRouteImport } from './routes/settings/integrations/ssh-connection/new'
+import { Route as SettingsIntegrationsKubernetesNewRouteImport } from './routes/settings/integrations/kubernetes/new'
+import { Route as SettingsIntegrationsGitRepoNewRouteImport } from './routes/settings/integrations/git-repo/new'
+import { Route as SettingsIntegrationsArgocdNewRouteImport } from './routes/settings/integrations/argocd/new'
+import { Route as SettingsIntegrationsSshIdentityIdEditRouteImport } from './routes/settings/integrations/ssh-identity/$id.edit'
+import { Route as SettingsIntegrationsSshConnectionIdEditRouteImport } from './routes/settings/integrations/ssh-connection/$id.edit'
+import { Route as SettingsIntegrationsKubernetesIdEditRouteImport } from './routes/settings/integrations/kubernetes/$id.edit'
+import { Route as SettingsIntegrationsGitRepoIdEditRouteImport } from './routes/settings/integrations/git-repo/$id.edit'
+import { Route as SettingsIntegrationsArgocdIdEditRouteImport } from './routes/settings/integrations/argocd/$id.edit'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsIntegrationsRoute = SettingsIntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsIntegrationsIndexRoute =
+  SettingsIntegrationsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsIntegrationsSshIdentityNewRoute =
+  SettingsIntegrationsSshIdentityNewRouteImport.update({
+    id: '/ssh-identity/new',
+    path: '/ssh-identity/new',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsIntegrationsSshConnectionNewRoute =
+  SettingsIntegrationsSshConnectionNewRouteImport.update({
+    id: '/ssh-connection/new',
+    path: '/ssh-connection/new',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsIntegrationsKubernetesNewRoute =
+  SettingsIntegrationsKubernetesNewRouteImport.update({
+    id: '/kubernetes/new',
+    path: '/kubernetes/new',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsIntegrationsGitRepoNewRoute =
+  SettingsIntegrationsGitRepoNewRouteImport.update({
+    id: '/git-repo/new',
+    path: '/git-repo/new',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsIntegrationsArgocdNewRoute =
+  SettingsIntegrationsArgocdNewRouteImport.update({
+    id: '/argocd/new',
+    path: '/argocd/new',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsIntegrationsSshIdentityIdEditRoute =
+  SettingsIntegrationsSshIdentityIdEditRouteImport.update({
+    id: '/ssh-identity/$id/edit',
+    path: '/ssh-identity/$id/edit',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsIntegrationsSshConnectionIdEditRoute =
+  SettingsIntegrationsSshConnectionIdEditRouteImport.update({
+    id: '/ssh-connection/$id/edit',
+    path: '/ssh-connection/$id/edit',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsIntegrationsKubernetesIdEditRoute =
+  SettingsIntegrationsKubernetesIdEditRouteImport.update({
+    id: '/kubernetes/$id/edit',
+    path: '/kubernetes/$id/edit',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsIntegrationsGitRepoIdEditRoute =
+  SettingsIntegrationsGitRepoIdEditRouteImport.update({
+    id: '/git-repo/$id/edit',
+    path: '/git-repo/$id/edit',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
+const SettingsIntegrationsArgocdIdEditRoute =
+  SettingsIntegrationsArgocdIdEditRouteImport.update({
+    id: '/argocd/$id/edit',
+    path: '/argocd/$id/edit',
+    getParentRoute: () => SettingsIntegrationsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/settings/integrations': typeof SettingsIntegrationsRouteWithChildren
+  '/settings/integrations/': typeof SettingsIntegrationsIndexRoute
+  '/settings/integrations/argocd/new': typeof SettingsIntegrationsArgocdNewRoute
+  '/settings/integrations/git-repo/new': typeof SettingsIntegrationsGitRepoNewRoute
+  '/settings/integrations/kubernetes/new': typeof SettingsIntegrationsKubernetesNewRoute
+  '/settings/integrations/ssh-connection/new': typeof SettingsIntegrationsSshConnectionNewRoute
+  '/settings/integrations/ssh-identity/new': typeof SettingsIntegrationsSshIdentityNewRoute
+  '/settings/integrations/argocd/$id/edit': typeof SettingsIntegrationsArgocdIdEditRoute
+  '/settings/integrations/git-repo/$id/edit': typeof SettingsIntegrationsGitRepoIdEditRoute
+  '/settings/integrations/kubernetes/$id/edit': typeof SettingsIntegrationsKubernetesIdEditRoute
+  '/settings/integrations/ssh-connection/$id/edit': typeof SettingsIntegrationsSshConnectionIdEditRoute
+  '/settings/integrations/ssh-identity/$id/edit': typeof SettingsIntegrationsSshIdentityIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/settings/integrations': typeof SettingsIntegrationsIndexRoute
+  '/settings/integrations/argocd/new': typeof SettingsIntegrationsArgocdNewRoute
+  '/settings/integrations/git-repo/new': typeof SettingsIntegrationsGitRepoNewRoute
+  '/settings/integrations/kubernetes/new': typeof SettingsIntegrationsKubernetesNewRoute
+  '/settings/integrations/ssh-connection/new': typeof SettingsIntegrationsSshConnectionNewRoute
+  '/settings/integrations/ssh-identity/new': typeof SettingsIntegrationsSshIdentityNewRoute
+  '/settings/integrations/argocd/$id/edit': typeof SettingsIntegrationsArgocdIdEditRoute
+  '/settings/integrations/git-repo/$id/edit': typeof SettingsIntegrationsGitRepoIdEditRoute
+  '/settings/integrations/kubernetes/$id/edit': typeof SettingsIntegrationsKubernetesIdEditRoute
+  '/settings/integrations/ssh-connection/$id/edit': typeof SettingsIntegrationsSshConnectionIdEditRoute
+  '/settings/integrations/ssh-identity/$id/edit': typeof SettingsIntegrationsSshIdentityIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/chat': typeof ChatRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/settings/integrations': typeof SettingsIntegrationsRouteWithChildren
+  '/settings/integrations/': typeof SettingsIntegrationsIndexRoute
+  '/settings/integrations/argocd/new': typeof SettingsIntegrationsArgocdNewRoute
+  '/settings/integrations/git-repo/new': typeof SettingsIntegrationsGitRepoNewRoute
+  '/settings/integrations/kubernetes/new': typeof SettingsIntegrationsKubernetesNewRoute
+  '/settings/integrations/ssh-connection/new': typeof SettingsIntegrationsSshConnectionNewRoute
+  '/settings/integrations/ssh-identity/new': typeof SettingsIntegrationsSshIdentityNewRoute
+  '/settings/integrations/argocd/$id/edit': typeof SettingsIntegrationsArgocdIdEditRoute
+  '/settings/integrations/git-repo/$id/edit': typeof SettingsIntegrationsGitRepoIdEditRoute
+  '/settings/integrations/kubernetes/$id/edit': typeof SettingsIntegrationsKubernetesIdEditRoute
+  '/settings/integrations/ssh-connection/$id/edit': typeof SettingsIntegrationsSshConnectionIdEditRoute
+  '/settings/integrations/ssh-identity/$id/edit': typeof SettingsIntegrationsSshIdentityIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/chat'
+    | '/settings'
+    | '/settings/integrations'
+    | '/settings/integrations/'
+    | '/settings/integrations/argocd/new'
+    | '/settings/integrations/git-repo/new'
+    | '/settings/integrations/kubernetes/new'
+    | '/settings/integrations/ssh-connection/new'
+    | '/settings/integrations/ssh-identity/new'
+    | '/settings/integrations/argocd/$id/edit'
+    | '/settings/integrations/git-repo/$id/edit'
+    | '/settings/integrations/kubernetes/$id/edit'
+    | '/settings/integrations/ssh-connection/$id/edit'
+    | '/settings/integrations/ssh-identity/$id/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/chat'
+    | '/settings'
+    | '/settings/integrations'
+    | '/settings/integrations/argocd/new'
+    | '/settings/integrations/git-repo/new'
+    | '/settings/integrations/kubernetes/new'
+    | '/settings/integrations/ssh-connection/new'
+    | '/settings/integrations/ssh-identity/new'
+    | '/settings/integrations/argocd/$id/edit'
+    | '/settings/integrations/git-repo/$id/edit'
+    | '/settings/integrations/kubernetes/$id/edit'
+    | '/settings/integrations/ssh-connection/$id/edit'
+    | '/settings/integrations/ssh-identity/$id/edit'
+  id:
+    | '__root__'
+    | '/'
+    | '/chat'
+    | '/settings'
+    | '/settings/integrations'
+    | '/settings/integrations/'
+    | '/settings/integrations/argocd/new'
+    | '/settings/integrations/git-repo/new'
+    | '/settings/integrations/kubernetes/new'
+    | '/settings/integrations/ssh-connection/new'
+    | '/settings/integrations/ssh-identity/new'
+    | '/settings/integrations/argocd/$id/edit'
+    | '/settings/integrations/git-repo/$id/edit'
+    | '/settings/integrations/kubernetes/$id/edit'
+    | '/settings/integrations/ssh-connection/$id/edit'
+    | '/settings/integrations/ssh-identity/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChatRoute: typeof ChatRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +245,147 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/integrations': {
+      id: '/settings/integrations'
+      path: '/integrations'
+      fullPath: '/settings/integrations'
+      preLoaderRoute: typeof SettingsIntegrationsRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/integrations/': {
+      id: '/settings/integrations/'
+      path: '/'
+      fullPath: '/settings/integrations/'
+      preLoaderRoute: typeof SettingsIntegrationsIndexRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/integrations/ssh-identity/new': {
+      id: '/settings/integrations/ssh-identity/new'
+      path: '/ssh-identity/new'
+      fullPath: '/settings/integrations/ssh-identity/new'
+      preLoaderRoute: typeof SettingsIntegrationsSshIdentityNewRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/integrations/ssh-connection/new': {
+      id: '/settings/integrations/ssh-connection/new'
+      path: '/ssh-connection/new'
+      fullPath: '/settings/integrations/ssh-connection/new'
+      preLoaderRoute: typeof SettingsIntegrationsSshConnectionNewRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/integrations/kubernetes/new': {
+      id: '/settings/integrations/kubernetes/new'
+      path: '/kubernetes/new'
+      fullPath: '/settings/integrations/kubernetes/new'
+      preLoaderRoute: typeof SettingsIntegrationsKubernetesNewRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/integrations/git-repo/new': {
+      id: '/settings/integrations/git-repo/new'
+      path: '/git-repo/new'
+      fullPath: '/settings/integrations/git-repo/new'
+      preLoaderRoute: typeof SettingsIntegrationsGitRepoNewRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/integrations/argocd/new': {
+      id: '/settings/integrations/argocd/new'
+      path: '/argocd/new'
+      fullPath: '/settings/integrations/argocd/new'
+      preLoaderRoute: typeof SettingsIntegrationsArgocdNewRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/integrations/ssh-identity/$id/edit': {
+      id: '/settings/integrations/ssh-identity/$id/edit'
+      path: '/ssh-identity/$id/edit'
+      fullPath: '/settings/integrations/ssh-identity/$id/edit'
+      preLoaderRoute: typeof SettingsIntegrationsSshIdentityIdEditRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/integrations/ssh-connection/$id/edit': {
+      id: '/settings/integrations/ssh-connection/$id/edit'
+      path: '/ssh-connection/$id/edit'
+      fullPath: '/settings/integrations/ssh-connection/$id/edit'
+      preLoaderRoute: typeof SettingsIntegrationsSshConnectionIdEditRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/integrations/kubernetes/$id/edit': {
+      id: '/settings/integrations/kubernetes/$id/edit'
+      path: '/kubernetes/$id/edit'
+      fullPath: '/settings/integrations/kubernetes/$id/edit'
+      preLoaderRoute: typeof SettingsIntegrationsKubernetesIdEditRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/integrations/git-repo/$id/edit': {
+      id: '/settings/integrations/git-repo/$id/edit'
+      path: '/git-repo/$id/edit'
+      fullPath: '/settings/integrations/git-repo/$id/edit'
+      preLoaderRoute: typeof SettingsIntegrationsGitRepoIdEditRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
+    '/settings/integrations/argocd/$id/edit': {
+      id: '/settings/integrations/argocd/$id/edit'
+      path: '/argocd/$id/edit'
+      fullPath: '/settings/integrations/argocd/$id/edit'
+      preLoaderRoute: typeof SettingsIntegrationsArgocdIdEditRouteImport
+      parentRoute: typeof SettingsIntegrationsRoute
+    }
   }
 }
 
+interface SettingsIntegrationsRouteChildren {
+  SettingsIntegrationsIndexRoute: typeof SettingsIntegrationsIndexRoute
+  SettingsIntegrationsArgocdNewRoute: typeof SettingsIntegrationsArgocdNewRoute
+  SettingsIntegrationsGitRepoNewRoute: typeof SettingsIntegrationsGitRepoNewRoute
+  SettingsIntegrationsKubernetesNewRoute: typeof SettingsIntegrationsKubernetesNewRoute
+  SettingsIntegrationsSshConnectionNewRoute: typeof SettingsIntegrationsSshConnectionNewRoute
+  SettingsIntegrationsSshIdentityNewRoute: typeof SettingsIntegrationsSshIdentityNewRoute
+  SettingsIntegrationsArgocdIdEditRoute: typeof SettingsIntegrationsArgocdIdEditRoute
+  SettingsIntegrationsGitRepoIdEditRoute: typeof SettingsIntegrationsGitRepoIdEditRoute
+  SettingsIntegrationsKubernetesIdEditRoute: typeof SettingsIntegrationsKubernetesIdEditRoute
+  SettingsIntegrationsSshConnectionIdEditRoute: typeof SettingsIntegrationsSshConnectionIdEditRoute
+  SettingsIntegrationsSshIdentityIdEditRoute: typeof SettingsIntegrationsSshIdentityIdEditRoute
+}
+
+const SettingsIntegrationsRouteChildren: SettingsIntegrationsRouteChildren = {
+  SettingsIntegrationsIndexRoute: SettingsIntegrationsIndexRoute,
+  SettingsIntegrationsArgocdNewRoute: SettingsIntegrationsArgocdNewRoute,
+  SettingsIntegrationsGitRepoNewRoute: SettingsIntegrationsGitRepoNewRoute,
+  SettingsIntegrationsKubernetesNewRoute:
+    SettingsIntegrationsKubernetesNewRoute,
+  SettingsIntegrationsSshConnectionNewRoute:
+    SettingsIntegrationsSshConnectionNewRoute,
+  SettingsIntegrationsSshIdentityNewRoute:
+    SettingsIntegrationsSshIdentityNewRoute,
+  SettingsIntegrationsArgocdIdEditRoute: SettingsIntegrationsArgocdIdEditRoute,
+  SettingsIntegrationsGitRepoIdEditRoute:
+    SettingsIntegrationsGitRepoIdEditRoute,
+  SettingsIntegrationsKubernetesIdEditRoute:
+    SettingsIntegrationsKubernetesIdEditRoute,
+  SettingsIntegrationsSshConnectionIdEditRoute:
+    SettingsIntegrationsSshConnectionIdEditRoute,
+  SettingsIntegrationsSshIdentityIdEditRoute:
+    SettingsIntegrationsSshIdentityIdEditRoute,
+}
+
+const SettingsIntegrationsRouteWithChildren =
+  SettingsIntegrationsRoute._addFileChildren(SettingsIntegrationsRouteChildren)
+
+interface SettingsRouteChildren {
+  SettingsIntegrationsRoute: typeof SettingsIntegrationsRouteWithChildren
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsIntegrationsRoute: SettingsIntegrationsRouteWithChildren,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChatRoute: ChatRoute,
+  SettingsRoute: SettingsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

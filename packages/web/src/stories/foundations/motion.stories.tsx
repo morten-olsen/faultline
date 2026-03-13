@@ -64,7 +64,7 @@ const EasingDemo = (): React.ReactElement => {
               <motion.div
                 initial={{ x: 0 }}
                 animate={{ x: '100%' }}
-                transition={{ duration: 1.2, ease: ease as unknown as number[] }}
+                transition={{ duration: 1.2, ease }}
                 style={{
                   width: 16, height: 16, borderRadius: '50%',
                   background: label === 'linear' ? '#5a5a5a' : '#60a5fa',
@@ -106,7 +106,7 @@ const TimingDemo = (): React.ReactElement => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration, ease: easeOut as unknown as number[] }}
+                transition={{ duration, ease: easeOut }}
                 style={{
                   width: 32, height: 32, borderRadius: 8,
                   background: color, opacity: 0.7,
@@ -143,7 +143,7 @@ const StaggerDemo = (): React.ReactElement => {
             key={`${title}-${key}`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: easeOut as unknown as number[], delay: i * 0.05 }}
+            transition={{ duration: 0.35, ease: easeOut, delay: i * 0.05 }}
             style={{
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '10px 0',
@@ -199,7 +199,7 @@ const EnterExitDemo = (): React.ReactElement => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3, ease: easeOut as unknown as number[] }}
+              transition={{ duration: 0.3, ease: easeOut }}
               style={{
                 background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(245,158,11,0.12)',
@@ -239,7 +239,7 @@ const HierarchyDemo = (): React.ReactElement => {
           key={`heading-${key}`}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: easeOut as unknown as number[] }}
+          transition={{ duration: 0.35, ease: easeOut }}
           style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}
         >
           <span style={{ fontSize: '1.25rem', fontWeight: 500, letterSpacing: '-0.02em' }}>1 thing needs you</span>
@@ -250,7 +250,7 @@ const HierarchyDemo = (): React.ReactElement => {
           key={`sub-${key}`}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: easeOut as unknown as number[], delay: 0.08 }}
+          transition={{ duration: 0.35, ease: easeOut, delay: 0.08 }}
           style={{ fontSize: '0.8125rem', color: '#5a5a5a', marginBottom: 16 }}
         >
           2 more being handled.
@@ -261,7 +261,7 @@ const HierarchyDemo = (): React.ReactElement => {
           key={`card-${key}`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: easeOut as unknown as number[], delay: 0.15 }}
+          transition={{ duration: 0.4, ease: easeOut, delay: 0.15 }}
           style={{
             background: 'rgba(255,255,255,0.03)',
             border: '1px solid rgba(245,158,11,0.12)',
@@ -298,7 +298,7 @@ const HierarchyDemo = (): React.ReactElement => {
             key={`${title}-${key}`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: easeOut as unknown as number[], delay: 0.4 + i * 0.05 }}
+            transition={{ duration: 0.35, ease: easeOut, delay: 0.4 + i * 0.05 }}
             style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0',
               borderBottom: i === 0 ? '1px solid rgba(255,255,255,0.04)' : 'none',

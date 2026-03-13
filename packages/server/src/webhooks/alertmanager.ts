@@ -60,7 +60,7 @@ const registerAlertmanagerWebhook = (
   app: FastifyInstance,
   services: Services,
 ): void => {
-  app.post("/webhooks/alertmanager", async (request, reply) => {
+  app.post("/api/webhooks/alertmanager", async (request, reply) => {
     const result = alertmanagerPayloadSchema.safeParse(request.body);
 
     if (!result.success) {
@@ -81,51 +81,57 @@ const registerAlertmanagerWebhook = (
 
       if (alert.status === "firing") {
         if (!existing) {
-          await issueService.create({
+          const issue = await issueService.create({
             fingerprint: alert.fingerprint,
             source: "alertmanager",
             title: buildTitle(alert),
+            summary: alert.annotations["summary"] ?? null,
             description: alert.annotations["description"] ?? null,
-            status: "triage",
+            stage: "triage",
+            needsYou: false,
             priority: severityToPriority(alert.labels["severity"]),
             sourcePayload: JSON.stringify(alert),
           });
+
+          await issueService.addTimelineEntry({
+            issueId: issue.id,
+            agentLoopId: null,
+            kind: "detected",
+            status: "info",
+            title: buildTitle(alert),
+            body: alert.annotations["description"] ?? null,
+            commandRun: null,
+          });
         } else {
-          const updates: Record<string, unknown> = {
+          const wasResolved = existing.stage === "resolved";
+
+          await issueService.update(existing.id, {
             sourcePayload: JSON.stringify(alert),
-          };
+            ...(wasResolved ? { stage: "triage" } : {}),
+          });
 
-          if (existing.status === "resolved") {
-            updates.status = "regressed";
-          }
-
-          await issueService.update(existing.id, updates);
-
-          await issueService.addEvent({
+          await issueService.addTimelineEntry({
             issueId: existing.id,
-            actor: "alertmanager",
-            eventType: existing.status === "resolved" ? "status_change" : "comment",
-            data: JSON.stringify({
-              ...(existing.status === "resolved"
-                ? { from: "resolved", to: "regressed" }
-                : { message: "Alert re-fired" }),
-              alert,
-            }),
+            agentLoopId: null,
+            kind: wasResolved ? "regression" : "detected",
+            status: "info",
+            title: wasResolved ? "Alert re-fired — issue regressed" : "Alert re-fired",
+            body: JSON.stringify(alert),
+            commandRun: null,
           });
         }
       } else if (alert.status === "resolved") {
-        if (existing && existing.status !== "resolved" && existing.status !== "cancelled") {
-          await issueService.update(existing.id, { status: "resolved" });
+        if (existing && existing.stage !== "resolved") {
+          await issueService.update(existing.id, { stage: "resolved" });
 
-          await issueService.addEvent({
+          await issueService.addTimelineEntry({
             issueId: existing.id,
-            actor: "alertmanager",
-            eventType: "status_change",
-            data: JSON.stringify({
-              from: existing.status,
-              to: "resolved",
-              alert,
-            }),
+            agentLoopId: null,
+            kind: "resolved",
+            status: "success",
+            title: "Alert resolved by source",
+            body: null,
+            commandRun: null,
           });
         }
       }

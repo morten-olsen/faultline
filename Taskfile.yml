@@ -12,7 +12,13 @@ tasks:
       - pnpm -r run build
 
   dev:
-    desc: Start the server in development mode
+    desc: Start server and frontend in development mode
+    deps:
+      - dev:server
+      - dev:web
+
+  dev:server:
+    desc: Start the backend server in development mode
     dir: packages/server
     cmds:
       - pnpm run dev
@@ -22,6 +28,12 @@ tasks:
     dir: packages/web
     cmds:
       - pnpm run dev
+
+  storybook:
+    desc: Start the storybook preview server
+    dir: packages/web
+    cmds:
+      - pnpm run storybook
 
   typecheck:
     desc: Type-check all packages
