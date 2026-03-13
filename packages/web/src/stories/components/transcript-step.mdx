@@ -1,0 +1,101 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { TranscriptStep } from '../../components/transcript-step/transcript-step.tsx'
+
+<Meta title="Design System/Components/Transcript Step/Overview" />
+
+<div style={{ maxWidth: 560, color: '#e8e8e8' }}>
+
+# Transcript Step
+
+<p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+  One line in an agent's work log. The system thinks, acts, and reports — each step
+  is visible, collapsible, and honest. Transparency builds trust.
+</p>
+
+---
+
+## Why this matters
+
+Faultline is autonomous — agents investigate issues, run commands, and apply fixes
+without asking. But "automatic" should never feel like "invisible." Every action the
+system takes is recorded as a transcript the user can inspect at any time.
+
+This is Principle 2 in action: **Show the Machine Thinking.**
+
+<div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem', margin: '1.5rem 0', borderLeft: '3px solid #3b82f6' }}>
+  <p style={{ margin: 0, color: '#a3a3a3', fontStyle: 'italic', fontSize: '0.9375rem', lineHeight: 1.7 }}>
+    "Every automated action has a visible trace. Decisions are explainable in plain language."
+  </p>
+</div>
+
+---
+
+## Step kinds
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '1.5rem 0' }}>
+  {[
+    { kind: 'thinking', desc: 'The agent reasoning about what to do next' },
+    { kind: 'tool-call', desc: 'A command or API call being executed' },
+    { kind: 'tool-result', desc: 'Data returned from a tool or query' },
+    { kind: 'message', desc: 'The agent explaining what happened or what it will do' },
+    { kind: 'error', desc: 'Something went wrong — the step failed' },
+  ].map(({ kind, desc }) => (
+    <div key={kind} style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '10px 14px', background: '#141414', borderRadius: 10 }}>
+      <span style={{ fontSize: '0.75rem', fontFamily: '"Geist Mono Variable", monospace', color: '#60a5fa', minWidth: 80 }}>{kind}</span>
+      <span style={{ fontSize: '0.8125rem', color: '#5a5a5a' }}>{desc}</span>
+    </div>
+  ))}
+</div>
+
+---
+
+## Collapsible by default
+
+Most steps are collapsed — the transcript is scannable at a glance. The user
+expands individual steps when they're curious about the details. This keeps the
+interface calm while maintaining full transparency.
+
+<div style={{ background: '#141414', borderRadius: 12, padding: 16, margin: '1.5rem 0' }}>
+  <TranscriptStep
+    kind="tool-call"
+    title="kubectl top nodes"
+    duration="1.2s"
+    output={`NAME      CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%\nnode-01   312m         15%    2841Mi          61%\nnode-02   487m         24%    3892Mi          84%`}
+    collapsible
+    isLast
+  />
+</div>
+
+Click the chevron to expand. The output appears in a monospace block — machine
+data in the machine voice.
+
+---
+
+## Status
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '1.5rem 0' }}>
+  {[
+    { status: 'complete', color: '#5a5a5a', desc: 'Finished — subtle checkmark, no fanfare' },
+    { status: 'running', color: '#60a5fa', desc: 'In progress — spinning indicator, elevated text' },
+    { status: 'failed', color: '#f87171', desc: 'Something broke — red icon, clear about what happened' },
+  ].map(({ status, color, desc }) => (
+    <div key={status} style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '10px 14px', background: '#141414', borderRadius: 10 }}>
+      <span style={{ fontSize: '0.75rem', fontFamily: '"Geist Mono Variable", monospace', color, minWidth: 72 }}>{status}</span>
+      <span style={{ fontSize: '0.8125rem', color: '#5a5a5a' }}>{desc}</span>
+    </div>
+  ))}
+</div>
+
+A running step is the only one that demands attention. Everything else settles
+into the background — completed work doesn't compete for focus.
+
+---
+
+## The rail
+
+Steps are connected by a thin vertical rail — the same pattern as the
+timeline, but thinner and more subdued. The transcript is a subordinate
+view, not the primary narrative. The rail creates continuity without
+pulling focus from the issue timeline above it.
+
+</div>

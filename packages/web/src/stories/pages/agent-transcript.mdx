@@ -1,0 +1,155 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Bot, Square, ChevronRight, ArrowLeft } from 'lucide-react'
+
+<Meta title="Design System/Pages/Agent Transcript/Overview" />
+
+<div style={{ maxWidth: 640, margin: '0 auto', color: '#e8e8e8' }}>
+
+# Agent Transcript
+
+<p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+  The complete record of what an agent did, thought, and decided.
+  Full transparency — not because we expect you to read it, but because
+  you always can.
+</p>
+
+---
+
+## How you get here
+
+The transcript isn't a page you navigate to — it's a page you **drill into**.
+Every timeline entry that involves agent work has an expand affordance. Tap it,
+and you see the full story.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '1.5rem 0' }}>
+  {[
+    { step: '1', desc: 'You\'re on the issue detail page, reading the timeline' },
+    { step: '2', desc: 'A timeline entry shows an agent activity indicator — "Analyzing memory pressure"' },
+    { step: '3', desc: 'You tap the chevron (or the whole indicator)' },
+    { step: '4', desc: 'The transcript slides in — every step the agent took, in order' },
+    { step: '5', desc: 'You read what you need, tap "Back to issue" to return' },
+  ].map(({ step, desc }) => (
+    <div key={step} style={{ display: 'flex', gap: 12, alignItems: 'baseline', padding: '10px 14px', background: '#141414', borderRadius: 10 }}>
+      <span style={{ color: '#3b82f6', fontSize: '0.6875rem', fontFamily: '"Geist Mono Variable", monospace', flexShrink: 0 }}>{step}</span>
+      <span style={{ fontSize: '0.8125rem', color: '#a3a3a3' }}>{desc}</span>
+    </div>
+  ))}
+</div>
+
+---
+
+## Anatomy
+
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', margin: '1.5rem 0' }}>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.25rem' }}>
+    <p style={{ color: '#60a5fa', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 0.5rem' }}>Header</p>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>Bot icon, task title, stage, elapsed time, step count, status badge.</p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.25rem' }}>
+    <p style={{ color: '#60a5fa', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 0.5rem' }}>Step list</p>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>Transcript steps in a surface card. Most collapsed, expandable on tap.</p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.25rem' }}>
+    <p style={{ color: '#fbbf24', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 0.5rem' }}>Approval card</p>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>When the agent is blocked, an amber card appears below the steps.</p>
+  </div>
+  <div style={{ background: '#141414', borderRadius: 12, padding: '1.25rem' }}>
+    <p style={{ color: '#4ade80', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 0.5rem' }}>Outcome</p>
+    <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6 }}>Summary of what happened, with totals for time and commands run.</p>
+  </div>
+</div>
+
+---
+
+## States
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', margin: '1.5rem 0' }}>
+  <div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#60a5fa' }} />
+      <strong style={{ fontSize: '0.875rem' }}>Live</strong>
+    </div>
+    <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6, paddingLeft: 14 }}>
+      Agent is actively working. Steps appear in real time. The last step
+      shows a spinner. A "Stop agent" button is in the top bar.
+    </p>
+  </div>
+  <div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#fbbf24' }} />
+      <strong style={{ fontSize: '0.875rem' }}>Waiting</strong>
+    </div>
+    <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6, paddingLeft: 14 }}>
+      Agent hit a step that needs user input. The approval card explains
+      what's needed and why. The pulse turns amber.
+    </p>
+  </div>
+  <div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', opacity: 0.6 }} />
+      <strong style={{ fontSize: '0.875rem' }}>Complete</strong>
+    </div>
+    <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6, paddingLeft: 14 }}>
+      Agent finished. An outcome summary shows what happened. The full
+      transcript remains browsable.
+    </p>
+  </div>
+  <div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#5a5a5a' }} />
+      <strong style={{ fontSize: '0.875rem' }}>Stopped</strong>
+    </div>
+    <p style={{ color: '#5a5a5a', fontSize: '0.8125rem', margin: 0, lineHeight: 1.6, paddingLeft: 14 }}>
+      User stopped the agent. A notice explains where it left off. A
+      "Resume" button lets them restart the investigation.
+    </p>
+  </div>
+</div>
+
+---
+
+## Stopping an agent
+
+<div style={{ background: '#141414', borderRadius: 12, padding: '1.5rem', margin: '1.5rem 0', borderLeft: '3px solid #5a5a5a' }}>
+  <p style={{ margin: 0, color: '#a3a3a3', fontStyle: 'italic', fontSize: '0.9375rem', lineHeight: 1.7 }}>
+    "Automatic by default, never a loss of control."
+  </p>
+</div>
+
+The stop button is always accessible when an agent is active — both in the
+transcript view (top bar) and in the timeline (agent activity indicator).
+Stopping is immediate and non-destructive. The issue stays open and can be
+picked up later.
+
+Two places to stop:
+- **In the timeline** — the <Square size={10} style={{ display: 'inline', verticalAlign: 'middle', color: '#5a5a5a' }} /> button on the agent activity indicator
+- **In the transcript** — the "Stop agent" link in the top navigation bar
+
+---
+
+## Relationship to the timeline
+
+The timeline is the **high-level narrative**: "Detected memory pressure",
+"Rebalanced workloads", "Waiting for approval." Each entry is a chapter
+heading.
+
+The transcript is the **detailed notes**: every `kubectl` command, every
+piece of reasoning, every error. It's one level deeper — the curious user's
+view.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '1.5rem 0' }}>
+  <div style={{ padding: '10px 14px', background: '#141414', borderRadius: 10, borderLeft: '2px solid #60a5fa' }}>
+    <span style={{ fontSize: '0.8125rem', color: '#a3a3a3' }}>Timeline entry: <strong style={{ color: '#e8e8e8' }}>"Rebalanced workloads to free memory"</strong></span>
+  </div>
+  <div style={{ padding: '10px 14px 10px 28px', background: '#0f0f0f', borderRadius: 10, fontSize: '0.75rem', fontFamily: '"Geist Mono Variable", monospace', color: '#5a5a5a', lineHeight: 1.8 }}>
+    → thinking: "3 low-priority pods can be moved"<br />
+    → tool-call: kubectl cordon node-02<br />
+    → tool-call: kubectl drain node-02 --pod-selector=priority=low<br />
+    → tool-result: 3 pods evicted<br />
+    → message: "Memory dropped to 68%"
+  </div>
+</div>
+
+The timeline tells you what happened. The transcript shows you how.
+
+</div>

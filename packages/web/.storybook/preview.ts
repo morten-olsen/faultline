@@ -27,7 +27,7 @@ const preview: Preview = {
             'Introduction',
             'Foundations', ['Colors', 'Typography', 'Spacing', 'Motion', 'Tone', 'Issue Lifecycle'],
             'Components',
-            'Pages', ['Home', 'Issue Detail', 'Issue Search'],
+            'Pages', ['Home', 'Issue Detail', 'Issue Search', 'Agent Transcript'],
           ],
         ],
       },

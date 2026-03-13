@@ -8,6 +8,7 @@ import { StagePill } from '../../components/stage-pill/stage-pill.tsx'
 import { Button } from '../../components/button/button.tsx'
 import { TimelineEntry } from '../../components/timeline-entry/timeline-entry.tsx'
 import { ResourceChip } from '../../components/resource-chip/resource-chip.tsx'
+import { AgentActivity } from '../../components/agent-activity/agent-activity.tsx'
 
 /*
  * The Issue Lifecycle — a single scrollable walkthrough showing
@@ -212,6 +213,24 @@ const LifecycleStory = (): React.ReactElement => (
       />
     </motion.div>
 
+    <Label>Agent activity — the work behind the entry</Label>
+    <motion.div {...stagger(0, 0.15)} style={{ maxWidth: 420 }}>
+      <AgentActivity
+        status="complete"
+        label="Checked allocations — ran 4 queries in 2.3s"
+        onExpand={() => {}}
+      />
+    </motion.div>
+    <motion.div {...stagger(0, 0.2)} style={{
+      background: '#141414', borderRadius: 10, padding: '12px 14px', marginTop: 12, marginBottom: 16,
+    }}>
+      <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', lineHeight: 1.6, margin: 0 }}>
+        Every timeline entry that involved agent work shows an <strong style={{ color: '#e8e8e8' }}>AgentActivity</strong> indicator
+        beneath it. Tap the chevron to open the full transcript — every <code style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.06)', padding: '1px 5px', borderRadius: 4 }}>kubectl</code> command,
+        every piece of reasoning, every decision. Most users won't look — but they can.
+      </p>
+    </motion.div>
+
     <StageTransition
       from="Investigation"
       to="Proposed Plan"
@@ -276,6 +295,13 @@ const LifecycleStory = (): React.ReactElement => (
         time="14:04"
         commandRun="kubectl cordon node-02 && kubectl drain node-02 --pod-selector=priority=low"
         isLast
+      />
+    </motion.div>
+    <motion.div {...stagger(0, 0.15)} style={{ marginLeft: 28, marginTop: -8, marginBottom: 16, maxWidth: 380 }}>
+      <AgentActivity
+        status="complete"
+        label="Rebalanced 3 pods — 6 commands, 4.2s"
+        onExpand={() => {}}
       />
     </motion.div>
 
@@ -425,6 +451,25 @@ const LifecycleStory = (): React.ReactElement => (
         body="The system wants to evict home-assistant from node-02 to free 1.2 GB. Your smart home would be offline for about 3 minutes."
         isLast
       />
+    </motion.div>
+    <motion.div {...stagger(0, 0.2)} style={{ marginLeft: 28, marginTop: -8, marginBottom: 16, maxWidth: 380 }}>
+      <AgentActivity
+        status="waiting"
+        label="Needs approval to evict home-assistant"
+        elapsed="2m"
+        onStop={() => {}}
+        onExpand={() => {}}
+      />
+    </motion.div>
+    <motion.div {...stagger(0, 0.2)} style={{
+      background: '#141414', borderRadius: 10, padding: '12px 14px', marginBottom: 16,
+    }}>
+      <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', lineHeight: 1.6, margin: 0 }}>
+        The agent indicator turns <strong style={{ color: '#fbbf24' }}>amber</strong> when waiting —
+        same color language as "Needs you" everywhere else. The stop button lets you halt the agent
+        entirely. The chevron opens the full transcript so you can see *why* this decision was reached
+        before approving.
+      </p>
     </motion.div>
 
     <StageTransition

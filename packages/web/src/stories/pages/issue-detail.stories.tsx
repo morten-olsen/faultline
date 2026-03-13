@@ -9,6 +9,7 @@ import { Badge } from '../../components/badge/badge.tsx'
 import { Button } from '../../components/button/button.tsx'
 import { TimelineEntry } from '../../components/timeline-entry/timeline-entry.tsx'
 import { ResourceChip } from '../../components/resource-chip/resource-chip.tsx'
+import { AgentActivity } from '../../components/agent-activity/agent-activity.tsx'
 
 /*
  * Issue Detail — the full story behind one issue.
@@ -174,6 +175,15 @@ const InProgressNeedsYou = (): React.ReactElement => (
           time="14:22"
           body="The system wants to evict home-assistant from node-02 to free 1.2 GB. This would take your smart home offline for about 3 minutes."
         />
+        <div className="ml-8 -mt-3 mb-4">
+          <AgentActivity
+            status="waiting"
+            label="Needs approval to evict home-assistant"
+            elapsed="2m"
+            onStop={() => {}}
+            onExpand={() => {}}
+          />
+        </div>
       </AnimatedTimeline>
       <AnimatedTimeline index={1} baseDelay={0.4}>
         <TimelineEntry
@@ -202,6 +212,13 @@ const InProgressNeedsYou = (): React.ReactElement => (
           body="Rescheduled prometheus-adapter and metrics-server. node-01 has 40% memory headroom."
           commandRun="kubectl cordon node-02 && kubectl drain node-02 --delete-emptydir-data --ignore-daemonsets --pod-selector=priority=low"
         />
+        <div className="ml-8 -mt-3 mb-4">
+          <AgentActivity
+            status="complete"
+            label="Rebalanced 3 pods — 6 commands run"
+            onExpand={() => {}}
+          />
+        </div>
       </AnimatedTimeline>
       <AnimatedTimeline index={4} baseDelay={0.4}>
         <TimelineEntry
@@ -211,6 +228,13 @@ const InProgressNeedsYou = (): React.ReactElement => (
           time="14:03"
           body="prometheus-adapter, metrics-server, and node-exporter can be safely rescheduled. home-assistant is the largest consumer at 1.2 GB but has no pod disruption budget."
         />
+        <div className="ml-8 -mt-3 mb-4">
+          <AgentActivity
+            status="complete"
+            label="Checked allocations — 4 queries"
+            onExpand={() => {}}
+          />
+        </div>
       </AnimatedTimeline>
       <AnimatedTimeline index={5} baseDelay={0.4}>
         <TimelineEntry
@@ -250,6 +274,77 @@ const InProgressNeedsYou = (): React.ReactElement => (
         delay={0.85}
       />
     </div>
+  </Shell>
+)
+
+/* ══════════════════════════════════════════════════════════════════════
+ * ACTIVE INVESTIGATION — agent is working right now
+ * ══════════════════════════════════════════════════════════════════════ */
+
+const ActiveInvestigation = (): React.ReactElement => (
+  <Shell>
+    {/* Header */}
+    <motion.div {...fadeUp} className="mb-6">
+      <div className="flex items-baseline justify-between gap-4 mb-2">
+        <h1 className="text-xl font-medium tracking-tight">Elevated API latency on traefik</h1>
+        <span className="text-xs text-text-muted font-mono flex-shrink-0">2m</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <StagePill stage="investigation" />
+        <Badge variant="info">Agent working</Badge>
+      </div>
+    </motion.div>
+
+    {/* Summary */}
+    <motion.p {...stagger(0, 0.1)} className="text-sm text-text-secondary leading-relaxed">
+      API response times spiked to 280ms (normally ~80ms). An agent is investigating
+      the root cause.
+    </motion.p>
+
+    {/* Timeline */}
+    <SectionLabel delay={0.2}>What's happening</SectionLabel>
+    <div>
+      <AnimatedTimeline index={0} baseDelay={0.25}>
+        <TimelineEntry
+          kind="analysis"
+          status="pending"
+          title="Investigating root cause"
+          time="14:02"
+          body="Checking traefik metrics and correlating with cluster events."
+        />
+        <div className="ml-8 -mt-3 mb-4">
+          <AgentActivity
+            status="working"
+            label="Analyzing traefik access logs"
+            elapsed="18s"
+            onStop={() => {}}
+            onExpand={() => {}}
+          />
+        </div>
+      </AnimatedTimeline>
+      <AnimatedTimeline index={1} baseDelay={0.25}>
+        <TimelineEntry
+          kind="detected"
+          status="info"
+          title="API response times at 280ms"
+          time="14:00"
+          body="Normal baseline is ~80ms. Crossed the 200ms threshold."
+          isLast
+        />
+      </AnimatedTimeline>
+    </div>
+
+    {/* Infrastructure */}
+    <SectionLabel delay={0.4}>Infrastructure</SectionLabel>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, delay: 0.45 }}
+      className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+    >
+      <ResourceChip kind="ingress" name="traefik" health="degraded" detail="280ms p99" />
+      <ResourceChip kind="node" name="node-02" health="degraded" detail="Memory 84%" />
+    </motion.div>
   </Shell>
 )
 
@@ -448,8 +543,9 @@ const meta: Meta = {
 type Story = StoryObj
 
 const NeedsApproval: Story = { render: InProgressNeedsYou }
+const AgentWorking: Story = { render: ActiveInvestigation }
 const BeingMonitored: Story = { render: Monitoring }
 const FullyResolved: Story = { render: Resolved }
 
-export { NeedsApproval, BeingMonitored, FullyResolved }
+export { NeedsApproval, AgentWorking, BeingMonitored, FullyResolved }
 export default meta
