@@ -1,7 +1,8 @@
-import { randomUUID } from "node:crypto";
-import { EventEmitter } from "../utils/utils.event-emitter.js";
+import { randomUUID } from 'node:crypto';
 
-import type { AgentTask, AgentProvider, AgentRunEventMap } from "./agent.types.js";
+import { EventEmitter } from '../utils/utils.event-emitter.js';
+
+import type { AgentTask, AgentProvider, AgentRunEventMap } from './agent.types.js';
 
 class AgentRun {
   readonly id: string;
@@ -39,24 +40,24 @@ class AgentRun {
     try {
       for await (const event of this.#provider.run(this.#task, this.#controller.signal)) {
         switch (event.type) {
-          case "step":
-            this.events.emit("step", event);
+          case 'step':
+            this.events.emit('step', event);
             break;
-          case "result":
-            this.events.emit("result", event);
+          case 'result':
+            this.events.emit('result', event);
             break;
-          case "error":
-            this.events.emit("error", event);
+          case 'error':
+            this.events.emit('error', event);
             break;
-          case "done":
+          case 'done':
             break;
         }
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      this.events.emit("error", { type: "error", message });
+      this.events.emit('error', { type: 'error', message });
     } finally {
-      this.events.emit("done");
+      this.events.emit('done');
     }
   };
 }

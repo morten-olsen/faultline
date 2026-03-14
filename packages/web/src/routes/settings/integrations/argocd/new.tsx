@@ -1,44 +1,45 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
-import { useClient } from "../../../../client/client.context.js"
-import { IntegrationForm } from "../../../../components/integration-form/integration-form.tsx"
-import { FormField } from "../../../../components/form-field/form-field.tsx"
-import { Input } from "../../../../components/input/input.tsx"
-import { TextArea } from "../../../../components/text-area/text-area.tsx"
-import { AnimatedField } from "../../../../components/animated-field/animated-field.tsx"
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+
+import { useClient } from '../../../../client/client.context.js';
+import { IntegrationForm } from '../../../../components/integration-form/integration-form.tsx';
+import { FormField } from '../../../../components/form-field/form-field.tsx';
+import { Input } from '../../../../components/input/input.tsx';
+import { TextArea } from '../../../../components/text-area/text-area.tsx';
+import { AnimatedField } from '../../../../components/animated-field/animated-field.tsx';
 
 const NewArgocd = (): React.ReactElement => {
-  const client = useClient()
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const client = useClient();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const [name, setName] = useState("")
-  const [serverUrl, setServerUrl] = useState("")
-  const [authToken, setAuthToken] = useState("")
-  const [description, setDescription] = useState("")
+  const [name, setName] = useState('');
+  const [serverUrl, setServerUrl] = useState('');
+  const [authToken, setAuthToken] = useState('');
+  const [description, setDescription] = useState('');
 
   const mutation = useMutation({
     mutationFn: () =>
-      client.call["argoInstances.create"]({
+      client.call['argoInstances.create']({
         name,
         serverUrl,
         authToken,
         description: description || null,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["argoInstances"] })
-      navigate({ to: "/settings/integrations" })
+      queryClient.invalidateQueries({ queryKey: ['argoInstances'] });
+      navigate({ to: '/settings/integrations' });
     },
-  })
+  });
 
-  const canSave = name.trim().length > 0 && serverUrl.trim().length > 0 && authToken.trim().length > 0
+  const canSave = name.trim().length > 0 && serverUrl.trim().length > 0 && authToken.trim().length > 0;
 
   return (
     <IntegrationForm
       title="New ArgoCD Instance"
       saving={mutation.isPending}
-      onBack={() => navigate({ to: "/settings/integrations" })}
+      onBack={() => navigate({ to: '/settings/integrations' })}
       onSave={() => canSave && mutation.mutate()}
     >
       <AnimatedField index={0}>
@@ -70,11 +71,11 @@ const NewArgocd = (): React.ReactElement => {
         </FormField>
       </AnimatedField>
     </IntegrationForm>
-  )
-}
+  );
+};
 
-const Route = createFileRoute("/settings/integrations/argocd/new")({
+const Route = createFileRoute('/settings/integrations/argocd/new')({
   component: NewArgocd,
-})
+});
 
-export { Route }
+export { Route };

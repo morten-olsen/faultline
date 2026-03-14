@@ -1,6 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { X, MoreHorizontal, ChevronDown, Pause, Play, ExternalLink, Trash2, Settings, Eye } from 'lucide-react'
-import { IconButton } from '../../components/icon-button/icon-button.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { X, MoreHorizontal, ChevronDown, Pause, Play, ExternalLink, Trash2, Settings, Eye } from 'lucide-react';
+
+import { IconButton } from '../../components/icon-button/icon-button.tsx';
 
 /*
  * Icon Button
@@ -17,17 +18,16 @@ const meta: Meta<typeof IconButton> = {
   parameters: {
     layout: 'padded',
   },
-}
+};
 
-type Story = StoryObj<typeof IconButton>
+type Story = StoryObj<typeof IconButton>;
 
 const Variants: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        Ghost is the default — nearly invisible until hovered. Secondary has a
-        background for when the button needs to be discoverable without interaction.
-        Danger is for destructive actions like dismissing or deleting.
+        Ghost is the default — nearly invisible until hovered. Secondary has a background for when the button needs to
+        be discoverable without interaction. Danger is for destructive actions like dismissing or deleting.
       </p>
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
@@ -52,14 +52,13 @@ const Variants: Story = {
       </div>
     </div>
   ),
-}
+};
 
 const Sizes: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        Small for inline use (table rows, tag close buttons). Medium is the
-        default. Large for standalone controls.
+        Small for inline use (table rows, tag close buttons). Medium is the default. Large for standalone controls.
       </p>
       <div className="flex items-center gap-4">
         <div className="flex flex-col items-center gap-1">
@@ -77,14 +76,14 @@ const Sizes: Story = {
       </div>
     </div>
   ),
-}
+};
 
 const InContext: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        Icon buttons at the edges of a card — dismiss, expand, external link.
-        They're visible but don't compete with the content.
+        Icon buttons at the edges of a card — dismiss, expand, external link. They're visible but don't compete with the
+        content.
       </p>
       <div className="bg-surface rounded-xl border border-border p-5">
         <div className="flex items-start justify-between mb-2">
@@ -100,7 +99,7 @@ const InContext: Story = {
       </div>
     </div>
   ),
-}
+};
 
-export { Variants, Sizes, InContext }
-export default meta
+export { Variants, Sizes, InContext };
+export default meta;

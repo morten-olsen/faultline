@@ -1,10 +1,10 @@
-import { Copy } from 'lucide-react'
+import { Copy } from 'lucide-react';
 
 type CopyBlockProps = {
-  value: string
-  label?: string
-  onCopy?: () => void
-}
+  value: string;
+  label?: string;
+  onCopy?: () => void;
+};
 
 const CopyBlock = ({ value, label, onCopy }: CopyBlockProps): React.ReactElement => (
   <div>
@@ -28,7 +28,7 @@ const CopyBlock = ({ value, label, onCopy }: CopyBlockProps): React.ReactElement
       {value}
     </div>
   </div>
-)
+);
 
-export type { CopyBlockProps }
-export { CopyBlock }
+export type { CopyBlockProps };
+export { CopyBlock };

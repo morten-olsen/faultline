@@ -5,8 +5,8 @@ export type {
   InferCallInput,
   InferCallOutput,
   InferEventPayload,
-} from "./protocol.types.js";
-export { defineProtocol } from "./protocol.types.js";
+} from './protocol.types.js';
+export { defineProtocol } from './protocol.types.js';
 
 export type {
   CallMessage,
@@ -28,7 +28,7 @@ export type {
   ArgocdInstance,
   SshConnection,
   StageConfig,
-} from "./protocol.schemas.js";
+} from './protocol.schemas.js';
 export {
   callMessageSchema,
   responseMessageSchema,
@@ -62,4 +62,4 @@ export {
   issueLinkTypes,
   sshIdentitySources,
   protocol,
-} from "./protocol.schemas.js";
+} from './protocol.schemas.js';

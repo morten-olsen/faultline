@@ -1,4 +1,4 @@
-import type { Tool } from "./agent.tools.js";
+import type { Tool } from './agent.tools.js';
 
 // ── Agent task — what the service receives to start a run ─────────
 
@@ -14,8 +14,8 @@ type AgentTask = {
 // ── Agent events — what a provider streams back ────────────────────
 
 type AgentStepEvent = {
-  type: "step";
-  kind: "thinking" | "tool-call" | "message" | "error";
+  type: 'step';
+  kind: 'thinking' | 'tool-call' | 'message' | 'error';
   title: string;
   detail?: string;
   output?: string;
@@ -24,24 +24,20 @@ type AgentStepEvent = {
 };
 
 type AgentResultEvent = {
-  type: "result";
+  type: 'result';
   text: string;
 };
 
 type AgentErrorEvent = {
-  type: "error";
+  type: 'error';
   message: string;
 };
 
 type AgentDoneEvent = {
-  type: "done";
+  type: 'done';
 };
 
-type AgentEvent =
-  | AgentStepEvent
-  | AgentResultEvent
-  | AgentErrorEvent
-  | AgentDoneEvent;
+type AgentEvent = AgentStepEvent | AgentResultEvent | AgentErrorEvent | AgentDoneEvent;
 
 // ── Provider interface — the abstraction boundary ──────────────────
 // Implement this for any LLM agent backend (Claude Agent SDK, OpenAI, local, etc.)

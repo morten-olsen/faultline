@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 import {
   issueStages,
@@ -9,7 +9,7 @@ import {
   healthStatuses,
   issueRelations,
   issueLinkTypes,
-} from "./issues.types.js";
+} from './issues.types.js';
 
 const createIssueSchema = z.object({
   fingerprint: z.string().min(1),
@@ -17,9 +17,9 @@ const createIssueSchema = z.object({
   title: z.string().min(1),
   summary: z.string().nullable().default(null),
   description: z.string().nullable().default(null),
-  stage: z.enum(issueStages).default("triage"),
+  stage: z.enum(issueStages).default('triage'),
   needsYou: z.boolean().default(false),
-  priority: z.enum(issuePriorities).default("medium"),
+  priority: z.enum(issuePriorities).default('medium'),
   sourcePayload: z.string().nullable().default(null),
 });
 
@@ -40,7 +40,7 @@ const createTimelineEntrySchema = z.object({
   issueId: z.string().uuid(),
   agentLoopId: z.string().uuid().nullable().default(null),
   kind: z.enum(timelineEntryKinds),
-  status: z.enum(timelineEntryStatuses).default("info"),
+  status: z.enum(timelineEntryStatuses).default('info'),
   title: z.string().min(1),
   body: z.string().nullable().default(null),
   commandRun: z.string().nullable().default(null),
@@ -52,7 +52,7 @@ const createIssueResourceSchema = z.object({
   issueId: z.string().uuid(),
   kind: z.enum(resourceKinds),
   name: z.string().min(1),
-  health: z.enum(healthStatuses).default("healthy"),
+  health: z.enum(healthStatuses).default('healthy'),
   detail: z.string().nullable().default(null),
 });
 

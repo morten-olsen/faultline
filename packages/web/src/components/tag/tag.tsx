@@ -1,13 +1,13 @@
-import { X } from 'lucide-react'
+import { X } from 'lucide-react';
 
-type TagVariant = 'default' | 'healthy' | 'warning' | 'critical' | 'info'
+type TagVariant = 'default' | 'healthy' | 'warning' | 'critical' | 'info';
 
 type TagProps = {
-  children: React.ReactNode
-  variant?: TagVariant
-  removable?: boolean
-  onRemove?: () => void
-}
+  children: React.ReactNode;
+  variant?: TagVariant;
+  removable?: boolean;
+  onRemove?: () => void;
+};
 
 const variantStyles: Record<TagVariant, string> = {
   default: 'text-text-secondary bg-white/6',
@@ -15,19 +15,16 @@ const variantStyles: Record<TagVariant, string> = {
   warning: 'text-amber-400 bg-amber-500/8',
   critical: 'text-red-400 bg-red-500/8',
   info: 'text-blue-400 bg-blue-500/8',
-}
+};
 
-const Tag = ({
-  children,
-  variant = 'default',
-  removable = false,
-  onRemove,
-}: TagProps): React.ReactElement => (
-  <span className={`
+const Tag = ({ children, variant = 'default', removable = false, onRemove }: TagProps): React.ReactElement => (
+  <span
+    className={`
     inline-flex items-center gap-1.5 text-sm
     px-2.5 py-0.5 rounded-md
     ${variantStyles[variant]}
-  `}>
+  `}
+  >
     {children}
     {removable && (
       <button
@@ -42,7 +39,7 @@ const Tag = ({
       </button>
     )}
   </span>
-)
+);
 
-export type { TagProps, TagVariant }
-export { Tag }
+export type { TagProps, TagVariant };
+export { Tag };

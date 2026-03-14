@@ -1,5 +1,5 @@
-import { Bot } from "lucide-react"
-import { motion } from "motion/react"
+import { Bot } from 'lucide-react';
+import { motion } from 'motion/react';
 
 const ChatEmptyState = (): React.ReactElement => (
   <div className="flex flex-col items-center justify-center h-full pb-16">
@@ -14,11 +14,10 @@ const ChatEmptyState = (): React.ReactElement => (
       </div>
       <p className="text-sm text-text-secondary">Ask a question or request an action.</p>
       <p className="text-xs text-text-muted leading-relaxed max-w-xs">
-        Check on your infrastructure, run ad-hoc tasks,
-        or ask about anything that happened.
+        Check on your infrastructure, run ad-hoc tasks, or ask about anything that happened.
       </p>
     </motion.div>
   </div>
-)
+);
 
-export { ChatEmptyState }
+export { ChatEmptyState };

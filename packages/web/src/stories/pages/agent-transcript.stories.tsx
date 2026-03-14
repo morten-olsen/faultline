@@ -1,16 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  ArrowLeft, Bot, Square, Clock,
-  CheckCircle2, AlertCircle, Hand,
-} from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
-import { useState } from 'react'
-import { TranscriptStep } from '../../components/transcript-step/transcript-step.tsx'
-import { AgentActivity } from '../../components/agent-activity/agent-activity.tsx'
-import { StagePill } from '../../components/stage-pill/stage-pill.tsx'
-import { Badge } from '../../components/badge/badge.tsx'
-import { Button } from '../../components/button/button.tsx'
-import { IconButton } from '../../components/icon-button/icon-button.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { ArrowLeft, Bot, Square, Clock, CheckCircle2, AlertCircle, Hand } from 'lucide-react';
+import { motion } from 'motion/react';
+
+import { TranscriptStep } from '../../components/transcript-step/transcript-step.tsx';
+import { Badge } from '../../components/badge/badge.tsx';
+import { Button } from '../../components/button/button.tsx';
 
 /*
  * Agent Transcript — the full record of an agent's work on a task.
@@ -30,22 +24,22 @@ const fadeUp = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const },
-}
+};
 
 const stagger = (i: number, base = 0) => ({
   ...fadeUp,
   transition: { ...fadeUp.transition, delay: base + i * 0.05 },
-})
+});
 
 /* ── Transcript header ──────────────────────────────────────────── */
 
 type TranscriptHeaderProps = {
-  title: string
-  stage: string
-  status: 'running' | 'complete' | 'stopped'
-  elapsed: string
-  steps: number
-}
+  title: string;
+  stage: string;
+  status: 'running' | 'complete' | 'stopped';
+  elapsed: string;
+  steps: number;
+};
 
 const TranscriptHeader = ({ title, stage, status, elapsed, steps }: TranscriptHeaderProps): React.ReactElement => (
   <motion.div {...fadeUp} className="mb-6">
@@ -70,22 +64,24 @@ const TranscriptHeader = ({ title, stage, status, elapsed, steps }: TranscriptHe
       </div>
       <span className="text-xs text-text-muted/30">·</span>
       <span className="text-xs text-text-muted">{steps} steps</span>
-      {status === 'running' && (
-        <Badge variant="info">Running</Badge>
-      )}
-      {status === 'complete' && (
-        <Badge variant="healthy">Complete</Badge>
-      )}
-      {status === 'stopped' && (
-        <Badge>Stopped</Badge>
-      )}
+      {status === 'running' && <Badge variant="info">Running</Badge>}
+      {status === 'complete' && <Badge variant="healthy">Complete</Badge>}
+      {status === 'stopped' && <Badge>Stopped</Badge>}
     </div>
   </motion.div>
-)
+);
 
 /* ── Page shell ────────────────────────────────────────────────────── */
 
-const Shell = ({ children, onBack, showStop = false }: { children: React.ReactNode; onBack?: () => void; showStop?: boolean }): React.ReactElement => (
+const Shell = ({
+  children,
+  onBack,
+  showStop = false,
+}: {
+  children: React.ReactNode;
+  onBack?: () => void;
+  showStop?: boolean;
+}): React.ReactElement => (
   <div className="bg-bg min-h-screen font-sans text-text antialiased">
     <div className="max-w-lg mx-auto px-5">
       {/* Nav bar */}
@@ -114,12 +110,10 @@ const Shell = ({ children, onBack, showStop = false }: { children: React.ReactNo
         )}
       </motion.div>
 
-      <div className="pt-2 pb-12">
-        {children}
-      </div>
+      <div className="pt-2 pb-12">{children}</div>
     </div>
   </div>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * LIVE — agent actively working on memory rebalance
@@ -192,7 +186,7 @@ const LiveTranscript = (): React.ReactElement => (
       <span className="text-xs text-text-muted">Agent is working…</span>
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * COMPLETE — fully resolved CoreDNS investigation
@@ -245,10 +239,7 @@ const CompletedTranscript = (): React.ReactElement => (
         detail="Revision 2 was deployed at 13:58, CoreDNS started crashing at 14:02. The previous revision ran stable for 14 days. Rolling back is the safest and fastest path to restore DNS."
         collapsible
       />
-      <TranscriptStep
-        kind="message"
-        title="Rolling back CoreDNS to revision 1 — the previous stable config"
-      />
+      <TranscriptStep kind="message" title="Rolling back CoreDNS to revision 1 — the previous stable config" />
       <TranscriptStep
         kind="tool-call"
         title="kubectl rollout undo deployment/coredns -n kube-system"
@@ -283,9 +274,8 @@ const CompletedTranscript = (): React.ReactElement => (
         <span className="text-xs font-medium text-text">Outcome</span>
       </div>
       <p className="text-sm text-text-secondary leading-relaxed">
-        CoreDNS restored by rolling back the deployment. Root cause was an invalid
-        ConfigMap update that removed upstream nameserver configuration. DNS queries
-        confirmed healthy at 3ms latency.
+        CoreDNS restored by rolling back the deployment. Root cause was an invalid ConfigMap update that removed
+        upstream nameserver configuration. DNS queries confirmed healthy at 3ms latency.
       </p>
       <div className="flex items-center gap-3 pt-1">
         <span className="text-xs text-text-muted font-mono">2m 14s total</span>
@@ -296,7 +286,7 @@ const CompletedTranscript = (): React.ReactElement => (
       </div>
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * NEEDS APPROVAL — agent paused, waiting for user decision
@@ -313,28 +303,15 @@ const WaitingForApproval = (): React.ReactElement => (
     />
 
     <motion.div {...stagger(0, 0.15)} className="bg-surface rounded-xl p-4 ring-1 ring-white/5">
-      <TranscriptStep
-        kind="thinking"
-        title="Memory alert — checking current allocations"
-        duration="0.3s"
-        collapsible
-      />
-      <TranscriptStep
-        kind="tool-call"
-        title="kubectl top nodes"
-        duration="1.2s"
-        collapsible
-      />
+      <TranscriptStep kind="thinking" title="Memory alert — checking current allocations" duration="0.3s" collapsible />
+      <TranscriptStep kind="tool-call" title="kubectl top nodes" duration="1.2s" collapsible />
       <TranscriptStep
         kind="tool-call"
         title="kubectl get pods -o wide --field-selector spec.nodeName=node-02"
         duration="0.8s"
         collapsible
       />
-      <TranscriptStep
-        kind="message"
-        title="Rebalancing low-priority workloads to node-01"
-      />
+      <TranscriptStep kind="message" title="Rebalancing low-priority workloads to node-01" />
       <TranscriptStep
         kind="tool-call"
         title="kubectl cordon node-02 && kubectl drain node-02 --pod-selector=priority=low"
@@ -383,12 +360,16 @@ const WaitingForApproval = (): React.ReactElement => (
         <span className="text-sm font-medium text-text">Approve evicting home-assistant?</span>
       </div>
       <p className="text-sm text-text-secondary leading-relaxed">
-        Your smart home will be offline for about 3 minutes while the pod
-        reschedules. All automations resume automatically.
+        Your smart home will be offline for about 3 minutes while the pod reschedules. All automations resume
+        automatically.
       </p>
       <div className="flex items-center gap-2 pt-1">
-        <Button variant="primary" size="sm">Approve</Button>
-        <Button variant="ghost" size="sm">Deny — find another way</Button>
+        <Button variant="primary" size="sm">
+          Approve
+        </Button>
+        <Button variant="ghost" size="sm">
+          Deny — find another way
+        </Button>
       </div>
     </motion.div>
 
@@ -403,7 +384,7 @@ const WaitingForApproval = (): React.ReactElement => (
       <span className="text-xs text-text-muted">Waiting for your decision…</span>
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * STOPPED — user stopped the agent mid-work
@@ -460,15 +441,16 @@ const StoppedTranscript = (): React.ReactElement => (
         <span className="text-xs font-medium text-text-muted">Stopped by you</span>
       </div>
       <p className="text-sm text-text-muted leading-relaxed">
-        The agent was investigating API latency when you stopped it. The issue
-        remains open and can be picked up again.
+        The agent was investigating API latency when you stopped it. The issue remains open and can be picked up again.
       </p>
       <div className="pt-2">
-        <Button variant="secondary" size="sm">Resume investigation</Button>
+        <Button variant="secondary" size="sm">
+          Resume investigation
+        </Button>
       </div>
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════ */
 
@@ -480,14 +462,14 @@ const meta: Meta = {
   globals: {
     backgrounds: { value: 'faultline' },
   },
-}
+};
 
-type Story = StoryObj
+type Story = StoryObj;
 
-const Live: Story = { render: LiveTranscript }
-const Complete: Story = { render: CompletedTranscript }
-const NeedsApproval: Story = { render: WaitingForApproval }
-const Stopped: Story = { render: StoppedTranscript }
+const Live: Story = { render: LiveTranscript };
+const Complete: Story = { render: CompletedTranscript };
+const NeedsApproval: Story = { render: WaitingForApproval };
+const Stopped: Story = { render: StoppedTranscript };
 
-export { Live, Complete, NeedsApproval, Stopped }
-export default meta
+export { Live, Complete, NeedsApproval, Stopped };
+export default meta;

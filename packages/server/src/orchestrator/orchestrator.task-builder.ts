@@ -1,14 +1,14 @@
-import { IntegrationService } from "../integrations/integrations.js";
-import { StageConfigService } from "../stage-configs/stage-configs.js";
-import { createFaultlineTools } from "../agent/agent.tools.faultline.js";
-import { createInfraTools, buildIntegrationSummary } from "../agent/agent.tools.infra.js";
-import { builtinToolsByAccess, resolveTools } from "../agent/agent.tools.js";
-import { createScopedIntegrationService } from "../agent/agent.integrations.js";
-import { resolveAccess } from "./orchestrator.tools.js";
+import { IntegrationService } from '../integrations/integrations.js';
+import { StageConfigService } from '../stage-configs/stage-configs.js';
+import { createFaultlineTools } from '../agent/agent.tools.faultline.js';
+import { createInfraTools, buildIntegrationSummary } from '../agent/agent.tools.infra.js';
+import { builtinToolsByAccess, resolveTools } from '../agent/agent.tools.js';
+import { createScopedIntegrationService } from '../agent/agent.integrations.js';
+import type { Services } from '../services/services.js';
+import type { IntegrationReader } from '../agent/agent.integrations.js';
+import type { Tool } from '../agent/agent.tools.js';
 
-import type { Services } from "../services/services.js";
-import type { IntegrationReader } from "../agent/agent.integrations.js";
-import type { Tool } from "../agent/agent.tools.js";
+import { resolveAccess } from './orchestrator.tools.js';
 
 type AgentTaskConfig = {
   builtinTools: readonly string[];
@@ -22,9 +22,7 @@ const buildAgentTaskConfig = async (
   stage: string,
   baseSystemPrompt?: string,
 ): Promise<AgentTaskConfig> => {
-  const stageConfig = await services
-    .get(StageConfigService)
-    .getByStage(stage);
+  const stageConfig = await services.get(StageConfigService).getByStage(stage);
 
   let integrations: IntegrationReader = services.get(IntegrationService);
 
@@ -45,9 +43,7 @@ const buildAgentTaskConfig = async (
   const builtinTools = builtinToolsByAccess[access];
 
   const infraSummary = await buildIntegrationSummary(integrations);
-  let systemPrompt = baseSystemPrompt
-    ? `${baseSystemPrompt}\n\n${infraSummary}`
-    : infraSummary;
+  let systemPrompt = baseSystemPrompt ? `${baseSystemPrompt}\n\n${infraSummary}` : infraSummary;
 
   if (stageConfig?.additional_system_prompt) {
     systemPrompt = `${systemPrompt}\n\n${stageConfig.additional_system_prompt}`;

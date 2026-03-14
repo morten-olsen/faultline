@@ -1,9 +1,9 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router"
+import { Outlet, createFileRoute } from '@tanstack/react-router';
 
-const SettingsLayout = (): React.ReactElement => <Outlet />
+const SettingsLayout = (): React.ReactElement => <Outlet />;
 
-const Route = createFileRoute("/settings")({
+const Route = createFileRoute('/settings')({
   component: SettingsLayout,
-})
+});
 
-export { Route }
+export { Route };

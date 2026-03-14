@@ -1,20 +1,21 @@
-import { ArrowLeft } from 'lucide-react'
-import { IconButton } from '../icon-button/icon-button.tsx'
-import { PageShell } from '../page-shell/page-shell.tsx'
+import { ArrowLeft } from 'lucide-react';
+
+import { IconButton } from '../icon-button/icon-button.tsx';
+import { PageShell } from '../page-shell/page-shell.tsx';
 
 type SettingsTab = {
-  id: string
-  label: string
-}
+  id: string;
+  label: string;
+};
 
 type SettingsShellProps = {
-  title: string
-  children: React.ReactNode
-  tabs?: SettingsTab[]
-  activeTab?: string
-  onBack?: () => void
-  onTabChange?: (id: string) => void
-}
+  title: string;
+  children: React.ReactNode;
+  tabs?: SettingsTab[];
+  activeTab?: string;
+  onBack?: () => void;
+  onTabChange?: (id: string) => void;
+};
 
 const SettingsShell = ({
   title,
@@ -41,9 +42,10 @@ const SettingsShell = ({
             onClick={() => onTabChange?.(tab.id)}
             className={`
               px-3 py-1.5 text-sm rounded-lg transition-all duration-fast cursor-pointer
-              ${activeTab === tab.id
-                ? 'bg-white/8 text-text font-medium'
-                : 'text-text-muted hover:text-text-secondary hover:bg-white/4'
+              ${
+                activeTab === tab.id
+                  ? 'bg-white/8 text-text font-medium'
+                  : 'text-text-muted hover:text-text-secondary hover:bg-white/4'
               }
             `}
           >
@@ -54,11 +56,9 @@ const SettingsShell = ({
     )}
 
     {/* Content */}
-    <div className="pb-12">
-      {children}
-    </div>
+    <div className="pb-12">{children}</div>
   </PageShell>
-)
+);
 
-export type { SettingsShellProps, SettingsTab }
-export { SettingsShell }
+export type { SettingsShellProps, SettingsTab };
+export { SettingsShell };

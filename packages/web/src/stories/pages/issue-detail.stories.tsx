@@ -1,17 +1,15 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import {
-  CircleCheck, Eye, Wrench, ArrowRight, Hand,
-} from 'lucide-react'
-import { motion } from 'motion/react'
-import { TopBar } from '../../components/top-bar/top-bar.tsx'
-import { StagePill } from '../../components/stage-pill/stage-pill.tsx'
-import { Badge } from '../../components/badge/badge.tsx'
-import { Button } from '../../components/button/button.tsx'
-import { TimelineEntry } from '../../components/timeline-entry/timeline-entry.tsx'
-import { ResourceChip } from '../../components/resource-chip/resource-chip.tsx'
-import { AgentActivity } from '../../components/agent-activity/agent-activity.tsx'
-import { ApprovalCard } from '../../components/approval-card/approval-card.tsx'
-import { MonitoringProgress } from '../../components/monitoring-progress/monitoring-progress.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Eye, Wrench } from 'lucide-react';
+import { motion } from 'motion/react';
+
+import { TopBar } from '../../components/top-bar/top-bar.tsx';
+import { StagePill } from '../../components/stage-pill/stage-pill.tsx';
+import { Badge } from '../../components/badge/badge.tsx';
+import { TimelineEntry } from '../../components/timeline-entry/timeline-entry.tsx';
+import { ResourceChip } from '../../components/resource-chip/resource-chip.tsx';
+import { AgentActivity } from '../../components/agent-activity/agent-activity.tsx';
+import { ApprovalCard } from '../../components/approval-card/approval-card.tsx';
+import { MonitoringProgress } from '../../components/monitoring-progress/monitoring-progress.tsx';
 
 /*
  * Issue Detail — the full story behind one issue.
@@ -27,19 +25,19 @@ const fadeUp = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const },
-}
+};
 
 const stagger = (i: number, base = 0) => ({
   ...fadeUp,
   transition: { ...fadeUp.transition, delay: base + i * 0.05 },
-})
+});
 
 /* ── Section label ─────────────────────────────────────────────────── */
 
 type SectionLabelProps = {
-  children: React.ReactNode
-  delay?: number
-}
+  children: React.ReactNode;
+  delay?: number;
+};
 
 const SectionLabel = ({ children, delay = 0 }: SectionLabelProps): React.ReactElement => (
   <motion.div
@@ -50,7 +48,7 @@ const SectionLabel = ({ children, delay = 0 }: SectionLabelProps): React.ReactEl
   >
     {children}
   </motion.div>
-)
+);
 
 /* ── Page shell ────────────────────────────────────────────────────── */
 
@@ -58,62 +56,69 @@ const Shell = ({ children }: { children: React.ReactNode }): React.ReactElement 
   <div className="bg-bg min-h-screen font-sans text-text antialiased">
     <div className="max-w-lg mx-auto px-5">
       <TopBar variant="detail" />
-      <div className="pt-4 pb-12">
-        {children}
-      </div>
+      <div className="pt-4 pb-12">{children}</div>
     </div>
   </div>
-)
+);
 
 /* ── Related issue row ─────────────────────────────────────────────── */
 
 type RelatedRowProps = {
-  title: string
-  relation: string
-  stage: string
-  time: string
-  icon: typeof Wrench
-  iconColor: string
-  delay?: number
-}
+  title: string;
+  relation: string;
+  stage: string;
+  time: string;
+  icon: typeof Wrench;
+  iconColor: string;
+  delay?: number;
+};
 
-const RelatedRow = ({ title, relation, stage, time, icon: Icon, iconColor, delay = 0 }: RelatedRowProps): React.ReactElement => (
-  <motion.div
-    initial={{ opacity: 0, y: 8 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const, delay }}
-    className="group flex items-start gap-3 py-3 -mx-2 px-2 rounded-lg cursor-pointer hover:bg-white/3 transition-colors"
-  >
-    <div className="mt-0.5 flex-shrink-0">
-      <Icon size={15} className={iconColor} />
-    </div>
-    <div className="flex-1 min-w-0">
-      <div className="flex items-baseline justify-between gap-3">
-        <span className="text-sm text-text group-hover:text-white transition-colors truncate">{title}</span>
-        <span className="text-xs text-text-muted font-mono flex-shrink-0">{time}</span>
+const RelatedRow = ({
+  title,
+  relation,
+  stage,
+  time,
+  icon,
+  iconColor,
+  delay = 0,
+}: RelatedRowProps): React.ReactElement => {
+  const IconComponent = icon;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const, delay }}
+      className="group flex items-start gap-3 py-3 -mx-2 px-2 rounded-lg cursor-pointer hover:bg-white/3 transition-colors"
+    >
+      <div className="mt-0.5 flex-shrink-0">
+        <IconComponent size={15} className={iconColor} />
       </div>
-      <div className="flex items-center gap-1.5 mt-1">
-        <span className="text-xs text-text-muted">{relation}</span>
-        <span className="text-xs text-text-muted/40">·</span>
-        <span className="text-xs text-text-muted">{stage}</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline justify-between gap-3">
+          <span className="text-sm text-text group-hover:text-white transition-colors truncate">{title}</span>
+          <span className="text-xs text-text-muted font-mono flex-shrink-0">{time}</span>
+        </div>
+        <div className="flex items-center gap-1.5 mt-1">
+          <span className="text-xs text-text-muted">{relation}</span>
+          <span className="text-xs text-text-muted/40">·</span>
+          <span className="text-xs text-text-muted">{stage}</span>
+        </div>
       </div>
-    </div>
-  </motion.div>
-)
+    </motion.div>
+  );
+};
 
 /* ── Animated timeline entry wrapper ──────────────────────────────── */
 
 type AnimatedTimelineProps = {
-  index: number
-  baseDelay?: number
-  children: React.ReactNode
-}
+  index: number;
+  baseDelay?: number;
+  children: React.ReactNode;
+};
 
 const AnimatedTimeline = ({ index, baseDelay = 0, children }: AnimatedTimelineProps): React.ReactElement => (
-  <motion.div {...stagger(index, baseDelay)}>
-    {children}
-  </motion.div>
-)
+  <motion.div {...stagger(index, baseDelay)}>{children}</motion.div>
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * IN PROGRESS — system actively working, needs-you for approval
@@ -143,22 +148,18 @@ const InProgressNeedsYou = (): React.ReactElement => (
         title="Approve evicting home-assistant?"
         body="Memory has been above 80% for over an hour despite two rebalancing attempts. The most effective option is to evict home-assistant temporarily — your smart home would be offline for about 3 minutes, then resume automatically."
         actions={[
-          { label: 'Approve', variant: 'primary', onClick: () => {} },
-          { label: 'Remind me later', variant: 'ghost', onClick: () => {} },
+          { label: 'Approve', variant: 'primary', onClick: () => undefined },
+          { label: 'Remind me later', variant: 'ghost', onClick: () => undefined },
         ]}
-        onReject={() => {}}
+        onReject={() => undefined}
       />
     </motion.div>
 
     {/* Summary */}
-    <motion.p
-      {...stagger(0, 0.25)}
-      className="text-sm text-text-secondary leading-relaxed mt-6"
-    >
-      Both nodes have been running above 80% memory for over an hour. The initial rebalance
-      moved low-priority workloads to node-01, but memory climbed back within 8 minutes. This
-      is the second attempt — the system has exhausted safe automated options and needs approval
-      for a more disruptive fix.
+    <motion.p {...stagger(0, 0.25)} className="text-sm text-text-secondary leading-relaxed mt-6">
+      Both nodes have been running above 80% memory for over an hour. The initial rebalance moved low-priority workloads
+      to node-01, but memory climbed back within 8 minutes. This is the second attempt — the system has exhausted safe
+      automated options and needs approval for a more disruptive fix.
     </motion.p>
 
     {/* Timeline */}
@@ -177,8 +178,8 @@ const InProgressNeedsYou = (): React.ReactElement => (
             status="waiting"
             label="Needs approval to evict home-assistant"
             elapsed="2m"
-            onStop={() => {}}
-            onExpand={() => {}}
+            onStop={() => undefined}
+            onExpand={() => undefined}
           />
         </div>
       </AnimatedTimeline>
@@ -210,11 +211,7 @@ const InProgressNeedsYou = (): React.ReactElement => (
           commandRun="kubectl cordon node-02 && kubectl drain node-02 --delete-emptydir-data --ignore-daemonsets --pod-selector=priority=low"
         />
         <div className="ml-8 -mt-3 mb-4">
-          <AgentActivity
-            status="complete"
-            label="Rebalanced 3 pods — 6 commands run"
-            onExpand={() => {}}
-          />
+          <AgentActivity status="complete" label="Rebalanced 3 pods — 6 commands run" onExpand={() => undefined} />
         </div>
       </AnimatedTimeline>
       <AnimatedTimeline index={4} baseDelay={0.4}>
@@ -226,11 +223,7 @@ const InProgressNeedsYou = (): React.ReactElement => (
           body="prometheus-adapter, metrics-server, and node-exporter can be safely rescheduled. home-assistant is the largest consumer at 1.2 GB but has no pod disruption budget."
         />
         <div className="ml-8 -mt-3 mb-4">
-          <AgentActivity
-            status="complete"
-            label="Checked allocations — 4 queries"
-            onExpand={() => {}}
-          />
+          <AgentActivity status="complete" label="Checked allocations — 4 queries" onExpand={() => undefined} />
         </div>
       </AnimatedTimeline>
       <AnimatedTimeline index={5} baseDelay={0.4}>
@@ -272,7 +265,7 @@ const InProgressNeedsYou = (): React.ReactElement => (
       />
     </div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * ACTIVE INVESTIGATION — agent is working right now
@@ -294,8 +287,7 @@ const ActiveInvestigation = (): React.ReactElement => (
 
     {/* Summary */}
     <motion.p {...stagger(0, 0.1)} className="text-sm text-text-secondary leading-relaxed">
-      API response times spiked to 280ms (normally ~80ms). An agent is investigating
-      the root cause.
+      API response times spiked to 280ms (normally ~80ms). An agent is investigating the root cause.
     </motion.p>
 
     {/* Timeline */}
@@ -314,8 +306,8 @@ const ActiveInvestigation = (): React.ReactElement => (
             status="working"
             label="Analyzing traefik access logs"
             elapsed="18s"
-            onStop={() => {}}
-            onExpand={() => {}}
+            onStop={() => undefined}
+            onExpand={() => undefined}
           />
         </div>
       </AnimatedTimeline>
@@ -343,7 +335,7 @@ const ActiveInvestigation = (): React.ReactElement => (
       <ResourceChip kind="node" name="node-02" health="degraded" detail="Memory 84%" />
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * MONITORING — fix applied, watching if it holds
@@ -362,9 +354,9 @@ const Monitoring = (): React.ReactElement => (
 
     {/* Summary */}
     <motion.p {...stagger(0, 0.1)} className="text-sm text-text-secondary leading-relaxed">
-      API response times spiked to 280ms (normally ~80ms) during the cluster memory pressure.
-      After the memory issue was resolved, latency started dropping. Currently at 120ms and
-      trending down. Monitoring for 10 more minutes before marking resolved.
+      API response times spiked to 280ms (normally ~80ms) during the cluster memory pressure. After the memory issue was
+      resolved, latency started dropping. Currently at 120ms and trending down. Monitoring for 10 more minutes before
+      marking resolved.
     </motion.p>
 
     {/* Timeline */}
@@ -426,7 +418,7 @@ const Monitoring = (): React.ReactElement => (
       />
     </div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * RESOLVED — issue fully handled, the complete story
@@ -445,9 +437,8 @@ const Resolved = (): React.ReactElement => (
 
     {/* Summary */}
     <motion.p {...stagger(0, 0.1)} className="text-sm text-text-secondary leading-relaxed">
-      The CoreDNS pod in kube-system went into CrashLoopBackOff after a config update.
-      The system restarted the pod with the previous stable config. DNS resolution was
-      confirmed healthy within 30 seconds.
+      The CoreDNS pod in kube-system went into CrashLoopBackOff after a config update. The system restarted the pod with
+      the previous stable config. DNS resolution was confirmed healthy within 30 seconds.
     </motion.p>
 
     {/* Timeline */}
@@ -523,7 +514,7 @@ const Resolved = (): React.ReactElement => (
       Resolved 25 minutes ago · Took 25 minutes from detection to close
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * TRIAGE ACTIVE — agent classifying the issue
@@ -557,8 +548,8 @@ const TriageActiveStory = (): React.ReactElement => (
             status="working"
             label="Classifying severity"
             elapsed="3s"
-            onStop={() => {}}
-            onExpand={() => {}}
+            onStop={() => undefined}
+            onExpand={() => undefined}
           />
         </div>
       </AnimatedTimeline>
@@ -584,7 +575,7 @@ const TriageActiveStory = (): React.ReactElement => (
       <ResourceChip kind="node" name="node-02" health="degraded" detail="Memory 84%" />
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * IMPLEMENTATION ACTIVE — agent executing the plan
@@ -622,18 +613,13 @@ const ImplementationActiveStory = (): React.ReactElement => (
             status="working"
             label="Executing fix — 3 commands run"
             elapsed="12s"
-            onStop={() => {}}
-            onExpand={() => {}}
+            onStop={() => undefined}
+            onExpand={() => undefined}
           />
         </div>
       </AnimatedTimeline>
       <AnimatedTimeline index={1} baseDelay={0.25}>
-        <TimelineEntry
-          kind="user-action"
-          status="success"
-          title="Plan approved"
-          time="14:38"
-        />
+        <TimelineEntry kind="user-action" status="success" title="Plan approved" time="14:38" />
       </AnimatedTimeline>
       <AnimatedTimeline index={2} baseDelay={0.25}>
         <TimelineEntry
@@ -667,7 +653,7 @@ const ImplementationActiveStory = (): React.ReactElement => (
       <ResourceChip kind="node" name="node-03" health="degraded" detail="Memory 81%" />
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * PLAN REJECTED — user rejected, re-investigating
@@ -705,8 +691,8 @@ const PlanRejectedStory = (): React.ReactElement => (
             status="working"
             label="Analyzing alternative approaches"
             elapsed="8s"
-            onStop={() => {}}
-            onExpand={() => {}}
+            onStop={() => undefined}
+            onExpand={() => undefined}
           />
         </div>
       </AnimatedTimeline>
@@ -751,7 +737,7 @@ const PlanRejectedStory = (): React.ReactElement => (
       <ResourceChip kind="node" name="node-03" health="degraded" detail="Memory 81%" />
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * MONITORING WITH SCHEDULE — uses MonitoringProgress
@@ -789,20 +775,10 @@ const MonitoringWithScheduleStory = (): React.ReactElement => (
         />
       </AnimatedTimeline>
       <AnimatedTimeline index={1} baseDelay={0.25}>
-        <TimelineEntry
-          kind="outcome"
-          status="success"
-          title="Check 2: Memory at 64% — holding"
-          time="14:45"
-        />
+        <TimelineEntry kind="outcome" status="success" title="Check 2: Memory at 64% — holding" time="14:45" />
       </AnimatedTimeline>
       <AnimatedTimeline index={2} baseDelay={0.25}>
-        <TimelineEntry
-          kind="outcome"
-          status="success"
-          title="Check 1: Memory at 58% — fix applied"
-          time="14:40"
-        />
+        <TimelineEntry kind="outcome" status="success" title="Check 1: Memory at 58% — fix applied" time="14:40" />
       </AnimatedTimeline>
       <AnimatedTimeline index={3} baseDelay={0.25}>
         <TimelineEntry
@@ -835,7 +811,7 @@ const MonitoringWithScheduleStory = (): React.ReactElement => (
       <ResourceChip kind="node" name="node-03" health="healthy" detail="Memory 71%" />
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * REGRESSED — monitoring detected regression
@@ -855,8 +831,8 @@ const RegressedStory = (): React.ReactElement => (
     </motion.div>
 
     <motion.p {...stagger(0, 0.1)} className="text-sm text-text-secondary leading-relaxed">
-      The rebalancing fix didn't hold. Memory climbed back above 80% after 8 minutes. The system is
-      re-investigating to find a more durable solution.
+      The rebalancing fix didn't hold. Memory climbed back above 80% after 8 minutes. The system is re-investigating to
+      find a more durable solution.
     </motion.p>
 
     <SectionLabel delay={0.2}>What happened</SectionLabel>
@@ -873,8 +849,8 @@ const RegressedStory = (): React.ReactElement => (
             status="working"
             label="Analyzing why rebalance didn't hold"
             elapsed="6s"
-            onStop={() => {}}
-            onExpand={() => {}}
+            onStop={() => undefined}
+            onExpand={() => undefined}
           />
         </div>
       </AnimatedTimeline>
@@ -927,7 +903,7 @@ const RegressedStory = (): React.ReactElement => (
       <ResourceChip kind="node" name="node-03" health="degraded" detail="Memory 81%" />
     </motion.div>
   </Shell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════ */
 
@@ -939,19 +915,29 @@ const meta: Meta = {
   globals: {
     backgrounds: { value: 'faultline' },
   },
-}
+};
 
-type Story = StoryObj
+type Story = StoryObj;
 
-const NeedsApproval: Story = { render: InProgressNeedsYou }
-const AgentWorking: Story = { render: ActiveInvestigation }
-const BeingMonitored: Story = { render: Monitoring }
-const FullyResolved: Story = { render: Resolved }
-const TriageActive: Story = { render: TriageActiveStory }
-const ImplementationActive: Story = { render: ImplementationActiveStory }
-const PlanRejected: Story = { render: PlanRejectedStory }
-const MonitoringWithSchedule: Story = { render: MonitoringWithScheduleStory }
-const Regressed: Story = { render: RegressedStory }
+const NeedsApproval: Story = { render: InProgressNeedsYou };
+const AgentWorking: Story = { render: ActiveInvestigation };
+const BeingMonitored: Story = { render: Monitoring };
+const FullyResolved: Story = { render: Resolved };
+const TriageActive: Story = { render: TriageActiveStory };
+const ImplementationActive: Story = { render: ImplementationActiveStory };
+const PlanRejected: Story = { render: PlanRejectedStory };
+const MonitoringWithSchedule: Story = { render: MonitoringWithScheduleStory };
+const Regressed: Story = { render: RegressedStory };
 
-export { NeedsApproval, AgentWorking, BeingMonitored, FullyResolved, TriageActive, ImplementationActive, PlanRejected, MonitoringWithSchedule, Regressed }
-export default meta
+export {
+  NeedsApproval,
+  AgentWorking,
+  BeingMonitored,
+  FullyResolved,
+  TriageActive,
+  ImplementationActive,
+  PlanRejected,
+  MonitoringWithSchedule,
+  Regressed,
+};
+export default meta;

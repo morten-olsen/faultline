@@ -1,25 +1,26 @@
-import { ChevronDown } from 'lucide-react'
-import { Tag } from '../tag/tag.tsx'
+import { ChevronDown } from 'lucide-react';
+
+import { Tag } from '../tag/tag.tsx';
 
 /* ── Types ────────────────────────────────────────────────────────── */
 
 type AllowanceOption = {
-  value: string
-  label: string
-}
+  value: string;
+  label: string;
+};
 
-type AllowanceMode = 'all' | 'select' | 'none'
+type AllowanceMode = 'all' | 'select' | 'none';
 
 type AllowanceFieldProps = {
-  label: string
-  description?: string
-  mode: AllowanceMode
-  selected: string[]
-  options: AllowanceOption[]
-  onModeChange?: (mode: AllowanceMode) => void
-  onAdd?: (value: string) => void
-  onRemove?: (value: string) => void
-}
+  label: string;
+  description?: string;
+  mode: AllowanceMode;
+  selected: string[];
+  options: AllowanceOption[];
+  onModeChange?: (mode: AllowanceMode) => void;
+  onAdd?: (value: string) => void;
+  onRemove?: (value: string) => void;
+};
 
 /* ── Mode toggle ──────────────────────────────────────────────────── */
 
@@ -27,14 +28,14 @@ const modes: { value: AllowanceMode; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'select', label: 'Select' },
   { value: 'none', label: 'None' },
-]
+];
 
 const ModeToggle = ({
   value,
   onChange,
 }: {
-  value: AllowanceMode
-  onChange?: (mode: AllowanceMode) => void
+  value: AllowanceMode;
+  onChange?: (mode: AllowanceMode) => void;
 }): React.ReactElement => (
   <div className="flex gap-1 bg-white/4 ring-1 ring-white/8 rounded-lg p-1">
     {modes.map((m) => (
@@ -44,17 +45,14 @@ const ModeToggle = ({
         onClick={() => onChange?.(m.value)}
         className={`
           flex-1 text-sm py-1 px-2.5 rounded-md transition-all duration-fast cursor-pointer
-          ${m.value === value
-            ? 'bg-white/10 text-text font-medium'
-            : 'text-text-muted hover:text-text-secondary'
-          }
+          ${m.value === value ? 'bg-white/10 text-text font-medium' : 'text-text-muted hover:text-text-secondary'}
         `}
       >
         {m.label}
       </button>
     ))}
   </div>
-)
+);
 
 /* ── Component ────────────────────────────────────────────────────── */
 
@@ -69,36 +67,26 @@ const AllowanceField = ({
   onRemove,
 }: AllowanceFieldProps): React.ReactElement => {
   // Options not yet selected
-  const available = options.filter((o) => !selected.includes(o.value))
+  const available = options.filter((o) => !selected.includes(o.value));
 
   // Build label lookup for selected values
-  const labelMap = new Map(options.map((o) => [o.value, o.label]))
+  const labelMap = new Map(options.map((o) => [o.value, o.label]));
 
   return (
     <div className="space-y-2">
       <div className="flex items-start justify-between gap-4">
         <div>
           <label className="text-sm font-medium text-text">{label}</label>
-          {description && (
-            <p className="text-sm text-text-muted mt-0.5">{description}</p>
-          )}
+          {description && <p className="text-sm text-text-muted mt-0.5">{description}</p>}
         </div>
         <div className="flex-shrink-0 mt-0.5">
           <ModeToggle value={mode} onChange={onModeChange} />
         </div>
       </div>
 
-      {mode === 'all' && (
-        <p className="text-sm text-text-muted py-1">
-          Agent can access all {label.toLowerCase()}
-        </p>
-      )}
+      {mode === 'all' && <p className="text-sm text-text-muted py-1">Agent can access all {label.toLowerCase()}</p>}
 
-      {mode === 'none' && (
-        <p className="text-sm text-text-muted py-1">
-          Agent cannot access any {label.toLowerCase()}
-        </p>
-      )}
+      {mode === 'none' && <p className="text-sm text-text-muted py-1">Agent cannot access any {label.toLowerCase()}</p>}
 
       {mode === 'select' && (
         <div className="space-y-2">
@@ -108,7 +96,9 @@ const AllowanceField = ({
               <select
                 value=""
                 onChange={(e) => {
-                  if (e.target.value) onAdd?.(e.target.value)
+                  if (e.target.value) {
+                    onAdd?.(e.target.value);
+                  }
                 }}
                 className="
                   w-full appearance-none bg-white/4 rounded-lg px-3.5 py-2.5 pr-9
@@ -116,9 +106,13 @@ const AllowanceField = ({
                   ring-1 ring-white/8 focus:ring-white/20
                 "
               >
-                <option value="" disabled>Add…</option>
+                <option value="" disabled>
+                  Add…
+                </option>
                 {available.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
                 ))}
               </select>
               <ChevronDown
@@ -138,15 +132,13 @@ const AllowanceField = ({
               ))}
             </div>
           ) : (
-            <p className="text-sm text-text-muted py-1">
-              No {label.toLowerCase()} selected — agent has no access
-            </p>
+            <p className="text-sm text-text-muted py-1">No {label.toLowerCase()} selected — agent has no access</p>
           )}
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export type { AllowanceFieldProps, AllowanceMode, AllowanceOption }
-export { AllowanceField }
+export type { AllowanceFieldProps, AllowanceMode, AllowanceOption };
+export { AllowanceField };

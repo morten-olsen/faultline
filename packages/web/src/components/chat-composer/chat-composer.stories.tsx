@@ -1,5 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ChatComposer } from './chat-composer.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
+import { ChatComposer } from './chat-composer.tsx';
 
 /*
  * Chat Composer — the input for talking to the agent.
@@ -14,21 +15,21 @@ const meta: Meta = {
   title: 'Design System/Components/Chat Composer',
   parameters: { layout: 'padded' },
   globals: { backgrounds: { value: 'faultline' } },
-}
+};
 
-type Story = StoryObj
+type Story = StoryObj;
 
 const Default: Story = {
   render: () => (
     <div className="max-w-lg mx-auto space-y-8 font-sans text-text">
       <p className="text-xs text-text-muted">
-        The composer sits at the bottom of the chat view. It's always
-        there but never demanding — a quiet invitation to ask something.
+        The composer sits at the bottom of the chat view. It's always there but never demanding — a quiet invitation to
+        ask something.
       </p>
       <ChatComposer />
     </div>
   ),
-}
+};
 
 const CustomPlaceholder: Story = {
   render: () => (
@@ -43,19 +44,19 @@ const CustomPlaceholder: Story = {
       </div>
     </div>
   ),
-}
+};
 
 const Disabled: Story = {
   render: () => (
     <div className="max-w-lg mx-auto space-y-6 font-sans text-text">
       <p className="text-xs text-text-muted">
-        Disabled while the agent is actively working — you can stop it or wait,
-        but the input is gently dimmed to avoid confusion.
+        Disabled while the agent is actively working — you can stop it or wait, but the input is gently dimmed to avoid
+        confusion.
       </p>
       <ChatComposer disabled placeholder="Agent is working…" />
     </div>
   ),
-}
+};
 
-export { Default, CustomPlaceholder, Disabled }
-export default meta
+export { Default, CustomPlaceholder, Disabled };
+export default meta;

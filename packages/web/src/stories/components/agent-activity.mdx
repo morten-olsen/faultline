@@ -36,16 +36,16 @@ default assumption is that the agent knows what it's doing.
 
 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', margin: '1.5rem 0' }}>
   <div style={{ maxWidth: 420 }}>
-    <AgentActivity status="working" label="Analyzing memory pressure" elapsed="12s" onStop={() => {}} onExpand={() => {}} />
+    <AgentActivity status="working" label="Analyzing memory pressure" elapsed="12s" onStop={() => undefined} onExpand={() => undefined} />
   </div>
   <div style={{ maxWidth: 420 }}>
-    <AgentActivity status="waiting" label="Needs approval to evict pod" elapsed="2m" onStop={() => {}} onExpand={() => {}} />
+    <AgentActivity status="waiting" label="Needs approval to evict pod" elapsed="2m" onStop={() => undefined} onExpand={() => undefined} />
   </div>
   <div style={{ maxWidth: 420 }}>
-    <AgentActivity status="complete" label="Rebalanced workloads successfully" onExpand={() => {}} />
+    <AgentActivity status="complete" label="Rebalanced workloads successfully" onExpand={() => undefined} />
   </div>
   <div style={{ maxWidth: 420 }}>
-    <AgentActivity status="stopped" label="Investigation halted" onExpand={() => {}} />
+    <AgentActivity status="stopped" label="Investigation halted" onExpand={() => undefined} />
   </div>
 </div>
 

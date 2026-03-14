@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 /*
  * Color Tokens
@@ -13,16 +13,14 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
  */
 
 type ScaleProps = {
-  title: string
-  description: string
-  colors: Array<{ name: string; value: string }>
-}
+  title: string;
+  description: string;
+  colors: { name: string; value: string }[];
+};
 
 const Scale = ({ title, description, colors }: ScaleProps): React.ReactElement => (
   <div style={{ marginBottom: '2.5rem' }}>
-    <h3 style={{ color: '#e8e8e8', fontSize: '1.125rem', fontWeight: 500, margin: '0 0 0.5rem' }}>
-      {title}
-    </h3>
+    <h3 style={{ color: '#e8e8e8', fontSize: '1.125rem', fontWeight: 500, margin: '0 0 0.5rem' }}>{title}</h3>
     <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: '0 0 1.25rem', maxWidth: 520, lineHeight: 1.6 }}>
       {description}
     </p>
@@ -39,19 +37,21 @@ const Scale = ({ title, description, colors }: ScaleProps): React.ReactElement =
               marginBottom: '0.375rem',
             }}
           />
-          <div style={{ color: '#5a5a5a', fontSize: '0.6875rem', fontFamily: '"Geist Mono Variable", monospace' }}>{name.split('-').pop()}</div>
+          <div style={{ color: '#5a5a5a', fontSize: '0.6875rem', fontFamily: '"Geist Mono Variable", monospace' }}>
+            {name.split('-').pop()}
+          </div>
         </div>
       ))}
     </div>
   </div>
-)
+);
 
 type SemanticPairProps = {
-  label: string
-  description: string
-  fg: string
-  bg: string
-}
+  label: string;
+  description: string;
+  fg: string;
+  bg: string;
+};
 
 const SemanticPair = ({ label, description, fg, bg }: SemanticPairProps): React.ReactElement => (
   <div
@@ -79,16 +79,15 @@ const SemanticPair = ({ label, description, fg, bg }: SemanticPairProps): React.
       <div style={{ color: '#a3a3a3', fontSize: '0.8125rem' }}>{description}</div>
     </div>
   </div>
-)
+);
 
 const ColorStory = (): React.ReactElement => (
   <div style={{ maxWidth: 720, color: '#e8e8e8' }}>
     <h2 style={{ fontSize: '1.5rem', fontWeight: 500, margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>Color</h2>
     <p style={{ color: '#a3a3a3', fontSize: '0.875rem', lineHeight: 1.7, margin: '0 0 2.5rem', maxWidth: 560 }}>
-      The palette is intentionally clean. Dark interfaces can feel cold — ours aims
-      for calm instead, using true neutrals that let semantic colors do the talking.
-      Color is reserved for meaning: green is healthy, amber is attention, red is
-      genuine failure, blue is "working on it."
+      The palette is intentionally clean. Dark interfaces can feel cold — ours aims for calm instead, using true
+      neutrals that let semantic colors do the talking. Color is reserved for meaning: green is healthy, amber is
+      attention, red is genuine failure, blue is "working on it."
     </p>
 
     <Scale
@@ -158,12 +157,10 @@ const ColorStory = (): React.ReactElement => (
     />
 
     <div style={{ marginBottom: '2.5rem' }}>
-      <h3 style={{ color: '#e8e8e8', fontSize: '1.125rem', fontWeight: 500, margin: '0 0 0.5rem' }}>
-        In context
-      </h3>
+      <h3 style={{ color: '#e8e8e8', fontSize: '1.125rem', fontWeight: 500, margin: '0 0 0.5rem' }}>In context</h3>
       <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: '0 0 1.25rem', maxWidth: 520, lineHeight: 1.6 }}>
-        How colors pair in practice. A foreground signal against a muted background —
-        clear without being loud. These are the actual combinations used across the interface.
+        How colors pair in practice. A foreground signal against a muted background — clear without being loud. These
+        are the actual combinations used across the interface.
       </p>
       <div style={{ display: 'grid', gap: '0.75rem' }}>
         <SemanticPair
@@ -194,13 +191,10 @@ const ColorStory = (): React.ReactElement => (
     </div>
 
     <div style={{ marginBottom: '2.5rem' }}>
-      <h3 style={{ color: '#e8e8e8', fontSize: '1.125rem', fontWeight: 500, margin: '0 0 0.5rem' }}>
-        Translucency
-      </h3>
+      <h3 style={{ color: '#e8e8e8', fontSize: '1.125rem', fontWeight: 500, margin: '0 0 0.5rem' }}>Translucency</h3>
       <p style={{ color: '#a3a3a3', fontSize: '0.8125rem', margin: '0 0 1.25rem', maxWidth: 520, lineHeight: 1.6 }}>
-        Most surfaces use translucent white rather than solid fills.
-        This creates depth and layering without visual weight — surfaces
-        feel like frosted glass, not stacked cards.
+        Most surfaces use translucent white rather than solid fills. This creates depth and layering without visual
+        weight — surfaces feel like frosted glass, not stacked cards.
       </p>
       <div style={{ display: 'flex', gap: '0.75rem' }}>
         {[
@@ -211,32 +205,38 @@ const ColorStory = (): React.ReactElement => (
           { label: 'white/12', bg: 'rgba(255,255,255,0.12)', desc: 'Active states' },
         ].map(({ label, bg, desc }) => (
           <div key={label} style={{ textAlign: 'center', flex: 1 }}>
-            <div style={{
-              height: 48, borderRadius: 8, backgroundColor: bg,
-              border: '1px solid rgba(255,255,255,0.04)',
-              marginBottom: '0.375rem',
-            }} />
-            <div style={{ color: '#7e7e7e', fontSize: '0.6875rem', fontFamily: '"Geist Mono Variable", monospace' }}>{label}</div>
+            <div
+              style={{
+                height: 48,
+                borderRadius: 8,
+                backgroundColor: bg,
+                border: '1px solid rgba(255,255,255,0.04)',
+                marginBottom: '0.375rem',
+              }}
+            />
+            <div style={{ color: '#7e7e7e', fontSize: '0.6875rem', fontFamily: '"Geist Mono Variable", monospace' }}>
+              {label}
+            </div>
             <div style={{ color: '#5a5a5a', fontSize: '0.6875rem', marginTop: 2 }}>{desc}</div>
           </div>
         ))}
       </div>
     </div>
   </div>
-)
+);
 
 const meta: Meta = {
   title: 'Design System/Foundations/Colors',
   parameters: {
     layout: 'padded',
   },
-}
+};
 
-type Story = StoryObj
+type Story = StoryObj;
 
 const Palette: Story = {
   render: ColorStory,
-}
+};
 
-export { Palette }
-export default meta
+export { Palette };
+export default meta;

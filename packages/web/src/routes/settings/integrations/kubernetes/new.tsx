@@ -1,50 +1,51 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
-import { useClient } from "../../../../client/client.context.js"
-import { IntegrationForm } from "../../../../components/integration-form/integration-form.tsx"
-import { FormField } from "../../../../components/form-field/form-field.tsx"
-import { Input } from "../../../../components/input/input.tsx"
-import { TextArea } from "../../../../components/text-area/text-area.tsx"
-import { Select } from "../../../../components/select/select.tsx"
-import { AnimatedField } from "../../../../components/animated-field/animated-field.tsx"
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+
+import { useClient } from '../../../../client/client.context.js';
+import { IntegrationForm } from '../../../../components/integration-form/integration-form.tsx';
+import { FormField } from '../../../../components/form-field/form-field.tsx';
+import { Input } from '../../../../components/input/input.tsx';
+import { TextArea } from '../../../../components/text-area/text-area.tsx';
+import { Select } from '../../../../components/select/select.tsx';
+import { AnimatedField } from '../../../../components/animated-field/animated-field.tsx';
 
 const NewKubernetes = (): React.ReactElement => {
-  const client = useClient()
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const client = useClient();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const [name, setName] = useState("")
-  const [context, setContext] = useState("")
-  const [description, setDescription] = useState("")
+  const [name, setName] = useState('');
+  const [context, setContext] = useState('');
+  const [description, setDescription] = useState('');
 
   const { data: availableData } = useQuery({
-    queryKey: ["kubeContextsAvailable"],
-    queryFn: () => client.call["kubeContexts.available"]({}),
-  })
+    queryKey: ['kubeContextsAvailable'],
+    queryFn: () => client.call['kubeContexts.available']({}),
+  });
 
-  const availableContexts = availableData?.contexts ?? []
+  const availableContexts = availableData?.contexts ?? [];
 
   const mutation = useMutation({
     mutationFn: () =>
-      client.call["kubeContexts.create"]({
+      client.call['kubeContexts.create']({
         name,
         context,
         description: description || null,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["kubeContexts"] })
-      navigate({ to: "/settings/integrations" })
+      queryClient.invalidateQueries({ queryKey: ['kubeContexts'] });
+      navigate({ to: '/settings/integrations' });
     },
-  })
+  });
 
-  const canSave = name.trim().length > 0 && context.trim().length > 0
+  const canSave = name.trim().length > 0 && context.trim().length > 0;
 
   return (
     <IntegrationForm
       title="New Kubernetes Context"
       saving={mutation.isPending}
-      onBack={() => navigate({ to: "/settings/integrations" })}
+      onBack={() => navigate({ to: '/settings/integrations' })}
       onSave={() => canSave && mutation.mutate()}
     >
       <AnimatedField index={0}>
@@ -75,11 +76,11 @@ const NewKubernetes = (): React.ReactElement => {
         </FormField>
       </AnimatedField>
     </IntegrationForm>
-  )
-}
+  );
+};
 
-const Route = createFileRoute("/settings/integrations/kubernetes/new")({
+const Route = createFileRoute('/settings/integrations/kubernetes/new')({
   component: NewKubernetes,
-})
+});
 
-export { Route }
+export { Route };

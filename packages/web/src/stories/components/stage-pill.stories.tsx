@@ -1,5 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { StagePill } from '../../components/stage-pill/stage-pill.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
+import { StagePill } from '../../components/stage-pill/stage-pill.tsx';
 
 /*
  * Stage Pill
@@ -23,17 +24,17 @@ const meta: Meta<typeof StagePill> = {
   parameters: {
     layout: 'padded',
   },
-}
+};
 
-type Story = StoryObj<typeof StagePill>
+type Story = StoryObj<typeof StagePill>;
 
 const Pipeline: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        The six stages of the issue lifecycle. Color shifts from warm (triage)
-        to cool (investigation, plan, implementation) to calm (monitoring, resolved) —
-        mirroring the emotional arc from "we've noticed" to "it's handled."
+        The six stages of the issue lifecycle. Color shifts from warm (triage) to cool (investigation, plan,
+        implementation) to calm (monitoring, resolved) — mirroring the emotional arc from "we've noticed" to "it's
+        handled."
       </p>
       <div className="flex flex-col gap-4">
         <StagePill stage="triage" />
@@ -45,15 +46,14 @@ const Pipeline: Story = {
       </div>
     </div>
   ),
-}
+};
 
 const WithNeedsYou: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        "Needs you" can appear at any stage. It means the pipeline is blocked
-        until the user acts — maybe input during investigation, approval for
-        a proposed plan, or confirmation during monitoring.
+        "Needs you" can appear at any stage. It means the pipeline is blocked until the user acts — maybe input during
+        investigation, approval for a proposed plan, or confirmation during monitoring.
       </p>
       <div className="flex flex-col gap-4">
         <StagePill stage="triage" needsYou />
@@ -64,7 +64,7 @@ const WithNeedsYou: Story = {
       </div>
     </div>
   ),
-}
+};
 
 const InContext: Story = {
   render: () => (
@@ -75,9 +75,7 @@ const InContext: Story = {
       <div className="flex flex-col gap-3">
         <div className="bg-white/3 rounded-xl ring-1 ring-amber-500/12 p-5">
           <h3 className="text-base font-medium text-text mb-2">NAS disk SMART warnings</h3>
-          <p className="text-text-secondary text-base leading-relaxed mb-4">
-            Disk 3 needs a physical swap.
-          </p>
+          <p className="text-text-secondary text-base leading-relaxed mb-4">Disk 3 needs a physical swap.</p>
           <StagePill stage="proposed-plan" needsYou />
         </div>
         <div className="bg-white/3 rounded-xl ring-1 ring-white/6 p-5">
@@ -97,7 +95,7 @@ const InContext: Story = {
       </div>
     </div>
   ),
-}
+};
 
-export { Pipeline, WithNeedsYou, InContext }
-export default meta
+export { Pipeline, WithNeedsYou, InContext };
+export default meta;

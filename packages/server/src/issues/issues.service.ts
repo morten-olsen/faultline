@@ -1,7 +1,7 @@
-import { DatabaseService } from "../database/database.js";
+import type { Selectable } from 'kysely';
 
-import type { Selectable } from "kysely";
-import type { Services } from "../services/services.js";
+import { DatabaseService } from '../database/database.js';
+import type { Services } from '../services/services.js';
 import type {
   IssuesTable,
   TimelineEntriesTable,
@@ -9,10 +9,10 @@ import type {
   IssueRelationsTable,
   ApprovalsTable,
   IssueLinksTable,
-} from "../database/database.js";
-import { transition, InvalidTransitionError } from "./issues.machine.js";
+} from '../database/database.js';
 
-import type { IssueStage } from "./issues.types.js";
+import { transition, InvalidTransitionError } from './issues.machine.js';
+import type { IssueStage } from './issues.types.js';
 import type {
   CreateIssueInput,
   UpdateIssueInput,
@@ -21,8 +21,8 @@ import type {
   CreateIssueRelationInput,
   CreateApprovalInput,
   CreateIssueLinkInput,
-} from "./issues.schemas.js";
-import type { IssueEvent } from "./issues.machine.js";
+} from './issues.schemas.js';
+import type { IssueEvent } from './issues.machine.js';
 
 type Issue = Selectable<IssuesTable>;
 type TimelineEntry = Selectable<TimelineEntriesTable>;
@@ -31,7 +31,7 @@ type IssueRelation = Selectable<IssueRelationsTable>;
 type Approval = Selectable<ApprovalsTable>;
 type IssueLink = Selectable<IssueLinksTable>;
 
-type IssueEventKind = "created" | "updated" | "stage-changed";
+type IssueEventKind = 'created' | 'updated' | 'stage-changed';
 type IssueEventListener = (kind: IssueEventKind, issueId: string, meta?: Record<string, string>) => void;
 
 type SetMonitoringPlanInput = {
@@ -52,7 +52,9 @@ class IssueService {
     this.#listeners.push(fn);
     return () => {
       const idx = this.#listeners.indexOf(fn);
-      if (idx >= 0) this.#listeners.splice(idx, 1);
+      if (idx >= 0) {
+        this.#listeners.splice(idx, 1);
+      }
     };
   };
 
@@ -93,9 +95,9 @@ class IssueService {
       updated_at: now,
     };
 
-    await db.insertInto("issues").values(issue).execute();
+    await db.insertInto('issues').values(issue).execute();
 
-    this.#emit("created", issue.id);
+    this.#emit('created', issue.id);
 
     return issue;
   };
@@ -103,41 +105,31 @@ class IssueService {
   getById = async (id: string): Promise<Issue | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("issues")
-      .selectAll()
-      .where("id", "=", id)
-      .executeTakeFirst();
+    return db.selectFrom('issues').selectAll().where('id', '=', id).executeTakeFirst();
   };
 
-  getByFingerprint = async (
-    fingerprint: string,
-    source: string,
-  ): Promise<Issue | undefined> => {
+  getByFingerprint = async (fingerprint: string, source: string): Promise<Issue | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
 
     return db
-      .selectFrom("issues")
+      .selectFrom('issues')
       .selectAll()
-      .where("fingerprint", "=", fingerprint)
-      .where("source", "=", source)
+      .where('fingerprint', '=', fingerprint)
+      .where('source', '=', source)
       .executeTakeFirst();
   };
 
-  list = async (filters?: {
-    stage?: string;
-    source?: string;
-  }): Promise<Issue[]> => {
+  list = async (filters?: { stage?: string; source?: string }): Promise<Issue[]> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    let query = db.selectFrom("issues").selectAll().orderBy("created_at", "desc");
+    let query = db.selectFrom('issues').selectAll().orderBy('created_at', 'desc');
 
     if (filters?.stage) {
-      query = query.where("stage", "=", filters.stage);
+      query = query.where('stage', '=', filters.stage);
     }
 
     if (filters?.source) {
-      query = query.where("source", "=", filters.source);
+      query = query.where('source', '=', filters.source);
     }
 
     return query.execute();
@@ -149,16 +141,28 @@ class IssueService {
 
     const values: Record<string, unknown> = { updated_at: now };
 
-    if (input.title !== undefined) values.title = input.title;
-    if (input.summary !== undefined) values.summary = input.summary;
-    if (input.description !== undefined) values.description = input.description;
-    if (input.needsYou !== undefined) values.needs_you = input.needsYou ? 1 : 0;
-    if (input.priority !== undefined) values.priority = input.priority;
-    if (input.sourcePayload !== undefined) values.source_payload = input.sourcePayload;
+    if (input.title !== undefined) {
+      values.title = input.title;
+    }
+    if (input.summary !== undefined) {
+      values.summary = input.summary;
+    }
+    if (input.description !== undefined) {
+      values.description = input.description;
+    }
+    if (input.needsYou !== undefined) {
+      values.needs_you = input.needsYou ? 1 : 0;
+    }
+    if (input.priority !== undefined) {
+      values.priority = input.priority;
+    }
+    if (input.sourcePayload !== undefined) {
+      values.source_payload = input.sourcePayload;
+    }
 
-    await db.updateTable("issues").set(values).where("id", "=", id).execute();
+    await db.updateTable('issues').set(values).where('id', '=', id).execute();
 
-    this.#emit("updated", id);
+    this.#emit('updated', id);
 
     return this.getById(id);
   };
@@ -167,7 +171,9 @@ class IssueService {
 
   transition = async (id: string, event: IssueEvent): Promise<Issue | undefined> => {
     const issue = await this.getById(id);
-    if (!issue) return undefined;
+    if (!issue) {
+      return undefined;
+    }
 
     const stage = issue.stage as IssueStage;
     const result = transition(stage, event);
@@ -183,11 +189,17 @@ class IssueService {
       stage: effect.stage,
       updated_at: now,
     };
-    if (effect.needsYou !== undefined) values.needs_you = effect.needsYou ? 1 : 0;
-    if (effect.resolvedAt) values.resolved_at = effect.resolvedAt;
-    if (effect.issueUpdates) Object.assign(values, effect.issueUpdates);
+    if (effect.needsYou !== undefined) {
+      values.needs_you = effect.needsYou ? 1 : 0;
+    }
+    if (effect.resolvedAt) {
+      values.resolved_at = effect.resolvedAt;
+    }
+    if (effect.issueUpdates) {
+      Object.assign(values, effect.issueUpdates);
+    }
 
-    await db.updateTable("issues").set(values).where("id", "=", id).execute();
+    await db.updateTable('issues').set(values).where('id', '=', id).execute();
 
     if (effect.timeline) {
       await this.addTimelineEntry({
@@ -201,8 +213,8 @@ class IssueService {
       });
     }
 
-    this.#emit("updated", id);
-    this.#emit("stage-changed", id, { from: issue.stage, to: effect.stage });
+    this.#emit('updated', id);
+    this.#emit('stage-changed', id, { from: issue.stage, to: effect.stage });
 
     return this.getById(id);
   };
@@ -225,7 +237,7 @@ class IssueService {
       created_at: now,
     };
 
-    await db.insertInto("timeline_entries").values(entry).execute();
+    await db.insertInto('timeline_entries').values(entry).execute();
 
     return entry;
   };
@@ -234,10 +246,10 @@ class IssueService {
     const db = await this.#services.get(DatabaseService).instance;
 
     return db
-      .selectFrom("timeline_entries")
+      .selectFrom('timeline_entries')
       .selectAll()
-      .where("issue_id", "=", issueId)
-      .orderBy("created_at", "desc")
+      .where('issue_id', '=', issueId)
+      .orderBy('created_at', 'desc')
       .execute();
   };
 
@@ -258,7 +270,7 @@ class IssueService {
       updated_at: now,
     };
 
-    await db.insertInto("issue_resources").values(resource).execute();
+    await db.insertInto('issue_resources').values(resource).execute();
 
     return resource;
   };
@@ -266,11 +278,7 @@ class IssueService {
   getResources = async (issueId: string): Promise<IssueResource[]> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("issue_resources")
-      .selectAll()
-      .where("issue_id", "=", issueId)
-      .execute();
+    return db.selectFrom('issue_resources').selectAll().where('issue_id', '=', issueId).execute();
   };
 
   // ── Issue relations ───────────────────────────────────────────────
@@ -287,7 +295,7 @@ class IssueService {
       created_at: now,
     };
 
-    await db.insertInto("issue_relations").values(relation).execute();
+    await db.insertInto('issue_relations').values(relation).execute();
 
     return relation;
   };
@@ -296,14 +304,9 @@ class IssueService {
     const db = await this.#services.get(DatabaseService).instance;
 
     return db
-      .selectFrom("issue_relations")
+      .selectFrom('issue_relations')
       .selectAll()
-      .where((eb) =>
-        eb.or([
-          eb("source_issue_id", "=", issueId),
-          eb("target_issue_id", "=", issueId),
-        ]),
-      )
+      .where((eb) => eb.or([eb('source_issue_id', '=', issueId), eb('target_issue_id', '=', issueId)]))
       .execute();
   };
 
@@ -319,13 +322,13 @@ class IssueService {
       agent_loop_id: input.agentLoopId,
       title: input.title,
       reason: input.reason,
-      status: "pending",
+      status: 'pending',
       decision_reason: null,
       decided_at: null,
       created_at: now,
     };
 
-    await db.insertInto("approvals").values(approval).execute();
+    await db.insertInto('approvals').values(approval).execute();
 
     return approval;
   };
@@ -334,35 +337,29 @@ class IssueService {
     const db = await this.#services.get(DatabaseService).instance;
 
     return db
-      .selectFrom("approvals")
+      .selectFrom('approvals')
       .selectAll()
-      .where("issue_id", "=", issueId)
-      .orderBy("created_at", "desc")
+      .where('issue_id', '=', issueId)
+      .orderBy('created_at', 'desc')
       .execute();
   };
 
   resolveApproval = async (
     id: string,
-    decision: "approved" | "denied",
+    decision: 'approved' | 'denied',
     reason?: string,
   ): Promise<Approval | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
     const values: Record<string, unknown> = { status: decision, decided_at: now };
-    if (reason !== undefined) values.decision_reason = reason;
+    if (reason !== undefined) {
+      values.decision_reason = reason;
+    }
 
-    await db
-      .updateTable("approvals")
-      .set(values)
-      .where("id", "=", id)
-      .execute();
+    await db.updateTable('approvals').set(values).where('id', '=', id).execute();
 
-    return db
-      .selectFrom("approvals")
-      .selectAll()
-      .where("id", "=", id)
-      .executeTakeFirst();
+    return db.selectFrom('approvals').selectAll().where('id', '=', id).executeTakeFirst();
   };
 
   // ── Issue links ───────────────────────────────────────────────────
@@ -382,7 +379,7 @@ class IssueService {
       created_at: now,
     };
 
-    await db.insertInto("issue_links").values(link).execute();
+    await db.insertInto('issue_links').values(link).execute();
 
     return link;
   };
@@ -392,35 +389,25 @@ class IssueService {
   addLabel = async (issueId: string, labelId: string): Promise<void> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    await db
-      .insertInto("issue_labels")
-      .values({ issue_id: issueId, label_id: labelId })
-      .execute();
+    await db.insertInto('issue_labels').values({ issue_id: issueId, label_id: labelId }).execute();
   };
 
   removeLabel = async (issueId: string, labelId: string): Promise<void> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    await db
-      .deleteFrom("issue_labels")
-      .where("issue_id", "=", issueId)
-      .where("label_id", "=", labelId)
-      .execute();
+    await db.deleteFrom('issue_labels').where('issue_id', '=', issueId).where('label_id', '=', labelId).execute();
   };
 
   // ── Monitoring ──────────────────────────────────────────────────────
 
-  setMonitoringPlan = async (
-    issueId: string,
-    input: SetMonitoringPlanInput,
-  ): Promise<Issue | undefined> => {
+  setMonitoringPlan = async (issueId: string, input: SetMonitoringPlanInput): Promise<Issue | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date();
     const until = new Date(now.getTime() + input.durationMinutes * 60_000);
     const nextCheck = new Date(now.getTime() + input.intervalMinutes * 60_000);
 
     await db
-      .updateTable("issues")
+      .updateTable('issues')
       .set({
         monitor_plan: input.plan,
         monitor_interval_minutes: input.intervalMinutes,
@@ -429,7 +416,7 @@ class IssueService {
         monitor_checks_completed: 0,
         updated_at: now.toISOString(),
       })
-      .where("id", "=", issueId)
+      .where('id', '=', issueId)
       .execute();
 
     return this.getById(issueId);
@@ -440,36 +427,37 @@ class IssueService {
     const now = new Date().toISOString();
 
     return db
-      .selectFrom("issues")
+      .selectFrom('issues')
       .selectAll()
-      .where("stage", "=", "monitoring")
-      .where("monitor_next_check_at", "<=", now)
-      .where("monitor_next_check_at", "is not", null)
+      .where('stage', '=', 'monitoring')
+      .where('monitor_next_check_at', '<=', now)
+      .where('monitor_next_check_at', 'is not', null)
       .execute();
   };
 
   advanceMonitorCheck = async (issueId: string): Promise<Issue | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
     const issue = await this.getById(issueId);
-    if (!issue || !issue.monitor_interval_minutes) return issue;
+    if (!issue || !issue.monitor_interval_minutes) {
+      return issue;
+    }
 
     const now = new Date();
     const nextCheck = new Date(now.getTime() + issue.monitor_interval_minutes * 60_000);
     const completed = (issue.monitor_checks_completed ?? 0) + 1;
 
     await db
-      .updateTable("issues")
+      .updateTable('issues')
       .set({
         monitor_checks_completed: completed,
         monitor_next_check_at: nextCheck.toISOString(),
         updated_at: now.toISOString(),
       })
-      .where("id", "=", issueId)
+      .where('id', '=', issueId)
       .execute();
 
     return this.getById(issueId);
   };
-
 }
 
 export type {

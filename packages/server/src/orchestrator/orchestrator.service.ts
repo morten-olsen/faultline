@@ -1,21 +1,16 @@
-import { mkdirSync } from "node:fs";
-import { join } from "node:path";
+import { mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 
-import { IssueService } from "../issues/issues.js";
-import { AgentRunService } from "../agent-runs/agent-runs.js";
-import { AgentService } from "../agent/agent.service.js";
-import { ConfigService } from "../config/config.js";
-import { buildAgentTaskConfig } from "./orchestrator.task-builder.js";
-import { destroy } from "../services/services.js";
-import {
-  triagePrompt,
-  investigationPrompt,
-  implementationPrompt,
-  monitorPrompt,
-} from "./orchestrator.prompts.js";
+import { IssueService } from '../issues/issues.js';
+import { AgentRunService } from '../agent-runs/agent-runs.js';
+import { AgentService } from '../agent/agent.service.js';
+import { ConfigService } from '../config/config.js';
+import { destroy } from '../services/services.js';
+import type { Services } from '../services/services.js';
+import type { Approval } from '../issues/issues.js';
 
-import type { Services } from "../services/services.js";
-import type { Approval } from "../issues/issues.js";
+import { triagePrompt, investigationPrompt, implementationPrompt, monitorPrompt } from './orchestrator.prompts.js';
+import { buildAgentTaskConfig } from './orchestrator.task-builder.js';
 
 const SWEEP_INTERVAL_MS = 60_000;
 const DISPATCH_DELAY_MS = 500;
@@ -63,60 +58,76 @@ class OrchestratorService {
     });
 
     // Subscribe to agent service events for DB persistence
-    this.#unsubscribeAgentStep = agentService.on("step", (runId, _correlationId, event) => {
+    this.#unsubscribeAgentStep = agentService.on('step', (runId, _correlationId, event) => {
       const mapping = this.#runMappings.get(runId);
-      if (!mapping) return;
+      if (!mapping) {
+        return;
+      }
 
       const agentRunService = this.#services.get(AgentRunService);
-      agentRunService.addAgentStep({
-        agentLoopId: mapping.agentLoopId,
-        kind: event.kind,
-        title: event.title,
-        detail: event.detail ?? null,
-        output: event.output ?? null,
-        durationMs: event.durationMs ?? null,
-        status: event.status ?? null,
-      }).catch(() => {});
+      agentRunService
+        .addAgentStep({
+          agentLoopId: mapping.agentLoopId,
+          kind: event.kind,
+          title: event.title,
+          detail: event.detail ?? null,
+          output: event.output ?? null,
+          durationMs: event.durationMs ?? null,
+          status: event.status ?? null,
+        })
+        .catch(() => undefined);
     });
 
-    this.#unsubscribeAgentResult = agentService.on("result", (runId, _correlationId, event) => {
+    this.#unsubscribeAgentResult = agentService.on('result', (runId, _correlationId, event) => {
       const mapping = this.#runMappings.get(runId);
-      if (!mapping) return;
+      if (!mapping) {
+        return;
+      }
 
-      this.#services.get(IssueService).addTimelineEntry({
-        issueId: mapping.issueId,
-        agentLoopId: mapping.agentLoopId,
-        kind: "outcome",
-        status: "success",
-        title: event.text.length > 120
-          ? event.text.slice(0, 117) + "..."
-          : event.text,
-        body: event.text,
-        commandRun: null,
-      }).catch(() => {});
+      this.#services
+        .get(IssueService)
+        .addTimelineEntry({
+          issueId: mapping.issueId,
+          agentLoopId: mapping.agentLoopId,
+          kind: 'outcome',
+          status: 'success',
+          title: event.text.length > 120 ? event.text.slice(0, 117) + '...' : event.text,
+          body: event.text,
+          commandRun: null,
+        })
+        .catch(() => undefined);
     });
 
-    this.#unsubscribeAgentError = agentService.on("error", (runId, _correlationId, event) => {
+    this.#unsubscribeAgentError = agentService.on('error', (runId, _correlationId, event) => {
       const mapping = this.#runMappings.get(runId);
-      if (!mapping) return;
+      if (!mapping) {
+        return;
+      }
 
       const agentRunService = this.#services.get(AgentRunService);
-      agentRunService.addAgentStep({
-        agentLoopId: mapping.agentLoopId,
-        kind: "error",
-        title: event.message,
-        detail: null,
-        output: null,
-        durationMs: null,
-        status: "failed",
-      }).catch(() => {});
+      agentRunService
+        .addAgentStep({
+          agentLoopId: mapping.agentLoopId,
+          kind: 'error',
+          title: event.message,
+          detail: null,
+          output: null,
+          durationMs: null,
+          status: 'failed',
+        })
+        .catch(() => undefined);
     });
 
-    this.#unsubscribeAgentDone = agentService.on("done", (runId, _correlationId) => {
+    this.#unsubscribeAgentDone = agentService.on('done', (runId, _correlationId) => {
       const mapping = this.#runMappings.get(runId);
-      if (!mapping) return;
+      if (!mapping) {
+        return;
+      }
 
-      this.#services.get(AgentRunService).updateAgentLoopStatus(mapping.agentLoopId, "complete").catch(() => {});
+      this.#services
+        .get(AgentRunService)
+        .updateAgentLoopStatus(mapping.agentLoopId, 'complete')
+        .catch(() => undefined);
 
       // Run cleanup (e.g. temp SSH key files)
       mapping.cleanup?.();
@@ -128,7 +139,7 @@ class OrchestratorService {
     });
 
     this.#sweepTimer = setInterval(() => {
-      this.#sweep().catch(() => {});
+      this.#sweep().catch(() => undefined);
     }, SWEEP_INTERVAL_MS);
   };
 
@@ -161,7 +172,7 @@ class OrchestratorService {
     for (const [runId, mapping] of this.#runMappings) {
       if (mapping.agentLoopId === agentLoopId) {
         this.#services.get(AgentService).stop(runId);
-        await this.#services.get(AgentRunService).updateAgentLoopStatus(agentLoopId, "stopped");
+        await this.#services.get(AgentRunService).updateAgentLoopStatus(agentLoopId, 'stopped');
         mapping.cleanup?.();
         this.#runMappings.delete(runId);
         return;
@@ -173,7 +184,9 @@ class OrchestratorService {
 
   isRunningForIssue = (issueId: string): boolean => {
     for (const [, mapping] of this.#runMappings) {
-      if (mapping.issueId === issueId) return true;
+      if (mapping.issueId === issueId) {
+        return true;
+      }
     }
     return false;
   };
@@ -183,17 +196,19 @@ class OrchestratorService {
   handleApprovalResolution = async (approval: Approval): Promise<void> => {
     const issueService = this.#services.get(IssueService);
     const issue = await issueService.getById(approval.issue_id);
-    if (!issue) return;
+    if (!issue) {
+      return;
+    }
 
-    if (approval.status === "approved") {
-      await issueService.transition(approval.issue_id, { type: "PLAN_APPROVED" });
-    } else if (approval.status === "denied") {
+    if (approval.status === 'approved') {
+      await issueService.transition(approval.issue_id, { type: 'PLAN_APPROVED' });
+    } else if (approval.status === 'denied') {
       // Transition back to investigation — the stage-changed event
       // will trigger #onIssueEvent which dispatches the agent.
       // The rejection reason is recorded in the timeline by the machine effect,
       // so the investigation agent discovers it via get-timeline.
       await issueService.transition(approval.issue_id, {
-        type: "PLAN_DENIED",
+        type: 'PLAN_DENIED',
         reason: approval.decision_reason ?? undefined,
       });
     }
@@ -209,33 +224,27 @@ class OrchestratorService {
       throw new Error(`Issue ${input.issueId} not found`);
     }
 
-    if (issue.stage === "ignored") {
+    if (issue.stage === 'ignored') {
       throw new Error(`Cannot run agent on ignored issue ${input.issueId}`);
     }
 
     const agentRunService = this.#services.get(AgentRunService);
     const loop = await agentRunService.createAgentLoop({
-      title: input.prompt.length > 120
-        ? input.prompt.slice(0, 117) + "..."
-        : input.prompt,
+      title: input.prompt.length > 120 ? input.prompt.slice(0, 117) + '...' : input.prompt,
     });
     await agentRunService.linkToIssue(input.issueId, loop.id);
 
     await issueService.addTimelineEntry({
       issueId: input.issueId,
       agentLoopId: loop.id,
-      kind: "analysis",
-      status: "pending",
-      title: "Agent investigating",
+      kind: 'analysis',
+      status: 'pending',
+      title: 'Agent investigating',
       body: null,
       commandRun: null,
     });
 
-    const taskConfig = await buildAgentTaskConfig(
-      this.#services,
-      issue.stage,
-      input.systemPrompt,
-    );
+    const taskConfig = await buildAgentTaskConfig(this.#services, issue.stage, input.systemPrompt);
 
     // Create an isolated workspace for this agent run
     const cwd = input.cwd ?? this.#workspacePath(input.issueId, loop.id);
@@ -263,29 +272,29 @@ class OrchestratorService {
   // ── Issue event handler ─────────────────────────────────────────
 
   #onIssueEvent = (kind: string, issueId: string, meta?: Record<string, string>): void => {
-    if (kind === "created") {
+    if (kind === 'created') {
       // New issue at triage — dispatch triage agent after a short delay
       setTimeout(() => {
-        this.#dispatchForStage(issueId, "triage").catch(() => {});
+        this.#dispatchForStage(issueId, 'triage').catch(() => undefined);
       }, DISPATCH_DELAY_MS);
     }
 
-    if (kind === "stage-changed" && meta?.from && meta?.to) {
+    if (kind === 'stage-changed' && meta?.from && meta?.to) {
       const from = meta.from;
       const to = meta.to;
 
       // Notify external listeners (WebSocket broadcasting)
       this.#stageChangeListener?.(issueId, from, to);
 
-      if (to === "investigation") {
+      if (to === 'investigation') {
         setTimeout(() => {
-          this.#dispatchForStage(issueId, "investigation").catch(() => {});
+          this.#dispatchForStage(issueId, 'investigation').catch(() => undefined);
         }, DISPATCH_DELAY_MS);
       }
 
-      if (to === "implementation") {
+      if (to === 'implementation') {
         setTimeout(() => {
-          this.#dispatchForStage(issueId, "implementation").catch(() => {});
+          this.#dispatchForStage(issueId, 'implementation').catch(() => undefined);
         }, DISPATCH_DELAY_MS);
       }
 
@@ -297,19 +306,26 @@ class OrchestratorService {
 
   #onAgentComplete = (issueId: string, _agentLoopId: string): void => {
     const issueService = this.#services.get(IssueService);
-    issueService.getById(issueId).then((issue) => {
-      if (!issue) return;
-
-      if (issue.stage === "monitoring" && issue.monitor_until) {
-        const until = new Date(issue.monitor_until);
-        if (new Date() >= until) {
-          issueService.transition(issueId, {
-            type: "MONITORING_DONE",
-            checksCompleted: issue.monitor_checks_completed ?? 0,
-          }).catch(() => {});
+    issueService
+      .getById(issueId)
+      .then((issue) => {
+        if (!issue) {
+          return;
         }
-      }
-    }).catch(() => {});
+
+        if (issue.stage === 'monitoring' && issue.monitor_until) {
+          const until = new Date(issue.monitor_until);
+          if (new Date() >= until) {
+            issueService
+              .transition(issueId, {
+                type: 'MONITORING_DONE',
+                checksCompleted: issue.monitor_checks_completed ?? 0,
+              })
+              .catch(() => undefined);
+          }
+        }
+      })
+      .catch(() => undefined);
   };
 
   // ── Sweep — periodic check ──────────────────────────────────────
@@ -321,7 +337,9 @@ class OrchestratorService {
 
     for (const issue of dueIssues) {
       // Don't dispatch if an agent is already running for this issue
-      if (this.isRunningForIssue(issue.id)) continue;
+      if (this.isRunningForIssue(issue.id)) {
+        continue;
+      }
 
       await this.#assembleAndRun({
         issueId: issue.id,
@@ -345,12 +363,14 @@ class OrchestratorService {
 
   #dispatchForStage = async (issueId: string, stage: string): Promise<void> => {
     // Guard: don't dispatch if an agent is already running for this issue
-    if (this.isRunningForIssue(issueId)) return;
+    if (this.isRunningForIssue(issueId)) {
+      return;
+    }
 
     const promptCtx = { issueId };
 
     switch (stage) {
-      case "triage":
+      case 'triage':
         await this.#assembleAndRun({
           issueId,
           prompt: `Triage issue ${issueId}`,
@@ -358,7 +378,7 @@ class OrchestratorService {
         });
         break;
 
-      case "investigation":
+      case 'investigation':
         await this.#assembleAndRun({
           issueId,
           prompt: `Investigate issue ${issueId}`,
@@ -366,7 +386,7 @@ class OrchestratorService {
         });
         break;
 
-      case "implementation":
+      case 'implementation':
         await this.#assembleAndRun({
           issueId,
           prompt: `Execute remediation plan for issue ${issueId}`,

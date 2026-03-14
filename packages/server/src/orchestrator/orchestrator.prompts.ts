@@ -2,7 +2,8 @@ type PromptContext = {
   issueId: string;
 };
 
-const triagePrompt = (ctx: PromptContext): string => `
+const triagePrompt = (ctx: PromptContext): string =>
+  `
 You are triaging a new infrastructure alert.
 
 Your job:
@@ -16,7 +17,8 @@ Issue ID: ${ctx.issueId}
 Keep it short. You're classifying, not investigating.
 `.trim();
 
-const investigationPrompt = (ctx: PromptContext): string => `
+const investigationPrompt = (ctx: PromptContext): string =>
+  `
 You are investigating the root cause of an infrastructure issue.
 
 Your job:
@@ -32,7 +34,8 @@ Issue ID: ${ctx.issueId}
 Be thorough but efficient. Explain what you found and why you're proposing what you're proposing.
 `.trim();
 
-const implementationPrompt = (ctx: PromptContext): string => `
+const implementationPrompt = (ctx: PromptContext): string =>
+  `
 You are executing an approved remediation plan.
 
 Your job:
@@ -46,7 +49,8 @@ Issue ID: ${ctx.issueId}
 Be careful and methodical. Record everything you do.
 `.trim();
 
-const monitorPrompt = (ctx: PromptContext): string => `
+const monitorPrompt = (ctx: PromptContext): string =>
+  `
 You are checking whether a fix is holding.
 
 Your job:

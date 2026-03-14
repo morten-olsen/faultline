@@ -1,6 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { motion } from 'motion/react'
-import { AgentActivity } from '../../components/agent-activity/agent-activity.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { motion } from 'motion/react';
+
+import { AgentActivity } from '../../components/agent-activity/agent-activity.tsx';
 
 /*
  * AgentActivity — inline indicator that an agent is working on something.
@@ -16,23 +17,21 @@ const fadeUp = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const },
-}
+};
 
 const stagger = (i: number, base = 0) => ({
   ...fadeUp,
   transition: { ...fadeUp.transition, delay: base + i * 0.05 },
-})
+});
 
 /* ── Showcase card ────────────────────────────────────────────────── */
 
 const ShowcaseCard = ({ children, label }: { children: React.ReactNode; label: string }): React.ReactElement => (
   <div>
     <span className="text-xs text-text-muted uppercase tracking-wider mb-3 block">{label}</span>
-    <div className="max-w-md">
-      {children}
-    </div>
+    <div className="max-w-md">{children}</div>
   </div>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * ALL STATES — every status an agent can be in
@@ -47,8 +46,8 @@ const AllStates = (): React.ReactElement => (
             status="working"
             label="Analyzing memory pressure on node-02"
             elapsed="12s"
-            onStop={() => {}}
-            onExpand={() => {}}
+            onStop={() => undefined}
+            onExpand={() => undefined}
           />
         </ShowcaseCard>
       </motion.div>
@@ -59,34 +58,26 @@ const AllStates = (): React.ReactElement => (
             status="waiting"
             label="Needs approval to evict home-assistant"
             elapsed="2m"
-            onStop={() => {}}
-            onExpand={() => {}}
+            onStop={() => undefined}
+            onExpand={() => undefined}
           />
         </ShowcaseCard>
       </motion.div>
 
       <motion.div {...stagger(2)}>
         <ShowcaseCard label="Complete — agent finished successfully">
-          <AgentActivity
-            status="complete"
-            label="Rebalanced workloads — memory at 61%"
-            onExpand={() => {}}
-          />
+          <AgentActivity status="complete" label="Rebalanced workloads — memory at 61%" onExpand={() => undefined} />
         </ShowcaseCard>
       </motion.div>
 
       <motion.div {...stagger(3)}>
         <ShowcaseCard label="Stopped — agent was stopped by user">
-          <AgentActivity
-            status="stopped"
-            label="Investigation halted by user"
-            onExpand={() => {}}
-          />
+          <AgentActivity status="stopped" label="Investigation halted by user" onExpand={() => undefined} />
         </ShowcaseCard>
       </motion.div>
     </div>
   </div>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * IN CONTEXT — how the indicator appears in a timeline
@@ -112,8 +103,8 @@ const InContext = (): React.ReactElement => (
                 status="working"
                 label="Moving prometheus-adapter to node-01"
                 elapsed="8s"
-                onStop={() => {}}
-                onExpand={() => {}}
+                onStop={() => undefined}
+                onExpand={() => undefined}
               />
             </div>
           </div>
@@ -129,7 +120,7 @@ const InContext = (): React.ReactElement => (
               <AgentActivity
                 status="complete"
                 label="Identified 3 low-priority pods on node-02"
-                onExpand={() => {}}
+                onExpand={() => undefined}
               />
             </div>
           </div>
@@ -142,18 +133,14 @@ const InContext = (): React.ReactElement => (
                 <span className="text-sm font-medium text-text">Detected memory pressure</span>
                 <span className="text-xs text-text-muted font-mono">14:02</span>
               </div>
-              <AgentActivity
-                status="complete"
-                label="Assessed severity — node-02 at 84%"
-                onExpand={() => {}}
-              />
+              <AgentActivity status="complete" label="Assessed severity — node-02 at 84%" onExpand={() => undefined} />
             </div>
           </div>
         </motion.div>
       </div>
     </div>
   </div>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════ */
 
@@ -165,12 +152,12 @@ const meta: Meta = {
   globals: {
     backgrounds: { value: 'faultline' },
   },
-}
+};
 
-type Story = StoryObj
+type Story = StoryObj;
 
-const States: Story = { render: AllStates }
-const Timeline: Story = { render: InContext }
+const States: Story = { render: AllStates };
+const Timeline: Story = { render: InContext };
 
-export { States, Timeline }
-export default meta
+export { States, Timeline };
+export default meta;

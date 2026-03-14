@@ -1,47 +1,41 @@
-import { useState } from 'react'
-import { Hand } from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
-import { Button } from '../button/button.tsx'
+import { useState } from 'react';
+import { Hand } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import type { LucideIcon } from 'lucide-react';
 
-import type { LucideIcon } from 'lucide-react'
+import { Button } from '../button/button.tsx';
 
 type ApprovalAction = {
-  label: string
-  variant: 'primary' | 'ghost'
-  onClick: () => void
-}
+  label: string;
+  variant: 'primary' | 'ghost';
+  onClick: () => void;
+};
 
 type ApprovalCardProps = {
-  title: string
-  body: string
-  actions: ApprovalAction[]
-  icon?: LucideIcon
-  onReject?: (reason: string) => void
-}
+  title: string;
+  body: string;
+  actions: ApprovalAction[];
+  icon?: LucideIcon;
+  onReject?: (reason: string) => void;
+};
 
-const ApprovalCard = ({
-  title,
-  body,
-  actions,
-  icon: Icon = Hand,
-  onReject,
-}: ApprovalCardProps): React.ReactElement => {
-  const [showRejectInput, setShowRejectInput] = useState(false)
-  const [rejectReason, setRejectReason] = useState('')
+const ApprovalCard = ({ title, body, actions, icon: Icon = Hand, onReject }: ApprovalCardProps): React.ReactElement => {
+  const [showRejectInput, setShowRejectInput] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
 
   const handleRejectClick = (): void => {
     if (onReject) {
-      setShowRejectInput(true)
+      setShowRejectInput(true);
     }
-  }
+  };
 
   const handleRejectSubmit = (): void => {
     if (onReject && rejectReason.trim()) {
-      onReject(rejectReason.trim())
-      setShowRejectInput(false)
-      setRejectReason('')
+      onReject(rejectReason.trim());
+      setShowRejectInput(false);
+      setRejectReason('');
     }
-  }
+  };
 
   return (
     <div className="bg-white/3 ring-1 ring-amber-500/12 rounded-xl p-4 space-y-3">
@@ -73,7 +67,14 @@ const ApprovalCard = ({
               <Button variant="danger" size="sm" onClick={handleRejectSubmit}>
                 Reject
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => { setShowRejectInput(false); setRejectReason('') }}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowRejectInput(false);
+                  setRejectReason('');
+                }}
+              >
                 Cancel
               </Button>
             </div>
@@ -100,8 +101,8 @@ const ApprovalCard = ({
         )}
       </AnimatePresence>
     </div>
-  )
-}
+  );
+};
 
-export type { ApprovalCardProps, ApprovalAction }
-export { ApprovalCard }
+export type { ApprovalCardProps, ApprovalAction };
+export { ApprovalCard };

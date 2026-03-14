@@ -1,25 +1,23 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { motion } from 'motion/react'
-import {
-  Server, Check, Shield,
-} from 'lucide-react'
-import { SettingsShell } from '../../components/settings-shell/settings-shell.tsx'
-import { IntegrationForm } from '../../components/integration-form/integration-form.tsx'
-import { FormField } from '../../components/form-field/form-field.tsx'
-import { Input } from '../../components/input/input.tsx'
-import { TextArea } from '../../components/text-area/text-area.tsx'
-import { Select } from '../../components/select/select.tsx'
-import { Button } from '../../components/button/button.tsx'
-import { ToggleGroup } from '../../components/toggle-group/toggle-group.tsx'
-import { CopyBlock } from '../../components/copy-block/copy-block.tsx'
-import { AnimatedField } from '../../components/animated-field/animated-field.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { motion } from 'motion/react';
+import { Server, Check, Shield } from 'lucide-react';
+
+import { SettingsShell } from '../../components/settings-shell/settings-shell.tsx';
+import { IntegrationForm } from '../../components/integration-form/integration-form.tsx';
+import { FormField } from '../../components/form-field/form-field.tsx';
+import { Input } from '../../components/input/input.tsx';
+import { TextArea } from '../../components/text-area/text-area.tsx';
+import { Select } from '../../components/select/select.tsx';
+import { Button } from '../../components/button/button.tsx';
+import { ToggleGroup } from '../../components/toggle-group/toggle-group.tsx';
+import { CopyBlock } from '../../components/copy-block/copy-block.tsx';
+import { AnimatedField } from '../../components/animated-field/animated-field.tsx';
 import {
   SectionHeader,
   IntegrationRow,
   integrationTypes,
-} from '../../components/integration-list/integration-list.tsx'
-
-import type { IntegrationType, IntegrationItem } from '../../components/integration-list/integration-list.tsx'
+} from '../../components/integration-list/integration-list.tsx';
+import type { IntegrationType, IntegrationItem } from '../../components/integration-list/integration-list.tsx';
 
 /*
  * Settings — Integrations
@@ -46,7 +44,7 @@ const fadeUp = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const },
-}
+};
 
 /* ── Mock data ────────────────────────────────────────────────────── */
 
@@ -103,9 +101,10 @@ const mockIntegrations: IntegrationItem[] = [
     detail: 'root@10.0.1.10:22',
     tags: [{ label: 'deploy-write', variant: 'default' }],
   },
-]
+];
 
-const mockPublicKey = 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHKz4g7R5pL9xF2nJqT8wM3vKxY6dB0cH1fQzU+pA2Lm faultline-deploy-readonly'
+const mockPublicKey =
+  'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHKz4g7R5pL9xF2nJqT8wM3vKxY6dB0cH1fQzU+pA2Lm faultline-deploy-readonly';
 
 /* ── Helper: group by type ────────────────────────────────────────── */
 
@@ -113,15 +112,15 @@ const groupByType = (items: IntegrationItem[]): Record<IntegrationType, Integrat
   const groups: Record<IntegrationType, IntegrationItem[]> = {
     'ssh-identity': [],
     'git-repo': [],
-    'kubernetes': [],
-    'argocd': [],
+    kubernetes: [],
+    argocd: [],
     'ssh-connection': [],
-  }
+  };
   for (const item of items) {
-    groups[item.type].push(item)
+    groups[item.type].push(item);
   }
-  return groups
-}
+  return groups;
+};
 
 /* ══════════════════════════════════════════════════════════════════════
  * EMPTY — no integrations configured yet
@@ -132,33 +131,31 @@ const groupByType = (items: IntegrationItem[]): Record<IntegrationType, Integrat
  * ══════════════════════════════════════════════════════════════════════ */
 
 const Empty = (): React.ReactElement => (
-  <SettingsShell
-    title="Settings"
-    tabs={[{ id: 'integrations', label: 'Integrations' }]}
-    activeTab="integrations"
-  >
+  <SettingsShell title="Settings" tabs={[{ id: 'integrations', label: 'Integrations' }]} activeTab="integrations">
     <motion.div {...fadeUp} className="text-center py-16">
       <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/4 mb-4">
         <Server size={18} className="text-text-muted" />
       </div>
       <h2 className="text-base font-medium text-text mb-2">No integrations yet</h2>
       <p className="text-sm text-text-muted max-w-xs mx-auto leading-relaxed mb-6">
-        Integrations give the agent access to your infrastructure — SSH keys,
-        git repos, Kubernetes clusters, and more. Add them as you need them.
+        Integrations give the agent access to your infrastructure — SSH keys, git repos, Kubernetes clusters, and more.
+        Add them as you need them.
       </p>
       <div className="flex flex-wrap justify-center gap-2">
-        {(Object.entries(integrationTypes) as [IntegrationType, typeof integrationTypes[IntegrationType]][]).map(([type, config]) => {
-          const Icon = config.icon
-          return (
-            <Button key={type} variant="secondary" size="sm" icon={Icon}>
-              {config.singular}
-            </Button>
-          )
-        })}
+        {(Object.entries(integrationTypes) as [IntegrationType, (typeof integrationTypes)[IntegrationType]][]).map(
+          ([type, config]) => {
+            const Icon = config.icon;
+            return (
+              <Button key={type} variant="secondary" size="sm" icon={Icon}>
+                {config.singular}
+              </Button>
+            );
+          },
+        )}
       </div>
     </motion.div>
   </SettingsShell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * POPULATED — several integrations configured
@@ -169,15 +166,11 @@ const Empty = (): React.ReactElement => (
  * ══════════════════════════════════════════════════════════════════════ */
 
 const Populated = (): React.ReactElement => {
-  const groups = groupByType(mockIntegrations)
-  let globalIndex = 0
+  const groups = groupByType(mockIntegrations);
+  let globalIndex = 0;
 
   return (
-    <SettingsShell
-      title="Settings"
-      tabs={[{ id: 'integrations', label: 'Integrations' }]}
-      activeTab="integrations"
-    >
+    <SettingsShell title="Settings" tabs={[{ id: 'integrations', label: 'Integrations' }]} activeTab="integrations">
       {(Object.entries(groups) as [IntegrationType, IntegrationItem[]][])
         .filter(([, items]) => items.length > 0)
         .map(([type, items], sectionIndex) => (
@@ -185,16 +178,15 @@ const Populated = (): React.ReactElement => {
             <SectionHeader type={type} delay={sectionIndex * 0.08} />
             <div className="divide-y divide-white/5">
               {items.map((item) => {
-                const idx = globalIndex++
-                return <IntegrationRow key={item.id} item={item} delay={0.1 + idx * 0.04} />
+                const idx = globalIndex++;
+                return <IntegrationRow key={item.id} item={item} delay={0.1 + idx * 0.04} />;
               })}
             </div>
           </div>
-        ))
-      }
+        ))}
     </SettingsShell>
-  )
-}
+  );
+};
 
 /* ══════════════════════════════════════════════════════════════════════
  * NEW SSH IDENTITY — generate a new keypair
@@ -208,7 +200,7 @@ const Populated = (): React.ReactElement => {
  * ══════════════════════════════════════════════════════════════════════ */
 
 const NewSshIdentityGenerate = (): React.ReactElement => (
-  <IntegrationForm title="New SSH Identity" onBack={() => {}} onSave={() => {}}>
+  <IntegrationForm title="New SSH Identity" onBack={() => undefined} onSave={() => undefined}>
     <AnimatedField index={0}>
       <FormField label="Name" description="How you'll refer to this key elsewhere in Faultline">
         <Input placeholder="deploy-readonly" />
@@ -236,7 +228,7 @@ const NewSshIdentityGenerate = (): React.ReactElement => (
       </div>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * NEW SSH IDENTITY — import an existing key
@@ -246,7 +238,7 @@ const NewSshIdentityGenerate = (): React.ReactElement => (
  * ══════════════════════════════════════════════════════════════════════ */
 
 const NewSshIdentityImport = (): React.ReactElement => (
-  <IntegrationForm title="New SSH Identity" onBack={() => {}} onSave={() => {}}>
+  <IntegrationForm title="New SSH Identity" onBack={() => undefined} onSave={() => undefined}>
     <AnimatedField index={0}>
       <FormField label="Name" description="How you'll refer to this key elsewhere in Faultline">
         <Input placeholder="deploy-readonly" />
@@ -266,16 +258,15 @@ const NewSshIdentityImport = (): React.ReactElement => (
     </AnimatedField>
 
     <AnimatedField index={2}>
-      <FormField label="Private key" description="Paste your key here. It stays on the server and is never sent back to the browser.">
-        <TextArea
-          placeholder={"-----BEGIN OPENSSH PRIVATE KEY-----\n..."}
-          rows={6}
-          mono
-        />
+      <FormField
+        label="Private key"
+        description="Paste your key here. It stays on the server and is never sent back to the browser."
+      >
+        <TextArea placeholder={'-----BEGIN OPENSSH PRIVATE KEY-----\n...'} rows={6} mono />
       </FormField>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * EDIT SSH IDENTITY — view public key, update settings
@@ -288,9 +279,9 @@ const EditSshIdentity = (): React.ReactElement => (
   <IntegrationForm
     title="Edit SSH Identity"
     isEdit
-    onBack={() => {}}
-    onSave={() => {}}
-    onDelete={() => {}}
+    onBack={() => undefined}
+    onSave={() => undefined}
+    onDelete={() => undefined}
   >
     <AnimatedField index={0}>
       <FormField label="Name">
@@ -309,7 +300,7 @@ const EditSshIdentity = (): React.ReactElement => (
       </div>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * NEW GIT REPOSITORY — connect a gitops repo
@@ -321,7 +312,7 @@ const EditSshIdentity = (): React.ReactElement => (
  * ══════════════════════════════════════════════════════════════════════ */
 
 const NewGitRepo = (): React.ReactElement => (
-  <IntegrationForm title="New Git Repository" onBack={() => {}} onSave={() => {}}>
+  <IntegrationForm title="New Git Repository" onBack={() => undefined} onSave={() => undefined}>
     <AnimatedField index={0}>
       <FormField label="Name" description="A short name for this repo">
         <Input placeholder="infra-gitops" />
@@ -336,10 +327,7 @@ const NewGitRepo = (): React.ReactElement => (
 
     <AnimatedField index={2}>
       <FormField label="Description" description="Helps the agent understand what this repo is for">
-        <TextArea
-          placeholder="Kubernetes manifests for the homelab cluster."
-          rows={3}
-        />
+        <TextArea placeholder="Kubernetes manifests for the homelab cluster." rows={3} />
       </FormField>
     </AnimatedField>
 
@@ -362,7 +350,7 @@ const NewGitRepo = (): React.ReactElement => (
       </FormField>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * NEW KUBERNETES — connect a cluster context
@@ -372,7 +360,7 @@ const NewGitRepo = (): React.ReactElement => (
  * ══════════════════════════════════════════════════════════════════════ */
 
 const NewKubernetes = (): React.ReactElement => (
-  <IntegrationForm title="New Kubernetes Context" onBack={() => {}} onSave={() => {}}>
+  <IntegrationForm title="New Kubernetes Context" onBack={() => undefined} onSave={() => undefined}>
     <AnimatedField index={0}>
       <FormField label="Name" description="A friendly name for this cluster">
         <Input placeholder="homelab-prod" />
@@ -395,14 +383,11 @@ const NewKubernetes = (): React.ReactElement => (
 
     <AnimatedField index={2}>
       <FormField label="Description" description="Helps the agent understand this cluster's role">
-        <TextArea
-          placeholder="Production homelab cluster running Traefik and ArgoCD."
-          rows={2}
-        />
+        <TextArea placeholder="Production homelab cluster running Traefik and ArgoCD." rows={2} />
       </FormField>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * NEW ARGOCD — connect an Argo CD instance
@@ -412,7 +397,7 @@ const NewKubernetes = (): React.ReactElement => (
  * ══════════════════════════════════════════════════════════════════════ */
 
 const NewArgocd = (): React.ReactElement => (
-  <IntegrationForm title="New ArgoCD Instance" onBack={() => {}} onSave={() => {}}>
+  <IntegrationForm title="New ArgoCD Instance" onBack={() => undefined} onSave={() => undefined}>
     <AnimatedField index={0}>
       <FormField label="Name" description="A friendly name for this instance">
         <Input placeholder="homelab-argo" />
@@ -433,14 +418,11 @@ const NewArgocd = (): React.ReactElement => (
 
     <AnimatedField index={3}>
       <FormField label="Description">
-        <TextArea
-          placeholder="Manages all homelab deployments. Watches the infra-gitops repo."
-          rows={2}
-        />
+        <TextArea placeholder="Manages all homelab deployments. Watches the infra-gitops repo." rows={2} />
       </FormField>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * NEW SSH CONNECTION — remote host access
@@ -451,7 +433,7 @@ const NewArgocd = (): React.ReactElement => (
  * ══════════════════════════════════════════════════════════════════════ */
 
 const NewSshConnection = (): React.ReactElement => (
-  <IntegrationForm title="New SSH Connection" onBack={() => {}} onSave={() => {}}>
+  <IntegrationForm title="New SSH Connection" onBack={() => undefined} onSave={() => undefined}>
     <AnimatedField index={0}>
       <FormField label="Name" description="A friendly name for this host">
         <Input placeholder="nas" />
@@ -491,14 +473,11 @@ const NewSshConnection = (): React.ReactElement => (
 
     <AnimatedField index={5}>
       <FormField label="Description" description="Helps the agent understand what this host does">
-        <TextArea
-          placeholder="Synology NAS running ZFS. Hosts backups and home automation data."
-          rows={2}
-        />
+        <TextArea placeholder="Synology NAS running ZFS. Hosts backups and home automation data." rows={2} />
       </FormField>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════ */
 
@@ -510,19 +489,19 @@ const meta: Meta = {
   globals: {
     backgrounds: { value: 'faultline' },
   },
-}
+};
 
-type Story = StoryObj
+type Story = StoryObj;
 
-const NoIntegrations: Story = { render: Empty }
-const AllConfigured: Story = { render: Populated }
-const AddSshIdentityGenerate: Story = { render: NewSshIdentityGenerate }
-const AddSshIdentityImport: Story = { render: NewSshIdentityImport }
-const EditExistingSshIdentity: Story = { render: EditSshIdentity }
-const AddGitRepository: Story = { render: NewGitRepo }
-const AddKubernetesContext: Story = { render: NewKubernetes }
-const AddArgocdInstance: Story = { render: NewArgocd }
-const AddSshConnection: Story = { render: NewSshConnection }
+const NoIntegrations: Story = { render: Empty };
+const AllConfigured: Story = { render: Populated };
+const AddSshIdentityGenerate: Story = { render: NewSshIdentityGenerate };
+const AddSshIdentityImport: Story = { render: NewSshIdentityImport };
+const EditExistingSshIdentity: Story = { render: EditSshIdentity };
+const AddGitRepository: Story = { render: NewGitRepo };
+const AddKubernetesContext: Story = { render: NewKubernetes };
+const AddArgocdInstance: Story = { render: NewArgocd };
+const AddSshConnection: Story = { render: NewSshConnection };
 
 export {
   NoIntegrations,
@@ -534,5 +513,5 @@ export {
   AddKubernetesContext,
   AddArgocdInstance,
   AddSshConnection,
-}
-export default meta
+};
+export default meta;

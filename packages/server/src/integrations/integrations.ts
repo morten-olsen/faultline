@@ -9,7 +9,7 @@ export type {
   UpdateArgocdInstanceInput,
   CreateSshConnectionInput,
   UpdateSshConnectionInput,
-} from "./integrations.schemas.js";
+} from './integrations.schemas.js';
 export {
   createSshIdentitySchema,
   updateSshIdentitySchema,
@@ -21,13 +21,7 @@ export {
   updateArgocdInstanceSchema,
   createSshConnectionSchema,
   updateSshConnectionSchema,
-} from "./integrations.schemas.js";
+} from './integrations.schemas.js';
 
-export type {
-  SshIdentity,
-  GitRepo,
-  KubeContext,
-  ArgocdInstance,
-  SshConnection,
-} from "./integrations.service.js";
-export { IntegrationService } from "./integrations.service.js";
+export type { SshIdentity, GitRepo, KubeContext, ArgocdInstance, SshConnection } from './integrations.service.js';
+export { IntegrationService } from './integrations.service.js';

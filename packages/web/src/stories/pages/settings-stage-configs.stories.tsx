@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { motion } from 'motion/react'
-import { Layers, Info } from 'lucide-react'
-import { SettingsShell } from '../../components/settings-shell/settings-shell.tsx'
-import { IntegrationForm } from '../../components/integration-form/integration-form.tsx'
-import { FormField } from '../../components/form-field/form-field.tsx'
-import { TextArea } from '../../components/text-area/text-area.tsx'
-import { Select } from '../../components/select/select.tsx'
-import { AnimatedField } from '../../components/animated-field/animated-field.tsx'
-import { AllowanceField } from '../../components/allowance-field/allowance-field.tsx'
-import { StageConfigRow } from '../../components/stage-config-list/stage-config-list.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { motion } from 'motion/react';
+import { Layers, Info } from 'lucide-react';
 
-import type { StageConfigItem } from '../../components/stage-config-list/stage-config-list.tsx'
+import { SettingsShell } from '../../components/settings-shell/settings-shell.tsx';
+import { IntegrationForm } from '../../components/integration-form/integration-form.tsx';
+import { FormField } from '../../components/form-field/form-field.tsx';
+import { TextArea } from '../../components/text-area/text-area.tsx';
+import { Select } from '../../components/select/select.tsx';
+import { AnimatedField } from '../../components/animated-field/animated-field.tsx';
+import { AllowanceField } from '../../components/allowance-field/allowance-field.tsx';
+import { StageConfigRow } from '../../components/stage-config-list/stage-config-list.tsx';
+import type { StageConfigItem } from '../../components/stage-config-list/stage-config-list.tsx';
 
 /*
  * Settings — Stage Configs
@@ -42,7 +42,7 @@ const fadeUp = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const },
-}
+};
 
 /* ── Mock data ────────────────────────────────────────────────────── */
 
@@ -54,7 +54,7 @@ const allStagesUnconfigured: StageConfigItem[] = [
   { stage: 'monitoring', configured: false },
   { stage: 'resolved', configured: false },
   { stage: 'ignored', configured: false },
-]
+];
 
 const mixedStages: StageConfigItem[] = [
   {
@@ -83,33 +83,31 @@ const mixedStages: StageConfigItem[] = [
     configured: true,
     allowedCounts: { kubeContexts: 0, sshConnections: 0, gitRepos: 0, argocdInstances: 0 },
   },
-]
+];
 
 /* ── Mock integration options (for the edit form) ────────────────── */
 
 const mockKubeOptions = [
   { value: 'k8s-1', label: 'homelab-prod' },
   { value: 'k8s-2', label: 'homelab-staging' },
-]
+];
 
 const mockSshConnOptions = [
   { value: 'ssh-conn-1', label: 'nas (admin@10.0.1.50)' },
   { value: 'ssh-conn-2', label: 'proxmox (root@10.0.1.10)' },
-]
+];
 
 const mockGitRepoOptions = [
   { value: 'git-1', label: 'infra-gitops' },
   { value: 'git-2', label: 'k8s-manifests' },
-]
+];
 
-const mockArgoOptions = [
-  { value: 'argo-1', label: 'homelab-argo' },
-]
+const mockArgoOptions = [{ value: 'argo-1', label: 'homelab-argo' }];
 
 const mockSshIdentityOptions = [
   { value: 'ssh-1', label: 'deploy-readonly' },
   { value: 'ssh-2', label: 'deploy-write' },
-]
+];
 
 /* ══════════════════════════════════════════════════════════════════════
  * DEFAULT — no stages configured
@@ -133,9 +131,8 @@ const Default = (): React.ReactElement => (
       <div className="flex items-start gap-2.5 bg-white/3 rounded-xl px-4 py-3 mb-6">
         <Info size={14} className="text-text-muted mt-0.5 flex-shrink-0" />
         <span className="text-sm text-text-secondary leading-relaxed">
-          Stage configs control what the agent can access at each stage of the issue
-          lifecycle. Unconfigured stages are unrestricted — the agent can use all
-          integrations. Configure a stage to limit access.
+          Stage configs control what the agent can access at each stage of the issue lifecycle. Unconfigured stages are
+          unrestricted — the agent can use all integrations. Configure a stage to limit access.
         </span>
       </div>
     </motion.div>
@@ -147,9 +144,7 @@ const Default = (): React.ReactElement => (
       className="flex items-center gap-2 mb-3"
     >
       <Layers size={14} className="text-text-muted" />
-      <span className="text-xs font-medium text-text-muted uppercase tracking-wider">
-        Issue Stages
-      </span>
+      <span className="text-xs font-medium text-text-muted uppercase tracking-wider">Issue Stages</span>
     </motion.div>
 
     <div className="divide-y divide-white/5">
@@ -158,7 +153,7 @@ const Default = (): React.ReactElement => (
       ))}
     </div>
   </SettingsShell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * CONFIGURED — some stages have access policies
@@ -184,9 +179,7 @@ const Configured = (): React.ReactElement => (
       className="flex items-center gap-2 mb-3"
     >
       <Layers size={14} className="text-text-muted" />
-      <span className="text-xs font-medium text-text-muted uppercase tracking-wider">
-        Issue Stages
-      </span>
+      <span className="text-xs font-medium text-text-muted uppercase tracking-wider">Issue Stages</span>
     </motion.div>
 
     <div className="divide-y divide-white/5">
@@ -195,7 +188,7 @@ const Configured = (): React.ReactElement => (
       ))}
     </div>
   </SettingsShell>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * EDIT TRIAGE — restrictive config for the triage stage
@@ -214,9 +207,9 @@ const EditTriage = (): React.ReactElement => (
   <IntegrationForm
     title="Triage — Stage Config"
     isEdit
-    onBack={() => {}}
-    onSave={() => {}}
-    onDelete={() => {}}
+    onBack={() => undefined}
+    onSave={() => undefined}
+    onDelete={() => undefined}
   >
     <AnimatedField index={0}>
       <AllowanceField
@@ -263,11 +256,7 @@ const EditTriage = (): React.ReactElement => (
         label="Fallback SSH identity"
         description="Used when an SSH connection doesn't have its own identity set"
       >
-        <Select
-          value=""
-          placeholder="None"
-          options={mockSshIdentityOptions}
-        />
+        <Select value="" placeholder="None" options={mockSshIdentityOptions} />
       </FormField>
     </AnimatedField>
 
@@ -283,7 +272,7 @@ const EditTriage = (): React.ReactElement => (
       </FormField>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * EDIT IMPLEMENTATION — permissive config with extras
@@ -297,44 +286,24 @@ const EditImplementation = (): React.ReactElement => (
   <IntegrationForm
     title="Implementation — Stage Config"
     isEdit
-    onBack={() => {}}
-    onSave={() => {}}
-    onDelete={() => {}}
+    onBack={() => undefined}
+    onSave={() => undefined}
+    onDelete={() => undefined}
   >
     <AnimatedField index={0}>
-      <AllowanceField
-        label="Kubernetes contexts"
-        mode="all"
-        selected={[]}
-        options={mockKubeOptions}
-      />
+      <AllowanceField label="Kubernetes contexts" mode="all" selected={[]} options={mockKubeOptions} />
     </AnimatedField>
 
     <AnimatedField index={1}>
-      <AllowanceField
-        label="SSH connections"
-        mode="all"
-        selected={[]}
-        options={mockSshConnOptions}
-      />
+      <AllowanceField label="SSH connections" mode="all" selected={[]} options={mockSshConnOptions} />
     </AnimatedField>
 
     <AnimatedField index={2}>
-      <AllowanceField
-        label="Git repositories"
-        mode="all"
-        selected={[]}
-        options={mockGitRepoOptions}
-      />
+      <AllowanceField label="Git repositories" mode="all" selected={[]} options={mockGitRepoOptions} />
     </AnimatedField>
 
     <AnimatedField index={3}>
-      <AllowanceField
-        label="ArgoCD instances"
-        mode="all"
-        selected={[]}
-        options={mockArgoOptions}
-      />
+      <AllowanceField label="ArgoCD instances" mode="all" selected={[]} options={mockArgoOptions} />
     </AnimatedField>
 
     <AnimatedField index={4}>
@@ -342,11 +311,7 @@ const EditImplementation = (): React.ReactElement => (
         label="Fallback SSH identity"
         description="Used when an SSH connection doesn't have its own identity set"
       >
-        <Select
-          value="ssh-2"
-          placeholder="None"
-          options={mockSshIdentityOptions}
-        />
+        <Select value="ssh-2" placeholder="None" options={mockSshIdentityOptions} />
       </FormField>
     </AnimatedField>
 
@@ -362,7 +327,7 @@ const EditImplementation = (): React.ReactElement => (
       </FormField>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * EDIT INVESTIGATION — partial restrictions, multiple selections
@@ -377,9 +342,9 @@ const EditInvestigation = (): React.ReactElement => (
   <IntegrationForm
     title="Investigation — Stage Config"
     isEdit
-    onBack={() => {}}
-    onSave={() => {}}
-    onDelete={() => {}}
+    onBack={() => undefined}
+    onSave={() => undefined}
+    onDelete={() => undefined}
   >
     <AnimatedField index={0}>
       <AllowanceField
@@ -402,21 +367,11 @@ const EditInvestigation = (): React.ReactElement => (
     </AnimatedField>
 
     <AnimatedField index={2}>
-      <AllowanceField
-        label="Git repositories"
-        mode="all"
-        selected={[]}
-        options={mockGitRepoOptions}
-      />
+      <AllowanceField label="Git repositories" mode="all" selected={[]} options={mockGitRepoOptions} />
     </AnimatedField>
 
     <AnimatedField index={3}>
-      <AllowanceField
-        label="ArgoCD instances"
-        mode="all"
-        selected={[]}
-        options={mockArgoOptions}
-      />
+      <AllowanceField label="ArgoCD instances" mode="all" selected={[]} options={mockArgoOptions} />
     </AnimatedField>
 
     <AnimatedField index={4}>
@@ -424,11 +379,7 @@ const EditInvestigation = (): React.ReactElement => (
         label="Fallback SSH identity"
         description="Used when an SSH connection doesn't have its own identity set"
       >
-        <Select
-          value=""
-          placeholder="None"
-          options={mockSshIdentityOptions}
-        />
+        <Select value="" placeholder="None" options={mockSshIdentityOptions} />
       </FormField>
     </AnimatedField>
 
@@ -437,14 +388,11 @@ const EditInvestigation = (): React.ReactElement => (
         label="Additional system prompt"
         description="Appended to the agent's system prompt when working on issues in this stage"
       >
-        <TextArea
-          placeholder="Any additional instructions for the agent at this stage…"
-          rows={3}
-        />
+        <TextArea placeholder="Any additional instructions for the agent at this stage…" rows={3} />
       </FormField>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * NEW CONFIG — configuring an unconfigured stage
@@ -455,11 +403,7 @@ const EditInvestigation = (): React.ReactElement => (
  * ══════════════════════════════════════════════════════════════════════ */
 
 const NewConfig = (): React.ReactElement => (
-  <IntegrationForm
-    title="Monitoring — Stage Config"
-    onBack={() => {}}
-    onSave={() => {}}
-  >
+  <IntegrationForm title="Monitoring — Stage Config" onBack={() => undefined} onSave={() => undefined}>
     <AnimatedField index={0}>
       <AllowanceField
         label="Kubernetes contexts"
@@ -505,11 +449,7 @@ const NewConfig = (): React.ReactElement => (
         label="Fallback SSH identity"
         description="Used when an SSH connection doesn't have its own identity set"
       >
-        <Select
-          value=""
-          placeholder="None"
-          options={mockSshIdentityOptions}
-        />
+        <Select value="" placeholder="None" options={mockSshIdentityOptions} />
       </FormField>
     </AnimatedField>
 
@@ -518,14 +458,11 @@ const NewConfig = (): React.ReactElement => (
         label="Additional system prompt"
         description="Appended to the agent's system prompt when working on issues in this stage"
       >
-        <TextArea
-          placeholder="Any additional instructions for the agent at this stage…"
-          rows={3}
-        />
+        <TextArea placeholder="Any additional instructions for the agent at this stage…" rows={3} />
       </FormField>
     </AnimatedField>
   </IntegrationForm>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════ */
 
@@ -537,16 +474,16 @@ const meta: Meta = {
   globals: {
     backgrounds: { value: 'faultline' },
   },
-}
+};
 
-type Story = StoryObj
+type Story = StoryObj;
 
-const AllUnconfigured: Story = { render: Default }
-const SomeConfigured: Story = { render: Configured }
-const EditTriageConfig: Story = { render: EditTriage }
-const EditImplementationConfig: Story = { render: EditImplementation }
-const EditInvestigationConfig: Story = { render: EditInvestigation }
-const NewStageConfig: Story = { render: NewConfig }
+const AllUnconfigured: Story = { render: Default };
+const SomeConfigured: Story = { render: Configured };
+const EditTriageConfig: Story = { render: EditTriage };
+const EditImplementationConfig: Story = { render: EditImplementation };
+const EditInvestigationConfig: Story = { render: EditInvestigation };
+const NewStageConfig: Story = { render: NewConfig };
 
 export {
   AllUnconfigured,
@@ -555,5 +492,5 @@ export {
   EditImplementationConfig,
   EditInvestigationConfig,
   NewStageConfig,
-}
-export default meta
+};
+export default meta;

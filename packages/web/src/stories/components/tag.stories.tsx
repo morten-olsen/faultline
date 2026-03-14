@@ -1,5 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Tag } from '../../components/tag/tag.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
+import { Tag } from '../../components/tag/tag.tsx';
 
 /*
  * Tag
@@ -17,17 +18,16 @@ const meta: Meta<typeof Tag> = {
   parameters: {
     layout: 'padded',
   },
-}
+};
 
-type Story = StoryObj<typeof Tag>
+type Story = StoryObj<typeof Tag>;
 
 const Variants: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        Tags use semantic color to communicate state at a glance. Default is
-        for neutral labels like namespaces. The semantic variants mirror the
-        system's issue states.
+        Tags use semantic color to communicate state at a glance. Default is for neutral labels like namespaces. The
+        semantic variants mirror the system's issue states.
       </p>
       <div className="flex flex-wrap gap-2">
         <Tag>kube-system</Tag>
@@ -38,30 +38,34 @@ const Variants: Story = {
       </div>
     </div>
   ),
-}
+};
 
 const Removable: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        Removable tags are used for active filters. The close icon is subtle
-        until hovered — it shouldn't compete with the label.
+        Removable tags are used for active filters. The close icon is subtle until hovered — it shouldn't compete with
+        the label.
       </p>
       <div className="flex flex-wrap gap-2">
         <Tag removable>namespace: monitoring</Tag>
-        <Tag removable variant="warning">stage: triaged</Tag>
-        <Tag removable variant="info">stage: in-progress</Tag>
+        <Tag removable variant="warning">
+          stage: triaged
+        </Tag>
+        <Tag removable variant="info">
+          stage: in-progress
+        </Tag>
       </div>
     </div>
   ),
-}
+};
 
 const InContext: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        Tags in practice — labeling the affected infrastructure on an issue card.
-        They're compact enough to sit alongside a title without crowding it.
+        Tags in practice — labeling the affected infrastructure on an issue card. They're compact enough to sit
+        alongside a title without crowding it.
       </p>
       <div className="bg-surface rounded-xl border border-border p-5">
         <div className="flex items-start justify-between gap-4 mb-2">
@@ -79,7 +83,7 @@ const InContext: Story = {
       </div>
     </div>
   ),
-}
+};
 
-export { Variants, Removable, InContext }
-export default meta
+export { Variants, Removable, InContext };
+export default meta;

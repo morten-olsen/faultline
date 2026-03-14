@@ -1,10 +1,10 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // ── SSH identities ──────────────────────────────────────────────────
 
 const createSshIdentitySchema = z.object({
   name: z.string().min(1),
-  source: z.enum(["generate", "import"]),
+  source: z.enum(['generate', 'import']),
   privateKey: z.string().optional(),
 });
 
@@ -23,7 +23,7 @@ const createGitRepoSchema = z.object({
   cloneUrl: z.string().min(1),
   description: z.string().nullable().default(null),
   sshIdentityId: z.string().uuid().nullable().default(null),
-  defaultBranch: z.string().default("main"),
+  defaultBranch: z.string().default('main'),
 });
 
 type CreateGitRepoInput = z.infer<typeof createGitRepoSchema>;

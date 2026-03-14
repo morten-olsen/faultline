@@ -1,8 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import {
-  agentStepKinds,
-} from "../issues/issues.types.js";
+import { agentStepKinds } from '../issues/issues.types.js';
 
 const createAgentLoopSchema = z.object({
   title: z.string().min(1),

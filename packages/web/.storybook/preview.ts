@@ -1,7 +1,8 @@
-import type { Preview } from '@storybook/react-vite'
-import { faultlineTheme } from './faultline-theme.ts'
-import '../src/styles.css'
-import './preview-overrides.css'
+import type { Preview } from '@storybook/react-vite';
+
+import { faultlineTheme } from './faultline-theme.ts';
+import '../src/styles.css';
+import './preview-overrides.css';
 
 const preview: Preview = {
   parameters: {
@@ -23,11 +24,14 @@ const preview: Preview = {
     options: {
       storySort: {
         order: [
-          'Design System', [
+          'Design System',
+          [
             'Introduction',
-            'Foundations', ['Colors', 'Typography', 'Spacing', 'Motion', 'Tone', 'Issue Lifecycle'],
+            'Foundations',
+            ['Colors', 'Typography', 'Spacing', 'Motion', 'Tone', 'Issue Lifecycle'],
             'Components',
-            'Pages', ['Home', 'Issue Detail', 'Issue Search', 'Agent Transcript'],
+            'Pages',
+            ['Home', 'Issue Detail', 'Issue Search', 'Agent Transcript'],
           ],
         ],
       },
@@ -39,6 +43,6 @@ const preview: Preview = {
   initialGlobals: {
     backgrounds: { value: 'faultline' },
   },
-}
+};
 
-export default preview
+export default preview;

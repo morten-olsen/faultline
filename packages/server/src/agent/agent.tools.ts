@@ -1,10 +1,10 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // ── Access levels ─────────────────────────────────────────────────
 // Ordered from least to most privileged. A phase's access level
 // determines the maximum tool access allowed.
 
-const toolAccessLevels = ["read", "write", "dangerous"] as const;
+const toolAccessLevels = ['read', 'write', 'dangerous'] as const;
 
 type ToolAccess = (typeof toolAccessLevels)[number];
 
@@ -41,29 +41,19 @@ const defineTool = <I extends z.ZodRawShape, O extends z.ZodType>(config: {
   execute: config.execute as (args: unknown) => Promise<unknown>,
 });
 
-
 // ── Built-in SDK tools by access level ────────────────────────────
 // These control which of the SDK's own tools (Read, Bash, etc.)
 // are made available to the agent at each access level.
 
 const builtinToolsByAccess: Record<ToolAccess, readonly string[]> = {
-  read: ["Read", "Glob", "Grep", "WebSearch", "WebFetch"],
-  write: [
-    "Read", "Glob", "Grep", "Bash",
-    "Write", "Edit",
-    "WebSearch", "WebFetch",
-  ],
-  dangerous: [
-    "Read", "Glob", "Grep", "Bash",
-    "Write", "Edit",
-    "WebSearch", "WebFetch",
-  ],
+  read: ['Read', 'Glob', 'Grep', 'WebSearch', 'WebFetch'],
+  write: ['Read', 'Glob', 'Grep', 'Bash', 'Write', 'Edit', 'WebSearch', 'WebFetch'],
+  dangerous: ['Read', 'Glob', 'Grep', 'Bash', 'Write', 'Edit', 'WebSearch', 'WebFetch'],
 };
 
 // ── Resolution helpers ────────────────────────────────────────────
 
-const accessIndex = (access: ToolAccess): number =>
-  toolAccessLevels.indexOf(access);
+const accessIndex = (access: ToolAccess): number => toolAccessLevels.indexOf(access);
 
 // Filter custom tools to those at or below the given access level
 const resolveTools = (allTools: readonly Tool[], access: ToolAccess): Tool[] => {
@@ -71,11 +61,5 @@ const resolveTools = (allTools: readonly Tool[], access: ToolAccess): Tool[] => 
   return allTools.filter((t) => accessIndex(t.access) <= max);
 };
 
-
 export type { ToolAccess, Tool };
-export {
-  toolAccessLevels,
-  builtinToolsByAccess,
-  defineTool,
-  resolveTools,
-};
+export { toolAccessLevels, builtinToolsByAccess, defineTool, resolveTools };

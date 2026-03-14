@@ -1,14 +1,15 @@
-import { Search, Plus, MessageSquare, Settings, User, ArrowLeft, MoreHorizontal } from 'lucide-react'
-import { IconButton } from '../icon-button/icon-button.tsx'
+import { Search, Plus, MessageSquare, Settings, User, ArrowLeft, MoreHorizontal } from 'lucide-react';
 
-type TopBarVariant = 'home' | 'detail'
+import { IconButton } from '../icon-button/icon-button.tsx';
+
+type TopBarVariant = 'home' | 'detail';
 
 type TopBarProps = {
-  variant?: TopBarVariant
-  onBack?: () => void
-  onChat?: () => void
-  onSettings?: () => void
-}
+  variant?: TopBarVariant;
+  onBack?: () => void;
+  onChat?: () => void;
+  onSettings?: () => void;
+};
 
 const TopBar = ({ variant = 'home', onBack, onChat, onSettings }: TopBarProps): React.ReactElement => (
   <div className="flex items-center justify-between h-14">
@@ -31,7 +32,7 @@ const TopBar = ({ variant = 'home', onBack, onChat, onSettings }: TopBarProps): 
       </>
     )}
   </div>
-)
+);
 
-export type { TopBarProps, TopBarVariant }
-export { TopBar }
+export type { TopBarProps, TopBarVariant };
+export { TopBar };

@@ -1,5 +1,5 @@
-const destroy = Symbol("destroy");
-const instanceKey = Symbol("instances");
+const destroy = Symbol('destroy');
+const instanceKey = Symbol('instances');
 
 type ServiceConstructor<T> = new (services: Services) => T;
 
@@ -29,12 +29,12 @@ class Services {
     await Promise.all(
       Array.from(this[instanceKey].values()).map(async (instance) => {
         if (
-          typeof instance === "object" &&
+          typeof instance === 'object' &&
           instance !== null &&
           destroy in instance &&
-          typeof (instance as Record<symbol, unknown>)[destroy] === "function"
+          typeof (instance as Record<symbol, unknown>)[destroy] === 'function'
         ) {
-          await (instance as Destroyable)[destroy]!();
+          await (instance as Destroyable)[destroy]?.();
         }
       }),
     );

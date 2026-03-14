@@ -1,12 +1,12 @@
-import { forwardRef } from "react"
-import { ArrowLeft, Bot } from "lucide-react"
+import { forwardRef } from 'react';
+import { ArrowLeft, Bot } from 'lucide-react';
 
 type ChatLayoutProps = {
-  children: React.ReactNode
-  trailing?: React.ReactNode
-  composer: React.ReactNode
-  onBack?: () => void
-}
+  children: React.ReactNode;
+  trailing?: React.ReactNode;
+  composer: React.ReactNode;
+  onBack?: () => void;
+};
 
 const ChatLayout = forwardRef<HTMLDivElement, ChatLayoutProps>(
   ({ children, trailing, composer, onBack }, ref): React.ReactElement => (
@@ -32,23 +32,18 @@ const ChatLayout = forwardRef<HTMLDivElement, ChatLayoutProps>(
         </div>
 
         {/* Messages area */}
-        <div
-          ref={ref}
-          className="flex-1 overflow-y-auto min-h-0 pt-4 pb-4"
-        >
+        <div ref={ref} className="flex-1 overflow-y-auto min-h-0 pt-4 pb-4">
           {children}
         </div>
 
         {/* Composer */}
-        <div className="pb-6 pt-2 flex-shrink-0">
-          {composer}
-        </div>
+        <div className="pb-6 pt-2 flex-shrink-0">{composer}</div>
       </div>
     </div>
   ),
-)
+);
 
-ChatLayout.displayName = "ChatLayout"
+ChatLayout.displayName = 'ChatLayout';
 
-export type { ChatLayoutProps }
-export { ChatLayout }
+export type { ChatLayoutProps };
+export { ChatLayout };

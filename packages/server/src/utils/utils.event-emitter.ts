@@ -10,7 +10,11 @@ type OnOptions = {
 class EventEmitter<T extends Record<string, (...args: ExplicitAny[]) => void | Promise<void>>> {
   #listeners = new Map<keyof T, Set<EventListener<ExplicitAny>>>();
 
-  on = <K extends keyof T>(event: K, callback: EventListener<Parameters<T[K]>>, options: OnOptions = {}): (() => void) => {
+  on = <K extends keyof T>(
+    event: K,
+    callback: EventListener<Parameters<T[K]>>,
+    options: OnOptions = {},
+  ): (() => void) => {
     const { abortSignal } = options;
     if (!this.#listeners.has(event)) {
       this.#listeners.set(event, new Set());
@@ -19,19 +23,23 @@ class EventEmitter<T extends Record<string, (...args: ExplicitAny[]) => void | P
     const abortController = new AbortController();
     const listeners = this.#listeners.get(event);
     if (!listeners) {
-      throw new Error("Event registration failed");
+      throw new Error('Event registration failed');
     }
-    abortSignal?.addEventListener("abort", () => abortController.abort());
+    abortSignal?.addEventListener('abort', () => abortController.abort());
     listeners.add(callbackClone);
-    abortController.signal.addEventListener("abort", () => {
+    abortController.signal.addEventListener('abort', () => {
       listeners.delete(callbackClone);
     });
     return () => abortController.abort();
   };
 
-  once = <K extends keyof T>(event: K, callback: EventListener<Parameters<T[K]>>, options: OnOptions = {}): (() => void) => {
+  once = <K extends keyof T>(
+    event: K,
+    callback: EventListener<Parameters<T[K]>>,
+    options: OnOptions = {},
+  ): (() => void) => {
     const abortController = new AbortController();
-    options.abortSignal?.addEventListener("abort", () => abortController.abort());
+    options.abortSignal?.addEventListener('abort', () => abortController.abort());
     return this.on(
       event,
       async (...args) => {

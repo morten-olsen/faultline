@@ -1,4 +1,4 @@
-import { create } from 'storybook/theming'
+import { create } from 'storybook/theming';
 
 const faultlineTheme = create({
   base: 'dark',
@@ -36,6 +36,6 @@ const faultlineTheme = create({
   inputBorder: '#282828',
   inputTextColor: '#e8e8e8',
   inputBorderRadius: 6,
-})
+});
 
-export { faultlineTheme }
+export { faultlineTheme };

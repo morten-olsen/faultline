@@ -1,11 +1,11 @@
-import { Search, Lightbulb, ListChecks, Wrench, Eye, CircleCheck, AlertCircle, EyeOff } from 'lucide-react'
+import { Search, Lightbulb, ListChecks, Wrench, Eye, CircleCheck, AlertCircle, EyeOff } from 'lucide-react';
 
-type Stage = 'triage' | 'investigation' | 'proposed-plan' | 'implementation' | 'monitoring' | 'resolved' | 'ignored'
+type Stage = 'triage' | 'investigation' | 'proposed-plan' | 'implementation' | 'monitoring' | 'resolved' | 'ignored';
 
 type StagePillProps = {
-  stage: Stage
-  needsYou?: boolean
-}
+  stage: Stage;
+  needsYou?: boolean;
+};
 
 const stageConfig: Record<Stage, { label: string; colorClass: string; icon: typeof Search }> = {
   triage: { label: 'Triage', colorClass: 'text-amber-400', icon: Search },
@@ -15,11 +15,11 @@ const stageConfig: Record<Stage, { label: string; colorClass: string; icon: type
   monitoring: { label: 'Monitoring', colorClass: 'text-green-400', icon: Eye },
   resolved: { label: 'Resolved', colorClass: 'text-green-400', icon: CircleCheck },
   ignored: { label: 'Ignored', colorClass: 'text-text-muted', icon: EyeOff },
-}
+};
 
 const StagePill = ({ stage, needsYou = false }: StagePillProps): React.ReactElement => {
-  const cfg = stageConfig[stage]
-  const Icon = cfg.icon
+  const cfg = stageConfig[stage];
+  const Icon = cfg.icon;
 
   return (
     <span className="inline-flex items-center gap-2.5">
@@ -34,8 +34,8 @@ const StagePill = ({ stage, needsYou = false }: StagePillProps): React.ReactElem
         </span>
       )}
     </span>
-  )
-}
+  );
+};
 
-export type { StagePillProps, Stage }
-export { StagePill }
+export type { StagePillProps, Stage };
+export { StagePill };

@@ -1,10 +1,10 @@
 type MonitoringProgressProps = {
-  plan: string
-  nextCheckIn: string
-  checksCompleted: number
-  totalChecks: number
-  intervalMinutes: number
-}
+  plan: string;
+  nextCheckIn: string;
+  checksCompleted: number;
+  totalChecks: number;
+  intervalMinutes: number;
+};
 
 const MonitoringProgress = ({
   plan,
@@ -13,7 +13,7 @@ const MonitoringProgress = ({
   totalChecks,
   intervalMinutes,
 }: MonitoringProgressProps): React.ReactElement => {
-  const progress = totalChecks > 0 ? checksCompleted / totalChecks : 0
+  const progress = totalChecks > 0 ? checksCompleted / totalChecks : 0;
 
   return (
     <div className="space-y-2.5">
@@ -36,8 +36,8 @@ const MonitoringProgress = ({
         Next check in {nextCheckIn}
       </p>
     </div>
-  )
-}
+  );
+};
 
-export type { MonitoringProgressProps }
-export { MonitoringProgress }
+export type { MonitoringProgressProps };
+export { MonitoringProgress };

@@ -1,6 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { motion } from 'motion/react'
-import { TranscriptStep } from '../../components/transcript-step/transcript-step.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { motion } from 'motion/react';
+
+import { TranscriptStep } from '../../components/transcript-step/transcript-step.tsx';
 
 /*
  * TranscriptStep — one step in an agent's work.
@@ -16,23 +17,21 @@ const fadeUp = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const },
-}
+};
 
 const stagger = (i: number, base = 0) => ({
   ...fadeUp,
   transition: { ...fadeUp.transition, delay: base + i * 0.05 },
-})
+});
 
 /* ── Showcase card ────────────────────────────────────────────────── */
 
 const ShowcaseCard = ({ children, label }: { children: React.ReactNode; label: string }): React.ReactElement => (
   <div>
     <span className="text-xs text-text-muted uppercase tracking-wider mb-3 block">{label}</span>
-    <div className="bg-surface rounded-xl p-4 ring-1 ring-white/5">
-      {children}
-    </div>
+    <div className="bg-surface rounded-xl p-4 ring-1 ring-white/5">{children}</div>
   </div>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * ALL KINDS — each step kind with its icon and color
@@ -41,7 +40,6 @@ const ShowcaseCard = ({ children, label }: { children: React.ReactNode; label: s
 const AllKinds = (): React.ReactElement => (
   <div className="bg-bg min-h-screen font-sans text-text antialiased p-8">
     <div className="max-w-xl mx-auto space-y-8">
-
       <ShowcaseCard label="Thinking">
         <TranscriptStep
           kind="thinking"
@@ -95,7 +93,7 @@ const AllKinds = (): React.ReactElement => (
       </ShowcaseCard>
     </div>
   </div>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * LIVE SEQUENCE — a running agent transcript
@@ -140,10 +138,7 @@ const LiveSequence = (): React.ReactElement => (
           />
         </motion.div>
         <motion.div {...stagger(4)}>
-          <TranscriptStep
-            kind="message"
-            title="Rebalancing low-priority workloads to node-01"
-          />
+          <TranscriptStep kind="message" title="Rebalancing low-priority workloads to node-01" />
         </motion.div>
         <motion.div {...stagger(5)}>
           <TranscriptStep
@@ -156,7 +151,7 @@ const LiveSequence = (): React.ReactElement => (
       </div>
     </div>
   </div>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════
  * COMPLETED — a finished transcript
@@ -192,10 +187,7 @@ const Completed = (): React.ReactElement => (
           output={`REVISION  CHANGE-CAUSE\n1         <none>\n2         configmap update 2026-03-13 13:58`}
           collapsible
         />
-        <TranscriptStep
-          kind="message"
-          title="ConfigMap change caused the crash — rolling back to revision 1"
-        />
+        <TranscriptStep kind="message" title="ConfigMap change caused the crash — rolling back to revision 1" />
         <TranscriptStep
           kind="tool-call"
           title="kubectl rollout undo deployment/coredns -n kube-system"
@@ -219,7 +211,7 @@ const Completed = (): React.ReactElement => (
       </div>
     </div>
   </div>
-)
+);
 
 /* ══════════════════════════════════════════════════════════════════════ */
 
@@ -231,13 +223,13 @@ const meta: Meta = {
   globals: {
     backgrounds: { value: 'faultline' },
   },
-}
+};
 
-type Story = StoryObj
+type Story = StoryObj;
 
-const Kinds: Story = { render: AllKinds }
-const Live: Story = { render: LiveSequence }
-const Complete: Story = { render: Completed }
+const Kinds: Story = { render: AllKinds };
+const Live: Story = { render: LiveSequence };
+const Complete: Story = { render: Completed };
 
-export { Kinds, Live, Complete }
-export default meta
+export { Kinds, Live, Complete };
+export default meta;

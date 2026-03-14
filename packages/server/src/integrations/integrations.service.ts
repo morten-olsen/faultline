@@ -1,19 +1,20 @@
-import { execSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
-import { join } from "node:path";
-import { tmpdir } from "node:os";
+import { execSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 
-import { DatabaseService } from "../database/database.js";
+import type { Selectable } from 'kysely';
 
-import type { Selectable } from "kysely";
-import type { Services } from "../services/services.js";
+import { DatabaseService } from '../database/database.js';
+import type { Services } from '../services/services.js';
 import type {
   SshIdentitiesTable,
   GitReposTable,
   KubeContextsTable,
   ArgocdInstancesTable,
   SshConnectionsTable,
-} from "../database/database.js";
+} from '../database/database.js';
+
 import type {
   CreateSshIdentityInput,
   UpdateSshIdentityInput,
@@ -25,7 +26,7 @@ import type {
   UpdateArgocdInstanceInput,
   CreateSshConnectionInput,
   UpdateSshConnectionInput,
-} from "./integrations.schemas.js";
+} from './integrations.schemas.js';
 
 type SshIdentity = Selectable<SshIdentitiesTable>;
 type GitRepo = Selectable<GitReposTable>;
@@ -35,20 +36,15 @@ type SshConnection = Selectable<SshConnectionsTable>;
 
 // ── Key generation ────────────────────────────────────────────────────
 
-const generateKeyPair = (
-  name: string,
-): { publicKey: string; privateKey: string } => {
-  const dir = mkdtempSync(join(tmpdir(), "faultline-keygen-"));
-  const keyPath = join(dir, "key");
+const generateKeyPair = (name: string): { publicKey: string; privateKey: string } => {
+  const dir = mkdtempSync(join(tmpdir(), 'faultline-keygen-'));
+  const keyPath = join(dir, 'key');
 
   try {
-    execSync(
-      `ssh-keygen -t ed25519 -f "${keyPath}" -N "" -C "faultline-${name}"`,
-      { stdio: "pipe" },
-    );
+    execSync(`ssh-keygen -t ed25519 -f "${keyPath}" -N "" -C "faultline-${name}"`, { stdio: 'pipe' });
 
-    const privateKey = readFileSync(keyPath, "utf-8");
-    const publicKey = readFileSync(`${keyPath}.pub`, "utf-8").trim();
+    const privateKey = readFileSync(keyPath, 'utf-8');
+    const publicKey = readFileSync(`${keyPath}.pub`, 'utf-8').trim();
 
     return { publicKey, privateKey };
   } finally {
@@ -67,33 +63,31 @@ class IntegrationService {
 
   // ── SSH identities ────────────────────────────────────────────────
 
-  createSshIdentity = async (
-    input: CreateSshIdentityInput,
-  ): Promise<SshIdentity> => {
+  createSshIdentity = async (input: CreateSshIdentityInput): Promise<SshIdentity> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
     let publicKey: string;
     let privateKey: string;
 
-    if (input.source === "generate") {
+    if (input.source === 'generate') {
       const pair = generateKeyPair(input.name);
       publicKey = pair.publicKey;
       privateKey = pair.privateKey;
     } else {
       if (!input.privateKey) {
-        throw new Error("Private key is required when importing");
+        throw new Error('Private key is required when importing');
       }
       privateKey = input.privateKey;
       // Extract public key from private key using ssh-keygen
-      const dir = mkdtempSync(join(tmpdir(), "faultline-import-"));
-      const keyPath = join(dir, "key");
+      const dir = mkdtempSync(join(tmpdir(), 'faultline-import-'));
+      const keyPath = join(dir, 'key');
       try {
-        const { writeFileSync, chmodSync } = await import("node:fs");
+        const { writeFileSync, chmodSync } = await import('node:fs');
         writeFileSync(keyPath, privateKey, { mode: 0o600 });
         chmodSync(keyPath, 0o600);
         publicKey = execSync(`ssh-keygen -y -f "${keyPath}"`, {
-          stdio: "pipe",
+          stdio: 'pipe',
         })
           .toString()
           .trim();
@@ -105,14 +99,14 @@ class IntegrationService {
     const identity: SshIdentity = {
       id: crypto.randomUUID(),
       name: input.name,
-      key_type: "ed25519",
+      key_type: 'ed25519',
       public_key: publicKey,
       private_key: privateKey,
       created_at: now,
       updated_at: now,
     };
 
-    await db.insertInto("ssh_identities").values(identity).execute();
+    await db.insertInto('ssh_identities').values(identity).execute();
 
     return identity;
   };
@@ -120,38 +114,25 @@ class IntegrationService {
   getSshIdentity = async (id: string): Promise<SshIdentity | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("ssh_identities")
-      .selectAll()
-      .where("id", "=", id)
-      .executeTakeFirst();
+    return db.selectFrom('ssh_identities').selectAll().where('id', '=', id).executeTakeFirst();
   };
 
   listSshIdentities = async (): Promise<SshIdentity[]> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("ssh_identities")
-      .selectAll()
-      .orderBy("created_at", "desc")
-      .execute();
+    return db.selectFrom('ssh_identities').selectAll().orderBy('created_at', 'desc').execute();
   };
 
-  updateSshIdentity = async (
-    id: string,
-    input: UpdateSshIdentityInput,
-  ): Promise<SshIdentity | undefined> => {
+  updateSshIdentity = async (id: string, input: UpdateSshIdentityInput): Promise<SshIdentity | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
     const values: Record<string, unknown> = { updated_at: now };
-    if (input.name !== undefined) values.name = input.name;
+    if (input.name !== undefined) {
+      values.name = input.name;
+    }
 
-    await db
-      .updateTable("ssh_identities")
-      .set(values)
-      .where("id", "=", id)
-      .execute();
+    await db.updateTable('ssh_identities').set(values).where('id', '=', id).execute();
 
     return this.getSshIdentity(id);
   };
@@ -159,10 +140,7 @@ class IntegrationService {
   deleteSshIdentity = async (id: string): Promise<boolean> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    const result = await db
-      .deleteFrom("ssh_identities")
-      .where("id", "=", id)
-      .execute();
+    const result = await db.deleteFrom('ssh_identities').where('id', '=', id).execute();
 
     return result.length > 0;
   };
@@ -184,7 +162,7 @@ class IntegrationService {
       updated_at: now,
     };
 
-    await db.insertInto("git_repos").values(repo).execute();
+    await db.insertInto('git_repos').values(repo).execute();
 
     return repo;
   };
@@ -192,44 +170,37 @@ class IntegrationService {
   getGitRepo = async (id: string): Promise<GitRepo | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("git_repos")
-      .selectAll()
-      .where("id", "=", id)
-      .executeTakeFirst();
+    return db.selectFrom('git_repos').selectAll().where('id', '=', id).executeTakeFirst();
   };
 
   listGitRepos = async (): Promise<GitRepo[]> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("git_repos")
-      .selectAll()
-      .orderBy("created_at", "desc")
-      .execute();
+    return db.selectFrom('git_repos').selectAll().orderBy('created_at', 'desc').execute();
   };
 
-  updateGitRepo = async (
-    id: string,
-    input: UpdateGitRepoInput,
-  ): Promise<GitRepo | undefined> => {
+  updateGitRepo = async (id: string, input: UpdateGitRepoInput): Promise<GitRepo | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
     const values: Record<string, unknown> = { updated_at: now };
-    if (input.name !== undefined) values.name = input.name;
-    if (input.cloneUrl !== undefined) values.clone_url = input.cloneUrl;
-    if (input.description !== undefined) values.description = input.description;
-    if (input.sshIdentityId !== undefined)
+    if (input.name !== undefined) {
+      values.name = input.name;
+    }
+    if (input.cloneUrl !== undefined) {
+      values.clone_url = input.cloneUrl;
+    }
+    if (input.description !== undefined) {
+      values.description = input.description;
+    }
+    if (input.sshIdentityId !== undefined) {
       values.ssh_identity_id = input.sshIdentityId;
-    if (input.defaultBranch !== undefined)
+    }
+    if (input.defaultBranch !== undefined) {
       values.default_branch = input.defaultBranch;
+    }
 
-    await db
-      .updateTable("git_repos")
-      .set(values)
-      .where("id", "=", id)
-      .execute();
+    await db.updateTable('git_repos').set(values).where('id', '=', id).execute();
 
     return this.getGitRepo(id);
   };
@@ -237,19 +208,14 @@ class IntegrationService {
   deleteGitRepo = async (id: string): Promise<boolean> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    const result = await db
-      .deleteFrom("git_repos")
-      .where("id", "=", id)
-      .execute();
+    const result = await db.deleteFrom('git_repos').where('id', '=', id).execute();
 
     return result.length > 0;
   };
 
   // ── Kubernetes contexts ───────────────────────────────────────────
 
-  createKubeContext = async (
-    input: CreateKubeContextInput,
-  ): Promise<KubeContext> => {
+  createKubeContext = async (input: CreateKubeContextInput): Promise<KubeContext> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
@@ -262,7 +228,7 @@ class IntegrationService {
       updated_at: now,
     };
 
-    await db.insertInto("kube_contexts").values(ctx).execute();
+    await db.insertInto('kube_contexts').values(ctx).execute();
 
     return ctx;
   };
@@ -270,40 +236,31 @@ class IntegrationService {
   getKubeContext = async (id: string): Promise<KubeContext | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("kube_contexts")
-      .selectAll()
-      .where("id", "=", id)
-      .executeTakeFirst();
+    return db.selectFrom('kube_contexts').selectAll().where('id', '=', id).executeTakeFirst();
   };
 
   listKubeContexts = async (): Promise<KubeContext[]> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("kube_contexts")
-      .selectAll()
-      .orderBy("created_at", "desc")
-      .execute();
+    return db.selectFrom('kube_contexts').selectAll().orderBy('created_at', 'desc').execute();
   };
 
-  updateKubeContext = async (
-    id: string,
-    input: UpdateKubeContextInput,
-  ): Promise<KubeContext | undefined> => {
+  updateKubeContext = async (id: string, input: UpdateKubeContextInput): Promise<KubeContext | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
     const values: Record<string, unknown> = { updated_at: now };
-    if (input.name !== undefined) values.name = input.name;
-    if (input.context !== undefined) values.context = input.context;
-    if (input.description !== undefined) values.description = input.description;
+    if (input.name !== undefined) {
+      values.name = input.name;
+    }
+    if (input.context !== undefined) {
+      values.context = input.context;
+    }
+    if (input.description !== undefined) {
+      values.description = input.description;
+    }
 
-    await db
-      .updateTable("kube_contexts")
-      .set(values)
-      .where("id", "=", id)
-      .execute();
+    await db.updateTable('kube_contexts').set(values).where('id', '=', id).execute();
 
     return this.getKubeContext(id);
   };
@@ -311,24 +268,21 @@ class IntegrationService {
   deleteKubeContext = async (id: string): Promise<boolean> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    const result = await db
-      .deleteFrom("kube_contexts")
-      .where("id", "=", id)
-      .execute();
+    const result = await db.deleteFrom('kube_contexts').where('id', '=', id).execute();
 
     return result.length > 0;
   };
 
   listAvailableKubeContexts = (): string[] => {
     try {
-      const output = execSync("kubectl config get-contexts -o name", {
-        stdio: "pipe",
+      const output = execSync('kubectl config get-contexts -o name', {
+        stdio: 'pipe',
         timeout: 5000,
       })
         .toString()
         .trim();
 
-      return output ? output.split("\n").filter(Boolean) : [];
+      return output ? output.split('\n').filter(Boolean) : [];
     } catch {
       return [];
     }
@@ -336,9 +290,7 @@ class IntegrationService {
 
   // ── ArgoCD instances ──────────────────────────────────────────────
 
-  createArgocdInstance = async (
-    input: CreateArgocdInstanceInput,
-  ): Promise<ArgocdInstance> => {
+  createArgocdInstance = async (input: CreateArgocdInstanceInput): Promise<ArgocdInstance> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
@@ -352,51 +304,42 @@ class IntegrationService {
       updated_at: now,
     };
 
-    await db.insertInto("argocd_instances").values(instance).execute();
+    await db.insertInto('argocd_instances').values(instance).execute();
 
     return instance;
   };
 
-  getArgocdInstance = async (
-    id: string,
-  ): Promise<ArgocdInstance | undefined> => {
+  getArgocdInstance = async (id: string): Promise<ArgocdInstance | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("argocd_instances")
-      .selectAll()
-      .where("id", "=", id)
-      .executeTakeFirst();
+    return db.selectFrom('argocd_instances').selectAll().where('id', '=', id).executeTakeFirst();
   };
 
   listArgocdInstances = async (): Promise<ArgocdInstance[]> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("argocd_instances")
-      .selectAll()
-      .orderBy("created_at", "desc")
-      .execute();
+    return db.selectFrom('argocd_instances').selectAll().orderBy('created_at', 'desc').execute();
   };
 
-  updateArgocdInstance = async (
-    id: string,
-    input: UpdateArgocdInstanceInput,
-  ): Promise<ArgocdInstance | undefined> => {
+  updateArgocdInstance = async (id: string, input: UpdateArgocdInstanceInput): Promise<ArgocdInstance | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
     const values: Record<string, unknown> = { updated_at: now };
-    if (input.name !== undefined) values.name = input.name;
-    if (input.serverUrl !== undefined) values.server_url = input.serverUrl;
-    if (input.authToken !== undefined) values.auth_token = input.authToken;
-    if (input.description !== undefined) values.description = input.description;
+    if (input.name !== undefined) {
+      values.name = input.name;
+    }
+    if (input.serverUrl !== undefined) {
+      values.server_url = input.serverUrl;
+    }
+    if (input.authToken !== undefined) {
+      values.auth_token = input.authToken;
+    }
+    if (input.description !== undefined) {
+      values.description = input.description;
+    }
 
-    await db
-      .updateTable("argocd_instances")
-      .set(values)
-      .where("id", "=", id)
-      .execute();
+    await db.updateTable('argocd_instances').set(values).where('id', '=', id).execute();
 
     return this.getArgocdInstance(id);
   };
@@ -404,19 +347,14 @@ class IntegrationService {
   deleteArgocdInstance = async (id: string): Promise<boolean> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    const result = await db
-      .deleteFrom("argocd_instances")
-      .where("id", "=", id)
-      .execute();
+    const result = await db.deleteFrom('argocd_instances').where('id', '=', id).execute();
 
     return result.length > 0;
   };
 
   // ── SSH connections ───────────────────────────────────────────────
 
-  createSshConnection = async (
-    input: CreateSshConnectionInput,
-  ): Promise<SshConnection> => {
+  createSshConnection = async (input: CreateSshConnectionInput): Promise<SshConnection> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
@@ -432,54 +370,48 @@ class IntegrationService {
       updated_at: now,
     };
 
-    await db.insertInto("ssh_connections").values(conn).execute();
+    await db.insertInto('ssh_connections').values(conn).execute();
 
     return conn;
   };
 
-  getSshConnection = async (
-    id: string,
-  ): Promise<SshConnection | undefined> => {
+  getSshConnection = async (id: string): Promise<SshConnection | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("ssh_connections")
-      .selectAll()
-      .where("id", "=", id)
-      .executeTakeFirst();
+    return db.selectFrom('ssh_connections').selectAll().where('id', '=', id).executeTakeFirst();
   };
 
   listSshConnections = async (): Promise<SshConnection[]> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    return db
-      .selectFrom("ssh_connections")
-      .selectAll()
-      .orderBy("created_at", "desc")
-      .execute();
+    return db.selectFrom('ssh_connections').selectAll().orderBy('created_at', 'desc').execute();
   };
 
-  updateSshConnection = async (
-    id: string,
-    input: UpdateSshConnectionInput,
-  ): Promise<SshConnection | undefined> => {
+  updateSshConnection = async (id: string, input: UpdateSshConnectionInput): Promise<SshConnection | undefined> => {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
     const values: Record<string, unknown> = { updated_at: now };
-    if (input.name !== undefined) values.name = input.name;
-    if (input.host !== undefined) values.host = input.host;
-    if (input.port !== undefined) values.port = input.port;
-    if (input.username !== undefined) values.username = input.username;
-    if (input.sshIdentityId !== undefined)
+    if (input.name !== undefined) {
+      values.name = input.name;
+    }
+    if (input.host !== undefined) {
+      values.host = input.host;
+    }
+    if (input.port !== undefined) {
+      values.port = input.port;
+    }
+    if (input.username !== undefined) {
+      values.username = input.username;
+    }
+    if (input.sshIdentityId !== undefined) {
       values.ssh_identity_id = input.sshIdentityId;
-    if (input.description !== undefined) values.description = input.description;
+    }
+    if (input.description !== undefined) {
+      values.description = input.description;
+    }
 
-    await db
-      .updateTable("ssh_connections")
-      .set(values)
-      .where("id", "=", id)
-      .execute();
+    await db.updateTable('ssh_connections').set(values).where('id', '=', id).execute();
 
     return this.getSshConnection(id);
   };
@@ -487,20 +419,11 @@ class IntegrationService {
   deleteSshConnection = async (id: string): Promise<boolean> => {
     const db = await this.#services.get(DatabaseService).instance;
 
-    const result = await db
-      .deleteFrom("ssh_connections")
-      .where("id", "=", id)
-      .execute();
+    const result = await db.deleteFrom('ssh_connections').where('id', '=', id).execute();
 
     return result.length > 0;
   };
 }
 
-export type {
-  SshIdentity,
-  GitRepo,
-  KubeContext,
-  ArgocdInstance,
-  SshConnection,
-};
+export type { SshIdentity, GitRepo, KubeContext, ArgocdInstance, SshConnection };
 export { IntegrationService };

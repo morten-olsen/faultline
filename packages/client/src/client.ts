@@ -1,16 +1,6 @@
-import WebSocket from "ws";
-import { z } from "zod";
-import {
-  messageSchema,
-  protocol,
-} from "@faultline/protocol";
-
-import type {
-  ProtocolDefinition,
-  InferCallInput,
-  InferCallOutput,
-  InferEventPayload,
-} from "@faultline/protocol";
+import WebSocket from 'ws';
+import { messageSchema, protocol } from '@faultline/protocol';
+import type { ProtocolDefinition, InferCallInput, InferCallOutput, InferEventPayload } from '@faultline/protocol';
 
 type PendingCall = {
   resolve: (value: unknown) => void;
@@ -26,15 +16,11 @@ type ClientOptions = {
 };
 
 type ClientCalls<P extends ProtocolDefinition> = {
-  [K in keyof P["calls"] & string]: (
-    input: InferCallInput<P["calls"][K]>,
-  ) => Promise<InferCallOutput<P["calls"][K]>>;
+  [K in keyof P['calls'] & string]: (input: InferCallInput<P['calls'][K]>) => Promise<InferCallOutput<P['calls'][K]>>;
 };
 
 type ClientEvents<P extends ProtocolDefinition> = {
-  [K in keyof P["events"] & string]: (
-    handler: (payload: InferEventPayload<P["events"][K]>) => void,
-  ) => () => void;
+  [K in keyof P['events'] & string]: (handler: (payload: InferEventPayload<P['events'][K]>) => void) => () => void;
 };
 
 type FaultlineClient = {
@@ -53,16 +39,18 @@ const createClient = (options: ClientOptions): FaultlineClient => {
     new Promise((resolve, reject) => {
       ws = new WebSocket(options.url);
 
-      ws.on("open", () => resolve());
-      ws.on("error", (err) => reject(err));
+      ws.on('open', () => resolve());
+      ws.on('error', (err) => reject(err));
 
-      ws.on("message", (data) => {
+      ws.on('message', (data) => {
         const parsed = messageSchema.safeParse(JSON.parse(String(data)));
-        if (!parsed.success) return;
+        if (!parsed.success) {
+          return;
+        }
 
         const msg = parsed.data;
 
-        if (msg.type === "response") {
+        if (msg.type === 'response') {
           const call = pending.get(msg.id);
           if (call) {
             pending.delete(msg.id);
@@ -70,7 +58,7 @@ const createClient = (options: ClientOptions): FaultlineClient => {
           }
         }
 
-        if (msg.type === "error") {
+        if (msg.type === 'error') {
           const call = pending.get(msg.id);
           if (call) {
             pending.delete(msg.id);
@@ -78,7 +66,7 @@ const createClient = (options: ClientOptions): FaultlineClient => {
           }
         }
 
-        if (msg.type === "event") {
+        if (msg.type === 'event') {
           const handlers = listeners.get(msg.event);
           if (handlers) {
             for (const handler of handlers) {
@@ -96,7 +84,7 @@ const createClient = (options: ClientOptions): FaultlineClient => {
     }
 
     for (const [, call] of pending) {
-      call.reject(new Error("Client disconnected"));
+      call.reject(new Error('Client disconnected'));
     }
     pending.clear();
   };
@@ -104,21 +92,18 @@ const createClient = (options: ClientOptions): FaultlineClient => {
   const sendCall = (method: string, params: unknown): Promise<unknown> =>
     new Promise((resolve, reject) => {
       if (!ws || ws.readyState !== WebSocket.OPEN) {
-        reject(new Error("Not connected"));
+        reject(new Error('Not connected'));
         return;
       }
 
       const id = crypto.randomUUID();
       pending.set(id, { resolve, reject });
 
-      ws.send(
-        JSON.stringify({ type: "call", id, method, params }),
-      );
+      ws.send(JSON.stringify({ type: 'call', id, method, params }));
     });
 
   const call = new Proxy({} as ClientCalls<typeof protocol>, {
-    get: (_target, method: string) => (input: unknown) =>
-      sendCall(method, input),
+    get: (_target, method: string) => (input: unknown) => sendCall(method, input),
   });
 
   const on = new Proxy({} as ClientEvents<typeof protocol>, {
@@ -126,7 +111,7 @@ const createClient = (options: ClientOptions): FaultlineClient => {
       if (!listeners.has(event)) {
         listeners.set(event, new Set());
       }
-      listeners.get(event)!.add(handler);
+      listeners.get(event)?.add(handler);
 
       return (): void => {
         listeners.get(event)?.delete(handler);

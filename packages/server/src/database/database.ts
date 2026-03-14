@@ -1,19 +1,19 @@
-import { mkdirSync } from "node:fs";
-import { dirname } from "node:path";
-import { Kysely, Migrator, SqliteDialect } from "kysely";
-import BetterSqlite3 from "better-sqlite3";
+import { mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 
-import { ConfigService } from "../config/config.js";
-import { destroy } from "../services/services.js";
-import * as m001 from "./migrations/001-create-issues.js";
-import * as m002 from "./migrations/002-create-integrations.js";
-import * as m003 from "./migrations/003-create-stage-configs.js";
-import * as m004 from "./migrations/004-add-monitoring-fields.js";
-import * as m005 from "./migrations/005-decouple-agent-runs.js";
+import { Kysely, Migrator, SqliteDialect } from 'kysely';
+import BetterSqlite3 from 'better-sqlite3';
+import type { Generated, MigrationProvider } from 'kysely';
 
-import type { Generated } from "kysely";
-import type { MigrationProvider } from "kysely";
-import type { Services } from "../services/services.js";
+import { ConfigService } from '../config/config.js';
+import { destroy } from '../services/services.js';
+import type { Services } from '../services/services.js';
+
+import * as m001 from './migrations/001-create-issues.js';
+import * as m002 from './migrations/002-create-integrations.js';
+import * as m003 from './migrations/003-create-stage-configs.js';
+import * as m004 from './migrations/004-add-monitoring-fields.js';
+import * as m005 from './migrations/005-decouple-agent-runs.js';
 
 type IssuesTable = {
   id: string;
@@ -213,11 +213,11 @@ type DatabaseSchema = {
 
 const migrationProvider: MigrationProvider = {
   getMigrations: async () => ({
-    "001-create-issues": m001,
-    "002-create-integrations": m002,
-    "003-create-stage-configs": m003,
-    "004-add-monitoring-fields": m004,
-    "005-decouple-agent-runs": m005,
+    '001-create-issues': m001,
+    '002-create-integrations': m002,
+    '003-create-stage-configs': m003,
+    '004-add-monitoring-fields': m004,
+    '005-decouple-agent-runs': m005,
   }),
 };
 

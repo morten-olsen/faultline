@@ -1,6 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Search, Filter, Terminal } from 'lucide-react'
-import { Input } from '../../components/input/input.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Search, Filter, Terminal } from 'lucide-react';
+
+import { Input } from '../../components/input/input.tsx';
 
 /*
  * Input
@@ -17,17 +18,16 @@ const meta: Meta<typeof Input> = {
   parameters: {
     layout: 'padded',
   },
-}
+};
 
-type Story = StoryObj<typeof Input>
+type Story = StoryObj<typeof Input>;
 
 const Default: Story = {
   render: () => (
     <div style={{ maxWidth: 480 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        The default input is quiet — a dark surface with a subtle border that
-        brightens on focus. No labels built in; those live outside the component
-        so layout stays flexible.
+        The default input is quiet — a dark surface with a subtle border that brightens on focus. No labels built in;
+        those live outside the component so layout stays flexible.
       </p>
       <div className="flex flex-col gap-4">
         <Input placeholder="Search resolved issues..." />
@@ -35,15 +35,14 @@ const Default: Story = {
       </div>
     </div>
   ),
-}
+};
 
 const WithIcon: Story = {
   render: () => (
     <div style={{ maxWidth: 480 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        A leading icon provides context. Search gets a magnifying glass,
-        filter gets a funnel, commands get a terminal prompt. The icon
-        is muted until the input is focused.
+        A leading icon provides context. Search gets a magnifying glass, filter gets a funnel, commands get a terminal
+        prompt. The icon is muted until the input is focused.
       </p>
       <div className="flex flex-col gap-4">
         <Input placeholder="Search..." icon={Search} />
@@ -52,14 +51,14 @@ const WithIcon: Story = {
       </div>
     </div>
   ),
-}
+};
 
 const States: Story = {
   render: () => (
     <div style={{ maxWidth: 480 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        Error states use a subtle red border and a message below — never
-        aggressive, but clear. Disabled inputs fade like disabled buttons.
+        Error states use a subtle red border and a message below — never aggressive, but clear. Disabled inputs fade
+        like disabled buttons.
       </p>
       <div className="flex flex-col gap-5">
         <div>
@@ -77,7 +76,7 @@ const States: Story = {
       </div>
     </div>
   ),
-}
+};
 
-export { Default, WithIcon, States }
-export default meta
+export { Default, WithIcon, States };
+export default meta;

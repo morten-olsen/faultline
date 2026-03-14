@@ -1,10 +1,10 @@
-import { EventEmitter } from "../utils/utils.event-emitter.js";
-import { destroy } from "../services/services.js";
-import { createClaudeAgentProvider } from "./agent.provider.claude.js";
-import { AgentRun } from "./agent.run.js";
+import { EventEmitter } from '../utils/utils.event-emitter.js';
+import { destroy } from '../services/services.js';
+import type { Services } from '../services/services.js';
 
-import type { Services } from "../services/services.js";
-import type { AgentTask, AgentProvider, AgentServiceEventMap } from "./agent.types.js";
+import { createClaudeAgentProvider } from './agent.provider.claude.js';
+import { AgentRun } from './agent.run.js';
+import type { AgentTask, AgentProvider, AgentServiceEventMap } from './agent.types.js';
 
 class AgentService {
   #provider: AgentProvider;
@@ -19,7 +19,7 @@ class AgentService {
 
   // ── Event subscription ──────────────────────────────────────────
 
-  on: EventEmitter<AgentServiceEventMap>["on"] = (event, callback, options) =>
+  on: EventEmitter<AgentServiceEventMap>['on'] = (event, callback, options) =>
     this.#emitter.on(event, callback, options);
 
   // ── Provider ────────────────────────────────────────────────────
@@ -38,21 +38,33 @@ class AgentService {
     // Forward run-level events to the service-level emitter
     const { id, correlationId } = run;
 
-    run.events.on("step", (event) => {
-      this.#emitter.emit("step", id, correlationId, event);
-    }, { abortSignal: run.signal });
+    run.events.on(
+      'step',
+      (event) => {
+        this.#emitter.emit('step', id, correlationId, event);
+      },
+      { abortSignal: run.signal },
+    );
 
-    run.events.on("result", (event) => {
-      this.#emitter.emit("result", id, correlationId, event);
-    }, { abortSignal: run.signal });
+    run.events.on(
+      'result',
+      (event) => {
+        this.#emitter.emit('result', id, correlationId, event);
+      },
+      { abortSignal: run.signal },
+    );
 
-    run.events.on("error", (event) => {
-      this.#emitter.emit("error", id, correlationId, event);
-    }, { abortSignal: run.signal });
+    run.events.on(
+      'error',
+      (event) => {
+        this.#emitter.emit('error', id, correlationId, event);
+      },
+      { abortSignal: run.signal },
+    );
 
-    run.events.on("done", () => {
+    run.events.on('done', () => {
       this.#running.delete(id);
-      this.#emitter.emit("done", id, correlationId);
+      this.#emitter.emit('done', id, correlationId);
     });
 
     run.start();
@@ -64,14 +76,15 @@ class AgentService {
 
   stop = (runId: string): void => {
     const run = this.#running.get(runId);
-    if (!run) return;
+    if (!run) {
+      return;
+    }
     run.stop();
   };
 
   // ── Query running state ─────────────────────────────────────────
 
-  isRunning = (runId: string): boolean =>
-    this.#running.has(runId);
+  isRunning = (runId: string): boolean => this.#running.has(runId);
 
   get runningCount(): number {
     return this.#running.size;

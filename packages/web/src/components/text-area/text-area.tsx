@@ -1,13 +1,13 @@
 type TextAreaProps = {
-  value?: string
-  defaultValue?: string
-  placeholder?: string
-  rows?: number
-  disabled?: boolean
-  error?: boolean
-  mono?: boolean
-  onChange?: (value: string) => void
-}
+  value?: string;
+  defaultValue?: string;
+  placeholder?: string;
+  rows?: number;
+  disabled?: boolean;
+  error?: boolean;
+  mono?: boolean;
+  onChange?: (value: string) => void;
+};
 
 const TextArea = ({
   value,
@@ -31,14 +31,11 @@ const TextArea = ({
       text-base text-text placeholder:text-text-muted/60
       outline-none transition-all duration-fast
       ${mono ? 'font-mono text-sm' : ''}
-      ${error
-        ? 'ring-1 ring-red-500/40 focus:ring-red-400/60'
-        : 'ring-1 ring-white/8 focus:ring-white/20'
-      }
+      ${error ? 'ring-1 ring-red-500/40 focus:ring-red-400/60' : 'ring-1 ring-white/8 focus:ring-white/20'}
       ${disabled ? 'opacity-35 pointer-events-none' : ''}
     `}
   />
-)
+);
 
-export type { TextAreaProps }
-export { TextArea }
+export type { TextAreaProps };
+export { TextArea };

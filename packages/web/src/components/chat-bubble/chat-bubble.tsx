@@ -1,38 +1,36 @@
-import { Bot, User } from 'lucide-react'
+import { Bot, User } from 'lucide-react';
 
-type ChatBubbleRole = 'user' | 'assistant'
+type ChatBubbleRole = 'user' | 'assistant';
 
 type ChatBubbleProps = {
-  role: ChatBubbleRole
-  children: React.ReactNode
-  timestamp?: string
-}
+  role: ChatBubbleRole;
+  children: React.ReactNode;
+  timestamp?: string;
+};
 
 const ChatBubble = ({ role, children, timestamp }: ChatBubbleProps): React.ReactElement => {
-  const isUser = role === 'user'
+  const isUser = role === 'user';
 
   return (
     <div className={`flex gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`}>
       {/* Avatar */}
-      <div className={`
+      <div
+        className={`
         flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5
         ${isUser ? 'bg-white/8' : 'bg-blue-500/10'}
-      `}>
-        {isUser
-          ? <User size={12} className="text-text-secondary" />
-          : <Bot size={12} className="text-blue-400/70" />
-        }
+      `}
+      >
+        {isUser ? <User size={12} className="text-text-secondary" /> : <Bot size={12} className="text-blue-400/70" />}
       </div>
 
       {/* Message */}
       <div className={`flex-1 min-w-0 ${isUser ? 'flex flex-col items-end' : ''}`}>
-        <div className={`
+        <div
+          className={`
           rounded-xl px-3.5 py-2.5 max-w-[85%]
-          ${isUser
-            ? 'bg-white/8 text-text'
-            : 'text-text-secondary'
-          }
-        `}>
+          ${isUser ? 'bg-white/8 text-text' : 'text-text-secondary'}
+        `}
+        >
           <div className="text-sm leading-relaxed whitespace-pre-wrap">{children}</div>
         </div>
         {timestamp && (
@@ -42,12 +40,12 @@ const ChatBubble = ({ role, children, timestamp }: ChatBubbleProps): React.React
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 type ChatBubbleTypingProps = {
-  label?: string
-}
+  label?: string;
+};
 
 const ChatBubbleTyping = ({ label = 'Thinking…' }: ChatBubbleTypingProps): React.ReactElement => (
   <div className="flex gap-2.5">
@@ -63,7 +61,7 @@ const ChatBubbleTyping = ({ label = 'Thinking…' }: ChatBubbleTypingProps): Rea
       <span className="text-xs text-text-muted">{label}</span>
     </div>
   </div>
-)
+);
 
-export type { ChatBubbleProps, ChatBubbleRole, ChatBubbleTypingProps }
-export { ChatBubble, ChatBubbleTyping }
+export type { ChatBubbleProps, ChatBubbleRole, ChatBubbleTypingProps };
+export { ChatBubble, ChatBubbleTyping };

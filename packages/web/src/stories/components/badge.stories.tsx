@@ -1,6 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Activity, AlertCircle, CheckCircle, Clock, Zap } from 'lucide-react'
-import { Badge } from '../../components/badge/badge.tsx'
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Activity, AlertCircle, CheckCircle, Clock, Zap } from 'lucide-react';
+
+import { Badge } from '../../components/badge/badge.tsx';
 
 /*
  * Badge
@@ -16,16 +17,16 @@ const meta: Meta<typeof Badge> = {
   parameters: {
     layout: 'padded',
   },
-}
+};
 
-type Story = StoryObj<typeof Badge>
+type Story = StoryObj<typeof Badge>;
 
 const Variants: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        Five variants matching the system's semantic palette. Default is for
-        neutral metadata. The semantic variants communicate issue state instantly.
+        Five variants matching the system's semantic palette. Default is for neutral metadata. The semantic variants
+        communicate issue state instantly.
       </p>
       <div className="flex flex-wrap gap-2">
         <Badge>Default</Badge>
@@ -36,38 +37,48 @@ const Variants: Story = {
       </div>
     </div>
   ),
-}
+};
 
 const WithIcons: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        An optional Lucide icon reinforces the meaning. Use sparingly — the
-        color already carries most of the signal. Icons help when badges
-        appear in isolation without surrounding context.
+        An optional Lucide icon reinforces the meaning. Use sparingly — the color already carries most of the signal.
+        Icons help when badges appear in isolation without surrounding context.
       </p>
       <div className="flex flex-wrap gap-2">
-        <Badge variant="healthy" icon={CheckCircle}>Resolved</Badge>
-        <Badge variant="warning" icon={Clock}>Triaged</Badge>
-        <Badge variant="info" icon={Activity}>In Progress</Badge>
-        <Badge variant="critical" icon={AlertCircle}>Needs You</Badge>
-        <Badge variant="info" icon={Zap}>Automated</Badge>
+        <Badge variant="healthy" icon={CheckCircle}>
+          Resolved
+        </Badge>
+        <Badge variant="warning" icon={Clock}>
+          Triaged
+        </Badge>
+        <Badge variant="info" icon={Activity}>
+          In Progress
+        </Badge>
+        <Badge variant="critical" icon={AlertCircle}>
+          Needs You
+        </Badge>
+        <Badge variant="info" icon={Zap}>
+          Automated
+        </Badge>
       </div>
     </div>
   ),
-}
+};
 
 const InContext: Story = {
   render: () => (
     <div style={{ maxWidth: 640 }}>
       <p className="text-text-secondary text-base leading-relaxed mb-8 max-w-lg">
-        Badges in the page header — the first thing the user sees. A single
-        badge communicates the overall system state.
+        Badges in the page header — the first thing the user sees. A single badge communicates the overall system state.
       </p>
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-semibold text-text tracking-tight">Home</h2>
-          <Badge variant="healthy" icon={CheckCircle}>All Clear</Badge>
+          <Badge variant="healthy" icon={CheckCircle}>
+            All Clear
+          </Badge>
         </div>
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-semibold text-text tracking-tight">Home</h2>
@@ -75,12 +86,14 @@ const InContext: Story = {
         </div>
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-semibold text-text tracking-tight">Home</h2>
-          <Badge variant="critical" icon={AlertCircle}>1 Needs You</Badge>
+          <Badge variant="critical" icon={AlertCircle}>
+            1 Needs You
+          </Badge>
         </div>
       </div>
     </div>
   ),
-}
+};
 
-export { Variants, WithIcons, InContext }
-export default meta
+export { Variants, WithIcons, InContext };
+export default meta;

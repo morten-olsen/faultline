@@ -1,9 +1,9 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router"
+import { Outlet, createFileRoute } from '@tanstack/react-router';
 
-const StageConfigsLayout = (): React.ReactElement => <Outlet />
+const StageConfigsLayout = (): React.ReactElement => <Outlet />;
 
-const Route = createFileRoute("/settings/stage-configs")({
+const Route = createFileRoute('/settings/stage-configs')({
   component: StageConfigsLayout,
-})
+});
 
-export { Route }
+export { Route };
