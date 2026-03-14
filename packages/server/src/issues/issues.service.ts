@@ -5,29 +5,27 @@ import type { Services } from "../services/services.js";
 import type {
   IssuesTable,
   TimelineEntriesTable,
-  AgentLoopsTable,
-  AgentStepsTable,
   IssueResourcesTable,
   IssueRelationsTable,
   ApprovalsTable,
   IssueLinksTable,
 } from "../database/database.js";
+import { transition, InvalidTransitionError } from "./issues.machine.js";
+
+import type { IssueStage } from "./issues.types.js";
 import type {
   CreateIssueInput,
   UpdateIssueInput,
   CreateTimelineEntryInput,
-  CreateAgentLoopInput,
-  CreateAgentStepInput,
   CreateIssueResourceInput,
   CreateIssueRelationInput,
   CreateApprovalInput,
   CreateIssueLinkInput,
 } from "./issues.schemas.js";
+import type { IssueEvent } from "./issues.machine.js";
 
 type Issue = Selectable<IssuesTable>;
 type TimelineEntry = Selectable<TimelineEntriesTable>;
-type AgentLoop = Selectable<AgentLoopsTable>;
-type AgentStep = Selectable<AgentStepsTable>;
 type IssueResource = Selectable<IssueResourcesTable>;
 type IssueRelation = Selectable<IssueRelationsTable>;
 type Approval = Selectable<ApprovalsTable>;
@@ -149,33 +147,64 @@ class IssueService {
     const db = await this.#services.get(DatabaseService).instance;
     const now = new Date().toISOString();
 
-    // Fetch old stage for change detection
-    const oldIssue = input.stage !== undefined ? await this.getById(id) : undefined;
-
     const values: Record<string, unknown> = { updated_at: now };
 
     if (input.title !== undefined) values.title = input.title;
     if (input.summary !== undefined) values.summary = input.summary;
     if (input.description !== undefined) values.description = input.description;
-    if (input.stage !== undefined) {
-      values.stage = input.stage;
-      if (input.stage === "resolved") values.resolved_at = now;
-    }
     if (input.needsYou !== undefined) values.needs_you = input.needsYou ? 1 : 0;
     if (input.priority !== undefined) values.priority = input.priority;
     if (input.sourcePayload !== undefined) values.source_payload = input.sourcePayload;
 
     await db.updateTable("issues").set(values).where("id", "=", id).execute();
 
-    const updated = await this.getById(id);
-
-    // Emit events
     this.#emit("updated", id);
-    if (oldIssue && input.stage !== undefined && oldIssue.stage !== input.stage) {
-      this.#emit("stage-changed", id, { from: oldIssue.stage, to: input.stage });
+
+    return this.getById(id);
+  };
+
+  // ── State machine transition ─────────────────────────────────────
+
+  transition = async (id: string, event: IssueEvent): Promise<Issue | undefined> => {
+    const issue = await this.getById(id);
+    if (!issue) return undefined;
+
+    const stage = issue.stage as IssueStage;
+    const result = transition(stage, event);
+    if (!result.ok) {
+      throw new InvalidTransitionError(stage, event.type, result.reason);
     }
 
-    return updated;
+    const { effect } = result;
+    const db = await this.#services.get(DatabaseService).instance;
+    const now = new Date().toISOString();
+
+    const values: Record<string, unknown> = {
+      stage: effect.stage,
+      updated_at: now,
+    };
+    if (effect.needsYou !== undefined) values.needs_you = effect.needsYou ? 1 : 0;
+    if (effect.resolvedAt) values.resolved_at = effect.resolvedAt;
+    if (effect.issueUpdates) Object.assign(values, effect.issueUpdates);
+
+    await db.updateTable("issues").set(values).where("id", "=", id).execute();
+
+    if (effect.timeline) {
+      await this.addTimelineEntry({
+        issueId: id,
+        agentLoopId: null,
+        kind: effect.timeline.kind,
+        status: effect.timeline.status,
+        title: effect.timeline.title,
+        body: effect.timeline.body ?? null,
+        commandRun: null,
+      });
+    }
+
+    this.#emit("updated", id);
+    this.#emit("stage-changed", id, { from: issue.stage, to: effect.stage });
+
+    return this.getById(id);
   };
 
   // ── Timeline entries ──────────────────────────────────────────────
@@ -209,109 +238,6 @@ class IssueService {
       .selectAll()
       .where("issue_id", "=", issueId)
       .orderBy("created_at", "desc")
-      .execute();
-  };
-
-  // ── Agent loops ───────────────────────────────────────────────────
-
-  createAgentLoop = async (input: CreateAgentLoopInput): Promise<AgentLoop> => {
-    const db = await this.#services.get(DatabaseService).instance;
-    const now = new Date().toISOString();
-
-    const loop: AgentLoop = {
-      id: crypto.randomUUID(),
-      issue_id: input.issueId,
-      title: input.title,
-      status: "running",
-      started_at: now,
-      finished_at: null,
-    };
-
-    await db.insertInto("agent_loops").values(loop).execute();
-
-    return loop;
-  };
-
-  getAgentLoop = async (id: string): Promise<AgentLoop | undefined> => {
-    const db = await this.#services.get(DatabaseService).instance;
-
-    return db
-      .selectFrom("agent_loops")
-      .selectAll()
-      .where("id", "=", id)
-      .executeTakeFirst();
-  };
-
-  getAgentLoops = async (issueId: string): Promise<AgentLoop[]> => {
-    const db = await this.#services.get(DatabaseService).instance;
-
-    return db
-      .selectFrom("agent_loops")
-      .selectAll()
-      .where("issue_id", "=", issueId)
-      .orderBy("started_at", "desc")
-      .execute();
-  };
-
-  updateAgentLoopStatus = async (
-    id: string,
-    status: string,
-  ): Promise<AgentLoop | undefined> => {
-    const db = await this.#services.get(DatabaseService).instance;
-    const now = new Date().toISOString();
-    const finished = status === "complete" || status === "stopped" ? now : null;
-
-    await db
-      .updateTable("agent_loops")
-      .set({ status, finished_at: finished })
-      .where("id", "=", id)
-      .execute();
-
-    return this.getAgentLoop(id);
-  };
-
-  // ── Agent steps ───────────────────────────────────────────────────
-
-  addAgentStep = async (input: CreateAgentStepInput): Promise<AgentStep> => {
-    const db = await this.#services.get(DatabaseService).instance;
-    const now = new Date().toISOString();
-
-    // Auto-assign sequence based on existing steps
-    const lastStep = await db
-      .selectFrom("agent_steps")
-      .select("sequence")
-      .where("agent_loop_id", "=", input.agentLoopId)
-      .orderBy("sequence", "desc")
-      .executeTakeFirst();
-
-    const sequence = (lastStep?.sequence ?? -1) + 1;
-
-    const step: AgentStep = {
-      id: crypto.randomUUID(),
-      agent_loop_id: input.agentLoopId,
-      kind: input.kind,
-      title: input.title,
-      status: input.status,
-      detail: input.detail,
-      output: input.output,
-      duration_ms: input.durationMs,
-      sequence,
-      created_at: now,
-    };
-
-    await db.insertInto("agent_steps").values(step).execute();
-
-    return step;
-  };
-
-  getAgentSteps = async (agentLoopId: string): Promise<AgentStep[]> => {
-    const db = await this.#services.get(DatabaseService).instance;
-
-    return db
-      .selectFrom("agent_steps")
-      .selectAll()
-      .where("agent_loop_id", "=", agentLoopId)
-      .orderBy("sequence", "asc")
       .execute();
   };
 
@@ -544,25 +470,11 @@ class IssueService {
     return this.getById(issueId);
   };
 
-  hasRunningAgentLoop = async (issueId: string): Promise<boolean> => {
-    const db = await this.#services.get(DatabaseService).instance;
-
-    const running = await db
-      .selectFrom("agent_loops")
-      .select("id")
-      .where("issue_id", "=", issueId)
-      .where("status", "=", "running")
-      .executeTakeFirst();
-
-    return running !== undefined;
-  };
 }
 
 export type {
   Issue,
   TimelineEntry,
-  AgentLoop,
-  AgentStep,
   IssueResource,
   IssueRelation,
   Approval,

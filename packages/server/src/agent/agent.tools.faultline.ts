@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { IssueService } from "../issues/issues.js";
+import { IssueService, issueEventTypes, issueEventSchema, InvalidTransitionError } from "../issues/issues.js";
 import { defineTool } from "./agent.tools.js";
 
 import type { Services } from "../services/services.js";
@@ -188,15 +188,13 @@ const createFaultlineTools = (services: Services): Tool[] => {
 
     defineTool({
       name: "update-issue",
-      description: "Update an issue's stage, priority, title, summary, or needsYou flag.",
+      description: "Update an issue's priority, title, summary, or needsYou flag. Use transition-issue to change stage.",
       access: "write",
       input: {
         issueId: z.string().uuid().describe("The issue ID"),
         title: z.string().optional().describe("New title"),
         summary: z.string().nullable().optional().describe("New summary"),
         description: z.string().nullable().optional().describe("New description"),
-        stage: z.enum(["triage", "investigation", "proposed-plan", "implementation", "monitoring", "resolved", "ignored"]).optional()
-          .describe("New stage"),
         priority: z.enum(["critical", "high", "medium", "low"]).optional()
           .describe("New priority"),
         needsYou: z.boolean().optional().describe("Whether this issue needs human attention"),
@@ -208,6 +206,55 @@ const createFaultlineTools = (services: Services): Tool[] => {
         const { issueId, ...updates } = args;
         const result = await issues().update(issueId, updates);
         return { updated: result !== undefined };
+      },
+    }),
+
+    defineTool({
+      name: "transition-issue",
+      description: [
+        "Transition an issue to a new stage via a lifecycle event.",
+        "Events and their required fields:",
+        "  TRIAGE_COMPLETE — summary (string): the triage summary",
+        "  PROPOSE_PLAN — plan (string): the remediation plan",
+        "  PLAN_APPROVED — (no extra fields)",
+        "  PLAN_DENIED — reason (optional string)",
+        "  ENTER_MONITORING — monitorPlan (string), intervalMinutes (int), durationMinutes (int)",
+        "  MONITORING_DONE — checksCompleted (optional int)",
+        "  REGRESSION, SOURCE_RESOLVED, REOPEN, IGNORE — (no extra fields)",
+      ].join("\n"),
+      access: "write",
+      input: {
+        issueId: z.string().uuid().describe("The issue ID"),
+        event: z.enum(issueEventTypes).describe("The lifecycle event to apply"),
+        summary: z.string().optional().describe("Triage summary (required for TRIAGE_COMPLETE)"),
+        plan: z.string().optional().describe("Remediation plan (required for PROPOSE_PLAN)"),
+        reason: z.string().optional().describe("Reason (used for PLAN_DENIED)"),
+        monitorPlan: z.string().optional().describe("What to monitor (required for ENTER_MONITORING)"),
+        intervalMinutes: z.number().int().optional().describe("Check interval in minutes (required for ENTER_MONITORING)"),
+        durationMinutes: z.number().int().optional().describe("Total monitoring duration in minutes (required for ENTER_MONITORING)"),
+        checksCompleted: z.number().int().optional().describe("Number of checks completed (used for MONITORING_DONE)"),
+      },
+      output: z.object({
+        transitioned: z.boolean(),
+        stage: z.string().optional(),
+        error: z.string().optional(),
+      }),
+      execute: async (args) => {
+        try {
+          const { issueId, event: eventType, ...payload } = args;
+          const parsed = issueEventSchema.parse({ type: eventType, ...payload });
+          const result = await issues().transition(issueId, parsed);
+          return { transitioned: true, stage: result?.stage };
+        } catch (err) {
+          if (err instanceof InvalidTransitionError) {
+            return { transitioned: false, error: err.message };
+          }
+          if (err instanceof z.ZodError) {
+            const messages = err.issues.map((i) => i.message).join("; ");
+            return { transitioned: false, error: `Invalid event data: ${messages}` };
+          }
+          throw err;
+        }
       },
     }),
 

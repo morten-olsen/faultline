@@ -7,7 +7,7 @@ import type { EventMessage } from "@faultline/protocol";
 import { Services } from "./services/services.js";
 import { DatabaseService } from "./database/database.js";
 import { IssueService } from "./issues/issues.js";
-import { AgentService } from "./agent/agent.js";
+import { AgentRunService } from "./agent-runs/agent-runs.js";
 import { IntegrationService } from "./integrations/integrations.js";
 import { StageConfigService } from "./stage-configs/stage-configs.js";
 import { OrchestratorService } from "./orchestrator/orchestrator.js";
@@ -17,13 +17,15 @@ import { registerAlertmanagerWebhook } from "./webhooks/webhooks.js";
 import type {
   Issue as IssueRow,
   TimelineEntry as TimelineEntryRow,
-  AgentLoop as AgentLoopRow,
-  AgentStep as AgentStepRow,
   IssueResource as IssueResourceRow,
   IssueRelationRow,
   Approval as ApprovalRow,
   IssueLink as IssueLinkRow,
 } from "./issues/issues.js";
+import type {
+  AgentLoop as AgentLoopRow,
+  AgentStep as AgentStepRow,
+} from "./agent-runs/agent-runs.js";
 import type {
   SshIdentity as SshIdentityRow,
   GitRepo as GitRepoRow,
@@ -67,9 +69,9 @@ const toTimelineEntry = (row: TimelineEntryRow) => ({
   createdAt: row.created_at,
 });
 
-const toAgentLoop = (row: AgentLoopRow) => ({
+const toAgentLoop = (row: AgentLoopRow, issueId?: string) => ({
   id: row.id,
-  issueId: row.issue_id,
+  issueId: issueId ?? "",
   title: row.title,
   status: row.status as "running",
   startedAt: row.started_at,
@@ -254,36 +256,35 @@ const router = createRouter(protocol, {
 
   // Agent loops
   "agentLoops.list": async (input, { services }) => {
-    const loops = await services.get(IssueService).getAgentLoops(input.issueId);
-    return { loops: loops.map(toAgentLoop) };
+    const loops = await services.get(AgentRunService).getAgentLoopsForIssue(input.issueId);
+    return { loops: loops.map((l) => toAgentLoop(l, input.issueId)) };
   },
 
   "agentLoops.get": async (input, { services }) => {
-    const loop = await services.get(IssueService).getAgentLoop(input.id);
+    const loop = await services.get(AgentRunService).getAgentLoop(input.id);
     return { loop: loop ? toAgentLoop(loop) : null };
   },
 
   "agentLoops.create": async (input, { services }) => {
-    const loop = await services.get(IssueService).createAgentLoop({
-      issueId: input.issueId,
-      title: input.title,
-    });
-    return { loop: toAgentLoop(loop) };
+    const agentRunService = services.get(AgentRunService);
+    const loop = await agentRunService.createAgentLoop({ title: input.title });
+    await agentRunService.linkToIssue(input.issueId, loop.id);
+    return { loop: toAgentLoop(loop, input.issueId) };
   },
 
   "agentLoops.updateStatus": async (input, { services }) => {
-    const loop = await services.get(IssueService).updateAgentLoopStatus(input.id, input.status);
+    const loop = await services.get(AgentRunService).updateAgentLoopStatus(input.id, input.status);
     return { loop: loop ? toAgentLoop(loop) : null };
   },
 
   // Agent steps
   "agentSteps.list": async (input, { services }) => {
-    const steps = await services.get(IssueService).getAgentSteps(input.agentLoopId);
+    const steps = await services.get(AgentRunService).getAgentSteps(input.agentLoopId);
     return { steps: steps.map(toAgentStep) };
   },
 
   "agentSteps.add": async (input, { services }) => {
-    const step = await services.get(IssueService).addAgentStep({
+    const step = await services.get(AgentRunService).addAgentStep({
       agentLoopId: input.agentLoopId,
       kind: input.kind,
       title: input.title,
@@ -353,18 +354,17 @@ const router = createRouter(protocol, {
 
   // Agent
   "agent.run": async (input, { services }) => {
-    const agentLoopId = await services.get(AgentService).run({
+    const agentLoopId = await services.get(OrchestratorService).runForIssue({
       issueId: input.issueId,
       prompt: input.prompt,
       systemPrompt: input.systemPrompt,
-      allowedTools: input.allowedTools,
       cwd: input.cwd,
     });
     return { agentLoopId };
   },
 
   "agent.stop": async (input, { services }) => {
-    await services.get(AgentService).stop(input.agentLoopId);
+    await services.get(OrchestratorService).stopByAgentLoopId(input.agentLoopId);
     return { stopped: true };
   },
 

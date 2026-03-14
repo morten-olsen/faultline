@@ -11,6 +11,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch --preserveWatchOutput & node --watch dist/main.js",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@types/better-sqlite3": "catalog:",
     "@types/ws": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^4.1.0"
   }
 }

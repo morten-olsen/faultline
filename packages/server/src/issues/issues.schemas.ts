@@ -5,7 +5,6 @@ import {
   issuePriorities,
   timelineEntryKinds,
   timelineEntryStatuses,
-  agentStepKinds,
   resourceKinds,
   healthStatuses,
   issueRelations,
@@ -30,7 +29,6 @@ const updateIssueSchema = z.object({
   title: z.string().min(1).optional(),
   summary: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
-  stage: z.enum(issueStages).optional(),
   needsYou: z.boolean().optional(),
   priority: z.enum(issuePriorities).optional(),
   sourcePayload: z.string().nullable().optional(),
@@ -49,25 +47,6 @@ const createTimelineEntrySchema = z.object({
 });
 
 type CreateTimelineEntryInput = z.infer<typeof createTimelineEntrySchema>;
-
-const createAgentLoopSchema = z.object({
-  issueId: z.string().uuid(),
-  title: z.string().min(1),
-});
-
-type CreateAgentLoopInput = z.infer<typeof createAgentLoopSchema>;
-
-const createAgentStepSchema = z.object({
-  agentLoopId: z.string().uuid(),
-  kind: z.enum(agentStepKinds),
-  title: z.string().min(1),
-  status: z.string().nullable().default(null),
-  detail: z.string().nullable().default(null),
-  output: z.string().nullable().default(null),
-  durationMs: z.number().int().nullable().default(null),
-});
-
-type CreateAgentStepInput = z.infer<typeof createAgentStepSchema>;
 
 const createIssueResourceSchema = z.object({
   issueId: z.string().uuid(),
@@ -111,8 +90,6 @@ export type {
   CreateIssueInput,
   UpdateIssueInput,
   CreateTimelineEntryInput,
-  CreateAgentLoopInput,
-  CreateAgentStepInput,
   CreateIssueResourceInput,
   CreateIssueRelationInput,
   CreateApprovalInput,
@@ -122,8 +99,6 @@ export {
   createIssueSchema,
   updateIssueSchema,
   createTimelineEntrySchema,
-  createAgentLoopSchema,
-  createAgentStepSchema,
   createIssueResourceSchema,
   createIssueRelationSchema,
   createApprovalSchema,

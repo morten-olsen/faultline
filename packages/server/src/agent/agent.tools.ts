@@ -41,17 +41,6 @@ const defineTool = <I extends z.ZodRawShape, O extends z.ZodType>(config: {
   execute: config.execute as (args: unknown) => Promise<unknown>,
 });
 
-// ── Phase → access level mapping ──────────────────────────────────
-
-const issueStageAccess: Record<string, ToolAccess> = {
-  triage: "read",
-  investigation: "read",
-  "proposed-plan": "read",
-  implementation: "write",
-  monitoring: "read",
-  resolved: "read",
-  ignored: "read",
-};
 
 // ── Built-in SDK tools by access level ────────────────────────────
 // These control which of the SDK's own tools (Read, Bash, etc.)
@@ -82,23 +71,11 @@ const resolveTools = (allTools: readonly Tool[], access: ToolAccess): Tool[] => 
   return allTools.filter((t) => accessIndex(t.access) <= max);
 };
 
-// Get built-in SDK tool names for an issue stage
-const resolveBuiltinTools = (stage: string): readonly string[] => {
-  const access = issueStageAccess[stage] ?? "read";
-  return builtinToolsByAccess[access] ?? builtinToolsByAccess.read;
-};
-
-// Get the access level for an issue stage
-const resolveAccess = (stage: string): ToolAccess =>
-  issueStageAccess[stage] ?? "read";
 
 export type { ToolAccess, Tool };
 export {
   toolAccessLevels,
-  issueStageAccess,
   builtinToolsByAccess,
   defineTool,
   resolveTools,
-  resolveBuiltinTools,
-  resolveAccess,
 };

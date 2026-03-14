@@ -29,8 +29,6 @@ export type {
   CreateIssueInput,
   UpdateIssueInput,
   CreateTimelineEntryInput,
-  CreateAgentLoopInput,
-  CreateAgentStepInput,
   CreateIssueResourceInput,
   CreateIssueRelationInput,
   CreateApprovalInput,
@@ -40,8 +38,6 @@ export {
   createIssueSchema,
   updateIssueSchema,
   createTimelineEntrySchema,
-  createAgentLoopSchema,
-  createAgentStepSchema,
   createIssueResourceSchema,
   createIssueRelationSchema,
   createApprovalSchema,
@@ -51,8 +47,6 @@ export {
 export type {
   Issue,
   TimelineEntry,
-  AgentLoop,
-  AgentStep,
   IssueResource,
   IssueRelation as IssueRelationRow,
   Approval,
@@ -62,3 +56,6 @@ export type {
   SetMonitoringPlanInput,
 } from "./issues.service.js";
 export { IssueService } from "./issues.service.js";
+
+export type { IssueEventType, IssueEvent } from "./issues.machine.js";
+export { issueEventTypes, issueEventSchema, InvalidTransitionError } from "./issues.machine.js";

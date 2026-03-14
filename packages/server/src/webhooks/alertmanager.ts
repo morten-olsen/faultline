@@ -103,36 +103,37 @@ const registerAlertmanagerWebhook = (
             commandRun: null,
           });
         } else {
-          const wasResolved = existing.stage === "resolved";
-
+          // Always update source payload
           await issueService.update(existing.id, {
             sourcePayload: JSON.stringify(alert),
-            ...(wasResolved ? { stage: "triage" } : {}),
           });
 
-          await issueService.addTimelineEntry({
-            issueId: existing.id,
-            agentLoopId: null,
-            kind: wasResolved ? "regression" : "detected",
-            status: "info",
-            title: wasResolved ? "Alert re-fired — issue regressed" : "Alert re-fired",
-            body: JSON.stringify(alert),
-            commandRun: null,
-          });
+          if (existing.stage === "resolved") {
+            await issueService.transition(existing.id, { type: "REOPEN" });
+            await issueService.addTimelineEntry({
+              issueId: existing.id,
+              agentLoopId: null,
+              kind: "regression",
+              status: "info",
+              title: "Alert re-fired — issue regressed",
+              body: JSON.stringify(alert),
+              commandRun: null,
+            });
+          } else {
+            await issueService.addTimelineEntry({
+              issueId: existing.id,
+              agentLoopId: null,
+              kind: "detected",
+              status: "info",
+              title: "Alert re-fired",
+              body: JSON.stringify(alert),
+              commandRun: null,
+            });
+          }
         }
       } else if (alert.status === "resolved") {
-        if (existing && existing.stage !== "resolved") {
-          await issueService.update(existing.id, { stage: "resolved" });
-
-          await issueService.addTimelineEntry({
-            issueId: existing.id,
-            agentLoopId: null,
-            kind: "resolved",
-            status: "success",
-            title: "Alert resolved by source",
-            body: null,
-            commandRun: null,
-          });
+        if (existing && existing.stage !== "resolved" && existing.stage !== "ignored") {
+          await issueService.transition(existing.id, { type: "SOURCE_RESOLVED" });
         }
       }
     }

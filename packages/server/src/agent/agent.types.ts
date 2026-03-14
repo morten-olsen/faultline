@@ -1,15 +1,14 @@
 import type { Tool } from "./agent.tools.js";
 
-// ── Agent task — what the service sends to a provider ──────────────
+// ── Agent task — what the service receives to start a run ─────────
 
 type AgentTask = {
-  issueId: string;
-  agentLoopId: string;
   prompt: string;
   systemPrompt?: string;
   builtinTools?: readonly string[];
   customTools?: Tool[];
   cwd?: string;
+  correlationId?: string;
 };
 
 // ── Agent events — what a provider streams back ────────────────────
@@ -51,6 +50,22 @@ type AgentProvider = {
   run: (task: AgentTask, signal: AbortSignal) => AsyncIterable<AgentEvent>;
 };
 
+// ── Typed event maps ───────────────────────────────────────────────
+
+type AgentRunEventMap = {
+  step: (event: AgentStepEvent) => void;
+  result: (event: AgentResultEvent) => void;
+  error: (event: AgentErrorEvent) => void;
+  done: () => void;
+};
+
+type AgentServiceEventMap = {
+  step: (runId: string, correlationId: string | undefined, event: AgentStepEvent) => void;
+  result: (runId: string, correlationId: string | undefined, event: AgentResultEvent) => void;
+  error: (runId: string, correlationId: string | undefined, event: AgentErrorEvent) => void;
+  done: (runId: string, correlationId: string | undefined) => void;
+};
+
 export type {
   AgentTask,
   AgentStepEvent,
@@ -59,4 +74,6 @@ export type {
   AgentDoneEvent,
   AgentEvent,
   AgentProvider,
+  AgentRunEventMap,
+  AgentServiceEventMap,
 };

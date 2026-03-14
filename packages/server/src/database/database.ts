@@ -1,11 +1,15 @@
+import { mkdirSync } from "node:fs";
+import { dirname } from "node:path";
 import { Kysely, Migrator, SqliteDialect } from "kysely";
 import BetterSqlite3 from "better-sqlite3";
 
+import { ConfigService } from "../config/config.js";
 import { destroy } from "../services/services.js";
 import * as m001 from "./migrations/001-create-issues.js";
 import * as m002 from "./migrations/002-create-integrations.js";
 import * as m003 from "./migrations/003-create-stage-configs.js";
 import * as m004 from "./migrations/004-add-monitoring-fields.js";
+import * as m005 from "./migrations/005-decouple-agent-runs.js";
 
 import type { Generated } from "kysely";
 import type { MigrationProvider } from "kysely";
@@ -56,11 +60,15 @@ type TimelineEntriesTable = {
 
 type AgentLoopsTable = {
   id: string;
-  issue_id: string;
   title: string;
   status: Generated<string>;
   started_at: Generated<string>;
   finished_at: string | null;
+};
+
+type IssueAgentRunsTable = {
+  issue_id: string;
+  agent_loop_id: string;
 };
 
 type AgentStepsTable = {
@@ -190,6 +198,7 @@ type DatabaseSchema = {
   timeline_entries: TimelineEntriesTable;
   agent_loops: AgentLoopsTable;
   agent_steps: AgentStepsTable;
+  issue_agent_runs: IssueAgentRunsTable;
   issue_resources: IssueResourcesTable;
   issue_relations: IssueRelationsTable;
   approvals: ApprovalsTable;
@@ -208,17 +217,24 @@ const migrationProvider: MigrationProvider = {
     "002-create-integrations": m002,
     "003-create-stage-configs": m003,
     "004-add-monitoring-fields": m004,
+    "005-decouple-agent-runs": m005,
   }),
 };
 
 class DatabaseService {
   #instance: Promise<Kysely<DatabaseSchema>> | undefined;
+  #services: Services;
 
-  constructor(_services: Services) {}
+  constructor(services: Services) {
+    this.#services = services;
+  }
 
   #setup = async (): Promise<Kysely<DatabaseSchema>> => {
+    const dbPath = this.#services.get(ConfigService).dbPath;
+    mkdirSync(dirname(dbPath), { recursive: true });
+
     const dialect = new SqliteDialect({
-      database: new BetterSqlite3("faultline.db"),
+      database: new BetterSqlite3(dbPath),
     });
 
     const db = new Kysely<DatabaseSchema>({ dialect });
@@ -256,6 +272,7 @@ export type {
   TimelineEntriesTable,
   AgentLoopsTable,
   AgentStepsTable,
+  IssueAgentRunsTable,
   IssueResourcesTable,
   IssueRelationsTable,
   ApprovalsTable,
